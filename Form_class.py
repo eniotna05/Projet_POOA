@@ -27,6 +27,7 @@ white = Color(255,255,255)
 
 black = Color(0,0,0)
 
+
 class Point:
 
     def __init__(self, absciss, ordinate):
@@ -51,27 +52,41 @@ class Point:
         self.absciss = absciss
         self.ordinate = ordinate
         
+        
     def __repr__(self):
         
-        return """Point of absciss {} and ordinate {}""".format(self.abscisse, self.ordonne)  
+        return """Point of absciss {} and ordinate {}""".format(self.absciss, self.ordinate)
+
+    
+class Form:
 
 
+    # Classe originelle dont hérite toutes les autres formes
+    # Pas utilise en tant que tel pour l'instant
+  
+    def __init__(self, *point, identifier = 0):
+        self.point_list = points
+        self.identifier = identifier
+        
 
-class Ligne:
-    def __init__(self, x, y,color = black):
+class Lign(Form):
+    def __init__(self, x, y,color = black, identifier = 0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(y, Point):
             raise TypeError("The second parameter has to be a point")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
+       
         self.x = x
         self.y = y
         self.color = color
+        self.identifier = identifier 
 
     def __repr__(self):
         
-        return """Ligne from {} to {} and of color: {}""".format(self.x, self.y, self.color)
+        return """Lign from {} to {} and of color: {}
+        and of id: {}""".format(self.x, self.y, self.color,self.identifier)
 
     def get_string(self):
 
@@ -79,19 +94,13 @@ class Ligne:
     # Ex: lign from (2,4) to (8,14) => string = "L2,4,8,14"
 
 
-        string = "L"
-        string += str (self.x.absciss)
-        string += ","
-        string += str (self.x.ordinate)
-        string += ","
-        string += str (self.y.absciss)
-        string += ","
-        string += str (self.y.ordinate)
+        string = "L" + str (self.x.absciss) + ","  + str (self.x.ordinate) + "," 
+        string += str (self.y.absciss) + "," + str (self.y.ordinate) + "," + str(self.identifier)
         return string
 
 
-class Rectangle:
-    def __init__(self, x, y,color = black):
+class Rectangle(Form):
+    def __init__(self, x, y,color = black, identifier = 0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(y, Point):
@@ -101,10 +110,12 @@ class Rectangle:
         self.x = x
         self.y = y
         self.color = color
+        self.identifier = identifier 
 
     def __repr__(self):
         
-        return """Rectangle from {} to {} and of color: {}""".format(self.x, self.y, self.color)
+        return """Rectangle from {} to {} and of color: {}
+        and of id: {}""".format(self.x, self.y, self.color,self.identifier)
 
     def get_string(self):
 
@@ -112,63 +123,57 @@ class Rectangle:
     # Ex: rectangle from (2,4) to (8,14) => string = "R2,4,8,14"
 
 
-        string = "R"
-        string += str (self.x.absciss)
-        string += ","
-        string += str (self.x.ordinate)
-        string += ","
-        string += str (self.y.absciss)
-        string += ","
-        string += str (self.y.ordinate)
+        string = "R" + str (self.x.absciss) + ","  + str (self.x.ordinate) + "," 
+        string += str (self.y.absciss) + "," + str (self.y.ordinate) + "," + str(self.identifier)
         return string
 
 
-class Square:
-    def __init__(self, x, d ,color = black):
+class Square(Form):
+    def __init__(self, x, d ,color = black, identifier = 0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(d, int):
             raise TypeError("The second parameter has to be an integer")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
+        self.x = x
         self.d = d
-        self.y = y
         self.color = color
+        self.identifier = identifier 
 
     def __repr__(self):
         
-        return """Square of left upper corner: {}, of side length; {} and of color: {}""".format(self.x, self.d, self.color)
+        return """Square of left upper corner: {}, of side length; {} and of color: {}
+        and of id: {}""".format(self.x, self.d, self.color,self.identifier)
 
     def get_string(self):
 
     # method to transform square into string
     # Ex: rectangle of left upper corner (17,5) and of side length 2 => string = "S17,5,2"
 
-
-        string = "S"
-        string += str (self.x.absciss)
-        string += ","
-        string += str (self.x.ordinate)
-        string += ","
-        string += str (self.d)
+        string = "S" + str (self.x.absciss) + "," + str (self.x.ordinate)
+        string += "," +str (self.d) + "," + str(self.identifier)
+        
         return string
 
 
-class Circle:
-    def __init__(self, c, r,color = black):
+class Circle(Form):
+    def __init__(self, c, r,color = black, identifier = 0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(r, int):
             raise TypeError("The second parameter has to be an integer")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
+        self.c = c
         self.r = r
-        self.y = y
         self.color = color
+        self.identifier = identifier 
 
     def __repr__(self):
         
-        return """Circle of center {}, of radius: {} and of color: {}""".format(self.c, self.r, self.color)
+        return """Circle of center {}, of radius: {} and of color: {}
+        and of id: {}""".format(self.c, self.r, self.color,self.identifier)
 
     def get_string(self):
 
@@ -176,12 +181,8 @@ class Circle:
     # Ex: Circle of center (17,5) and of radius 2 => string = "S17,5,2"
 
 
-        string = "C"
-        string += str (self.c.absciss)
-        string += ","
-        string += str (self.c.ordinate)
-        string += ","
-        string += str (self.r)
+        string = "C" + str (self.c.absciss) + "," + str (self.c.ordinate)
+        string += "," +str (self.r)+ "," + str(self.identifier)
         return string
 
 
