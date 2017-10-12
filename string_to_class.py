@@ -19,12 +19,12 @@ def string_to_square(string):
 def string_to_lign(string):
     parameters = string.split(",")
     return Lign(Point(int(parameters[0]),int(parameters[1])),
-    Point(int(parameters[2]),int(parameters[3])), identifier = parameters[3])
+    Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 def string_to_rectangle(string):
     parameters = string.split(",")
     return Rectangle(Point(int(parameters[0]),int(parameters[1])),
-    Point(int(parameters[2]),int(parameters[3])), identifier = parameters[3])
+    Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 
 
