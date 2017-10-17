@@ -75,8 +75,7 @@ class Reception(Thread):
     def __getmessage(self):
         """Receives a 3-characters long message"""
         commande = bytes()
-        while len(commande)<3:
-            commande += self.sock.recv(3-len(commande))
+        commande += self.sock.recv(1024)
         print(commande.decode())
         return commande.decode()
 

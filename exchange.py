@@ -34,6 +34,11 @@ class ExchangeThread(Thread):
             data += self.sock.recv(8 - len(data))
         return data.decode()
 
+    def __getmessage(self):
+        data = bytes()
+        data += self.sock.recv(1024)
+        return data.decode()
+
     def __stopListening(self):
         self.continuer = False
         print("End of communication with client {}".format(self.identifiant))
@@ -64,9 +69,9 @@ class ExchangeThread(Thread):
                 self.__stopListening()
                 break
             else:
-                commande = self.__getcommand()
+                commande = self.__getmessage()
                 if commande == "R":
-                    dim = self.__getfloat()
+                    dim = self.__getmessage()
                     self.__stockData(dim)
                     self.__sendmessage(dim)
                 self.__sendmessage(commande)
