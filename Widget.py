@@ -1,4 +1,4 @@
-from Form_class import Point, Lign, Square
+from Form_class import Point, Lign, Square, Circle
 from Form_class import Rectangle as OwnRectangle
 
 from kivy.app import App
@@ -30,6 +30,7 @@ class WhiteboardInstance(Widget):
         self.touch_origin_x = touch.x
         self.touch_origin_y = touch.y
         print("down", touch.x, touch.y)
+
         with self.canvas:
             if self._selected_form == Forms.LINE:
                 touch.ud['line'] = Line(points=(touch.x, touch.y), width=5)
@@ -43,6 +44,10 @@ class WhiteboardInstance(Widget):
                     size=(0, 0))
             elif self._selected_form == Forms.ELLIPSE:
                 touch.ud['ellipse'] = Ellipse(
+                    pos=(touch.x, touch.y),
+                    size=(0, 0))
+            elif self._selected_form == Forms.CIRCLE:
+                touch.ud['circle'] = Ellipse(
                     pos=(touch.x, touch.y),
                     size=(0, 0))
 
@@ -70,6 +75,13 @@ class WhiteboardInstance(Widget):
             touch.ud['ellipse'].size = touch.x - self.touch_origin_x, \
                 touch.y - self.touch_origin_y
 
+        elif self._selected_form == Forms.CIRCLE:
+            dx = touch.x - self.touch_origin_x
+            dy = touch.y - self.touch_origin_y
+            l = max(abs(dx), abs(dy))
+            sign = lambda x: (1, -1)[x < 0]
+            touch.ud['circle'].size =  sign(dx) * l, sign(dy) * l
+
     def on_touch_up(self, touch):
         self.drawing = False
         global client_form_database
@@ -80,8 +92,6 @@ class WhiteboardInstance(Widget):
             del touch.ud['line'].points[-2:]
             print('removing last point, line : ', touch.ud['line'].points)
             touch.ud['line'].points += [touch.x, touch.y]
-            print('last point, line : ', touch.ud['line'].points,
-                  'coords : ', touch.x, touch.y)
 
             a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
             b = Point(int(touch.x), int(touch.y))
@@ -103,7 +113,6 @@ class WhiteboardInstance(Widget):
             print('dico', client_form_database)
 
         elif self._selected_form == Forms.SQUARE:
-            print(touch.x, touch.y)
             dx = touch.x - self.touch_origin_x
             dy = touch.y - self.touch_origin_y
             l = int(max(abs(dx), abs(dy)))
@@ -122,6 +131,17 @@ class WhiteboardInstance(Widget):
 
         elif self._selected_form == Forms.ELLIPSE:
             pass
+        elif self._selected_form == Forms.CIRCLE:
+            c = Point(
+                int((touch.x + self.touch_origin_x) / 2),
+                int((touch.y + self.touch_origin_y) / 2))
+            r = int(abs(touch.x - self.touch_origin_x) / 2)
+            form_number += 1
+            client_form_database[client_id + str(form_number)] = \
+                Circle(c, r, identifier=client_id + str(form_number))
+            self.string_to_send = \
+                Circle(c, r, identifier=client_id + str(form_number)).get_string()
+            print('dico', client_form_database)
 
     @property
     def selected_form(self):
@@ -137,6 +157,7 @@ class Forms(Enum):
     RECT = 2
     SQUARE = 3
     ELLIPSE = 4
+    CIRCLE = 5
 
 
 class Toolbar(BoxLayout):
@@ -166,6 +187,10 @@ class Toolbar(BoxLayout):
         self.select_ellipse_btn.bind(on_release=self.select_ellipse)
         self.add_widget(self.select_ellipse_btn)
 
+        self.select_circle_btn = Button(text="Circle")
+        self.select_circle_btn.bind(on_release=self.select_circle)
+        self.add_widget(self.select_circle_btn)
+
     def select_line(self, obj):
         self.white_board.selected_form = Forms.LINE
 
@@ -177,6 +202,9 @@ class Toolbar(BoxLayout):
 
     def select_ellipse(self, obj):
         self.white_board.selected_form = Forms.ELLIPSE
+
+    def select_circle(self, obj):
+        self.white_board.selected_form = Forms.CIRCLE
 
     def clear_board(self, obj):
         self.white_board.canvas.clear()

@@ -7,8 +7,8 @@ class Color:
 
     def __init__(self, R, G, B):
 
-        if (not isinstance(R, int)) or (not isinstance(G, int)) or
-        (not isinstance(B, int)):
+        if (not isinstance(R, int) or not isinstance(G, int) or
+            not isinstance(B, int)):
             raise TypeError("All parameters have to be interger")
         if R < 0 or R > 255 or G < 0 or G > 255 or B < 0 or B > 255:
             raise ValueError("All parameters have to be between 0 and 255")
