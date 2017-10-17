@@ -129,6 +129,7 @@ class Rectangle(Form):
 
 
 class Square(Form):
+    # x had to be upper right corner
     def __init__(self, x, d ,color = black, identifier = 0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")

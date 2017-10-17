@@ -1,3 +1,9 @@
+
+from Command_class import *
+from Form_class import *
+from string_to_class import *
+
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
@@ -6,6 +12,10 @@ from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty
 
 from enum import Enum
+
+client_form_database = {}
+form_number = 0
+client_id = "yoann"
 
 
 class WhiteboardInstance(Widget):
@@ -59,12 +69,24 @@ class WhiteboardInstance(Widget):
 
     def on_touch_up(self, touch):
         self.drawing = False
+        global client_form_database
+        global form_number
+        global client_id
+
+
+
+        
         if self._selected_form == Forms.LINE:
             del touch.ud['line'].points[-2:]
             print('removing last point, line : ', touch.ud['line'].points)
             touch.ud['line'].points += [touch.x, touch.y]
             print('last point, line : ', touch.ud['line'].points,
                   'coords : ', touch.x, touch.y)
+            a = Point(self.touch_origin_x,self.touch_origin_y)
+            b = Point(touch.x, touch.y)
+            form_number +=1
+            client_form_database.append(Lign(a,b,identifier = client_id + form_number))
+            self.string_to_send = Lign(a,b,identifier = client_id + form_number).get_string()
         elif self._selected_form == Forms.RECT:
             pass
         elif self._selected_form == Forms.SQUARE:
