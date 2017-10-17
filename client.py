@@ -1,6 +1,8 @@
 from threading import Thread
 import socket
-import struct
+from commandclass import *
+from strtocommand import *
+from formclass import *
 import time
 
 userCmd = ""
@@ -19,6 +21,15 @@ class Client:
         if messageServeur != b"H":#tests if the server sends HLO
             raise ValueError("Protocol error: H expected")
         self.sock.send(u"H".encode())#Sends HLO back
+
+        messageServeur = self.sock.recv(1024)
+        messageServeur=messageServeur.decode()
+        print(messageServeur)
+        nomUtilisateur = input(">")
+        self.sock.send(nomUtilisateur.encode())
+        messageServeur = self.sock.recv(1024)
+        messageServeur=messageServeur.decode()
+        print(messageServeur)
 
         while self.continuer:
             if self.userCmd =="END":
@@ -56,12 +67,17 @@ class Envoi(Thread):
         self.sock.send(paquet)
 
     def run(self):
-        while True:
-            if self.userCmd == "Q":
-                break
-            else:
-                self.userCmd = input(">")
-                self.___sendcommand(self.userCmd)
+        #while True:
+            #if self.userCmd == "Q":
+            #    break
+            #else:
+                #self.userCmd = input(">")
+        """self.___sendcommand(string_1)
+        time.sleep(5)
+        self.___sendcommand(string_3)
+        time.sleep(0.2)
+        self.___sendcommand(string_4)"""
+
 
 class Reception(Thread):
     """Thread for reception of messages from the server"""
@@ -89,5 +105,23 @@ class Reception(Thread):
                 self.__getmessage()
 
 
+if __name__ == "__main__":
+    Creation_1 = Create(Rectangle(Point(1, 3), Point(10, 100)))
+    Creation_2 = Create(Lign(Point(134, 27), Point(1439, 238)))
+    Creation_3 = Create(Circle(Point(43, 372), 37))
+    Creation_4 = Create(Square(Point(74, 23), 7))
+
+    string_1 = Creation_1.get_string()
+    string_2 = Creation_2.get_string()
+    string_3 = Creation_3.get_string()
+    string_4 = Creation_4.get_string()
+
+    Creation_1_R = string_to_command(string_1)
+    Creation_2_R = string_to_command(string_2)
+    Creation_3_R = string_to_command(string_3)
+    Creation_4_R = string_to_command(string_4)
+
 client2 = Client()
 client2.clientRunning()
+
+

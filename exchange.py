@@ -21,6 +21,7 @@ class ExchangeThread(Thread):
         self.identifiant = identifiant + 1
         identifiant = identifiant+1
         self.continuer = True
+        self.nomUtilisateur = ""
 
     def __getcommand(self):
         data = bytes()
@@ -37,6 +38,7 @@ class ExchangeThread(Thread):
     def __getmessage(self):
         data = bytes()
         data += self.sock.recv(1024)
+        connexions[self.sock].append(data)
         return data.decode()
 
     def __stopListening(self):
@@ -64,6 +66,12 @@ class ExchangeThread(Thread):
         if commande != "H":
             print("End of communication")
 
+        self.sock.send(b"Veuillez entrer un nom d'utilisateur:")
+        self.nomUtilisateur = self.sock.recv(1024)
+        message = "Merci " + self.nomUtilisateur.decode()
+        print("ok")
+        self.sock.send(message.encode())
+
         while self.continuer:
             if commande == "Q":
                 self.__stopListening()
@@ -77,6 +85,7 @@ class ExchangeThread(Thread):
                 self.__sendmessage(commande)
                 for index,elements in enumerate(connexions[self.sock]):
                     print(index,elements)
+
 
         self.sock.close()
         print("socket closed")
