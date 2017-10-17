@@ -60,7 +60,6 @@ class Envoi(Thread):
             if self.userCmd == "Q":
                 break
             else:
-                self.__senddim("R",12345,678)
                 self.userCmd = input(">")
                 self.___sendcommand(self.userCmd)
 

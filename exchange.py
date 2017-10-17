@@ -69,6 +69,7 @@ class ExchangeThread(Thread):
                     dim = self.__getfloat()
                     self.__stockData(dim)
                     self.__sendmessage(dim)
+                self.__sendmessage(commande)
                 for index,elements in enumerate(connexions[self.sock]):
                     print(index,elements)
 
