@@ -80,7 +80,7 @@ class WhiteboardInstance(Widget):
             dy = touch.y - self.touch_origin_y
             l = max(abs(dx), abs(dy))
             sign = lambda x: (1, -1)[x < 0]
-            touch.ud['circle'].size =  sign(dx) * l, sign(dy) * l
+            touch.ud['circle'].size = sign(dx) * l, sign(dy) * l
 
     def on_touch_up(self, touch):
         self.drawing = False
@@ -142,6 +142,28 @@ class WhiteboardInstance(Widget):
             self.string_to_send = \
                 Circle(c, r, identifier=client_id + str(form_number)).get_string()
             print('dico', client_form_database)
+
+    def draw_form(self, form):
+
+        with self.canvas:
+            if isinstance(form, Lign):
+                Line(points=(
+                    form.x.absciss,
+                    form.x.ordinate,
+                    form.y.absciss,
+                    form.y.ordinate),
+                    width=5)
+
+            elif isinstance(form, OwnRectangle):
+                Rectangle(pos=(form.x.abciss, form.x.ordinate),
+                          size=(form.y.absciss, form.y.ordinate))
+
+            elif isinstance(form, Square):
+                Rectangle(pos=(form.x.absciss, form.x.ordinate),
+                          size=(form.y.abciss, form.y.ordinate))
+
+            elif isinstance(form, Circle):
+                pass
 
     @property
     def selected_form(self):
