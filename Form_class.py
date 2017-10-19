@@ -5,6 +5,8 @@ ordinate_max = 10000
 
 class Color:
 
+""" parameters are colors HTML RGB codes in that order"""
+
     def __init__(self, R, G, B):
 
         if (not isinstance(R, int) or not isinstance(G, int) or
@@ -28,6 +30,13 @@ black = Color(0, 0, 0)
 
 
 class Point:
+
+""" absciss and ordinate are the absciss and ordinate of the point on the white board
+they have to be integer and have a max value depending on the board size and a min value of zero
+
+
+"""
+
 
     def __init__(self, absciss, ordinate):
 
@@ -68,6 +77,13 @@ class Form:
 
 class Lign(Form):
 
+""" x and y are the two tip points of the line
+"""
+
+
+
+
+
     def __init__(self, x, y, color=black, identifier=0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")
@@ -99,6 +115,10 @@ class Lign(Form):
 
 class Rectangle(Form):
 
+"""x is one of the summit of the rectangle, y is the summit on the other side of the diagonal
+"""
+
+
     def __init__(self, x, y, color=black, identifier=0):
         if not isinstance(x, Point):
             raise TypeError("The first parameter has to be a point")
@@ -128,6 +148,11 @@ class Rectangle(Form):
 
 
 class Square(Form):
+
+"""x is one of the summit of the square, y is the summit on the other side of the diagonal
+"""
+
+
 
     def __init__(self, x, y, color=black, identifier=0):
         if not isinstance(x, Point):
@@ -162,6 +187,8 @@ class Square(Form):
 
 class Circle(Form):
 
+"""c is the center of the circle, r is the radius
+"""
     def __init__(self, c, r, color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
@@ -186,5 +213,41 @@ class Circle(Form):
 
         string = "C" + str(self.c.absciss) + "," + str(self.c.ordinate)
         string += "," + str(self.r) + ","
+        string += str(self.identifier)
+        return string
+
+
+
+class Ellipse(Form):
+
+"""c is the center of the ellipse, a is the length of the horizontal axis, b is the length of the vertical axis
+"""
+    def __init__(self, c, a, b ,  color=black, identifier=0):
+        if not isinstance(c, Point):
+            raise TypeError("The first parameter has to be a point")
+        if not isinstance(a, int):
+            raise TypeError("The second parameter has to be an integer")
+        if not isinstance(b, int):
+            raise TypeError("The second parameter has to be an integer")
+        if not isinstance(color, Color):
+            raise TypeError("The third parameter has to be a color")
+        self.c = c
+        self.a = a
+        self.b = b
+        self.color = color
+        self.identifier = identifier
+
+    def __repr__(self):
+
+        return """Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {}
+        and of id: {}""".format(self.c, self.a, ,self.b, self.color, self.identifier)
+
+    def get_string(self):
+
+        # method to transform circle into string
+        # Ex: Ellipse of center (17,5) and of horizontal axis 7 and of vertical axis 3 => string = "S17,5,7,3"
+
+        string = "E" + str(self.c.absciss) + "," + str(self.c.ordinate)
+        string += "," + str(self.a) + "," + str(self.b) + ","
         string += str(self.identifier)
         return string

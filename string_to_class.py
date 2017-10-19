@@ -9,6 +9,11 @@ def string_to_circle(string):
     return Circle(Point(int(parameters[0]),int(parameters[1])),
     int(parameters[2]),identifier = parameters[3])
 
+def string_to_ellipse(string):
+    parameters = string.split(",")
+    return Ellipse(Point(int(parameters[0]),int(parameters[1])),
+    int(parameters[2]),int(parameters[3]),identifier = parameters[4])
+
 
 def string_to_square(string):
     parameters = string.split(",")
@@ -40,6 +45,8 @@ def string_to_command(string):
 
     if FL == "C":
         return Create(string_to_circle(string[1:]))
+    elif FL == "E":
+        return Create(string_to_ellipse(string[1:]))
     elif FL == "S":
         return Create(string_to_square(string[1:]))
     elif FL == "R":
