@@ -73,11 +73,6 @@ class Envoi(Thread):
                 print("sending command to server", command)
                 self.sendcommand(command)
 
-        #self.userCmd = input(">")
-        #self.sendcommand(self.userCmd)
-        #self.sendcommand(string_1)
-        #self.sendcommand(string_2)
-
 
 class Reception(Thread):
     """Thread for reception of messages from the server"""

@@ -25,8 +25,8 @@ class Create:
 class Delete:
     def __init__(self, form_id):
        
-        if not isinstance(form_id, int):
-            raise TypeError("The parameter has to be an integer")
+        if not isinstance(form_id, str):
+            raise TypeError("The parameter has to be a string")
         self.form_id = form_id
         self.symbol = "D"
           
@@ -60,18 +60,56 @@ class Hello:
 
     def get_string(self):
 
-        return self.symbol 
+        return self.symbol
+
+
+
+class Move:
+    """ horizontal movement and y = vertical movement
+    x an y are integers and can be negative """
+
+    
+
+    
+    def __init__(self, form_id, x, y):
+
+        if not isinstance(form_id, str):
+            raise TypeError("The parameter has to be a string")
+        if not isinstance(x, int):
+            raise TypeError("The parameter has to be a string")
+        if not isinstance(y, int):
+            raise TypeError("The parameter has to be a string")
+       
+        self.form_id = form_id
+        self.x = x
+        self. y = y
+        self.symbol = "M"
+          
+        
+    def __repr__(self):
+        
+        return """Moving of the form: {}, horizontal movement = {},
+        vertical movement = {}""".format(self.form_id, self.x, self. y)
+
+    def get_string(self):
+
+        # method to transform command into string
+        # return string of created form 
+
+        return self.symbol + self.form_id + ","
+        + str(self.x) + "," + str(self.y)
+
        
           
 if __name__ == "__main__":
     Creation_1 = Create(WB_Rectangle(Point(1,3),Point(10,100)))
     Creation_2 = Create(WB_Line(Point(134,27),Point(1439,238)))
     Creation_3 = Create(WB_Circle(Point(43,372),37))
-    Creation_4 = Create(WB_Square(Point(74,23),7))
+
    
     print(Creation_1)
     print(Creation_2)
     print(Creation_3)
-    print(Creation_4)
+
 
    
