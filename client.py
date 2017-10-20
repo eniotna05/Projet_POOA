@@ -4,6 +4,7 @@ from Command_class import *
 from string_to_class import *
 from Form_class import *
 import time
+from Widget import WhiteboardApp
 
 userCmd = ""
 
@@ -36,6 +37,8 @@ class Client:
             if self.userCmd =="END":
                 break
             else:
+                drawing_window = WhiteboardApp()
+                drawing_window.run()
                 reception = Reception(self.sock)
                 reception.start()
                 envoi = Envoi(self.sock)
@@ -105,5 +108,3 @@ string_3 = Creation_3.get_string()
 
 client2 = Client()
 client2.clientRunning()
-
-
