@@ -50,18 +50,22 @@ class Stock:
     def returnStock(self,identifiant):
         return self.stock
 
+    def convertStockIntoStr(self):
+        concatenateElements = ""
+        for element in self.stock:
+            string = self.stock[element].get_string()
+            concatenateElements += string
+        return concatenateElements
 
 if __name__=="__main__":
 
-    Creation_1 = Create(Rectangle(Point(1, 3), Point(10, 100),black,2))
-    Creation_2 = Create(Lign(Point(134, 27), Point(1439, 238)))
-    Creation_3 = Create(Circle(Point(43, 372), 37))
+    Creation_1 = Create(WB_Rectangle(Point(1, 3), Point(10, 100),black,2))
+    Creation_2 = Create(WB_Line(Point(134, 27), Point(1439, 238),black,30))
+    Creation_3 = Create(WB_Circle(Point(43, 372), 37))
 
     string_1 = Creation_1.get_string()
     string_2 = Creation_2.get_string()
     string_3 = Creation_3.get_string()
-
-    print(string_1)
 
     essai = Stock("anais")
     essai.newObject(string_1)
@@ -69,3 +73,4 @@ if __name__=="__main__":
     print(essai.stock)
     for element in essai.stock:
         print(essai.stock[element])
+    print(essai.convertStockIntoStr())

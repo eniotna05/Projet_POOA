@@ -23,6 +23,11 @@ class ExchangeThread(Thread):
         global connexions
         connexions[self.sock] = self.reception
 
+    def getTableau(self):
+        string = ""
+        for socket in connexions:
+            string += connexions[socket].convertStockIntoStr()
+        return string+"Ok"
 
     def getmessage(self):
         data = bytes()
@@ -74,6 +79,7 @@ class ExchangeThread(Thread):
         if self.sock:
             self.sock.close()
 
+
     def run(self):
         self.sock.send("H".encode())
         commande = self.sock.recv(1024)
@@ -82,6 +88,9 @@ class ExchangeThread(Thread):
             print("End of communication")
 
         self.getUserName()
+
+        if len(connexions)>=1:
+            print(self.getTableau())
 
         while self.continuer:
             self.analyzeCommand()

@@ -66,7 +66,7 @@ class Envoi(Thread):
         #self.userCmd = input(">")
         #self.sendcommand(self.userCmd)
         self.sendcommand(string_1)
-        self.sendcommand(string_3)
+        self.sendcommand(string_2)
 
 
 class Reception(Thread):
@@ -95,13 +95,14 @@ class Reception(Thread):
                 self.getmessage()
 
 
-Creation_1 = Create(Rectangle(Point(1, 3), Point(10, 100), black, 2))
-Creation_2 = Create(Lign(Point(134, 27), Point(1439, 238)))
-Creation_3 = Create(Circle(Point(43, 372), 37))
+Creation_1 = Create(WB_Rectangle(Point(1, 3), Point(10, 100), black, 2))
+Creation_2 = Create(WB_Line(Point(134, 27), Point(1439, 238), black, 30))
+Creation_3 = Create(WB_Circle(Point(43, 372), 37))
 
 string_1 = Creation_1.get_string()
 string_2 = Creation_2.get_string()
 string_3 = Creation_3.get_string()
+
 
 client2 = Client()
 client2.clientRunning()
