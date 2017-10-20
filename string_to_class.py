@@ -1,6 +1,7 @@
-if __name__ == "__main__":
-    from Form_class import *
-    from Command_class import *
+#if __name__ == "__main__":
+
+from Form_class import *
+from Command_class import *
 
 
 
@@ -12,8 +13,9 @@ def string_to_circle(string):
 
 def string_to_square(string):
     parameters = string.split(",")
-    return Square(Point(int(parameters[0]),int(parameters[1])),
-    int(parameters[2]),identifier = parameters[3])
+    #return Square(Point(int(parameters[0]),int(parameters[1])),
+    #int(parameters[2]),identifier = parameters[3])
+    return Square(Point(int(parameters[0]),int(parameters[1])),int(parameters[2]),identifier = parameters[3])
 
 
 def string_to_lign(string):

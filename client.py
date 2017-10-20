@@ -1,14 +1,14 @@
 from threading import Thread
 import socket
-from commandclass import *
-from strtocommand import *
-from formclass import *
+from Command_class import *
+from string_to_class import *
+from Form_class import *
 import time
 
 userCmd = ""
+
 class Client:
     """Class defining the client"""
-
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.sock.connect(('localhost',12800))
@@ -17,6 +17,7 @@ class Client:
         self.continuer = True
 
     def clientRunning(self):
+
         messageServeur = self.sock.recv(1024)
         if messageServeur != b"H":#tests if the server sends HLO
             raise ValueError("Protocol error: H expected")
@@ -51,19 +52,10 @@ class Envoi(Thread):
         global userCmd
         self.userCmd = userCmd
 
-    def ___sendcommand(self,commande):
+    def sendcommand(self,commande):
         """Sends a message containing: the type of drawing and the associated data"""
         paquet = bytes()
         paquet += commande.encode()
-        self.sock.send(paquet)
-
-    def __senddim(self,commande,op1,op2):
-        paquet = bytes()
-        op1 = str(op1)
-        op2 = str(op2)
-        paquet += commande.encode()
-        paquet += op1.encode()
-        paquet += op2.encode()
         self.sock.send(paquet)
 
     def run(self):
@@ -71,12 +63,10 @@ class Envoi(Thread):
             #if self.userCmd == "Q":
             #    break
             #else:
-                #self.userCmd = input(">")
-        """self.___sendcommand(string_1)
-        time.sleep(5)
-        self.___sendcommand(string_3)
-        time.sleep(0.2)
-        self.___sendcommand(string_4)"""
+        #self.userCmd = input(">")
+        #self.sendcommand(self.userCmd)
+        self.sendcommand(string_1)
+        self.sendcommand(string_3)
 
 
 class Reception(Thread):
@@ -88,7 +78,7 @@ class Reception(Thread):
         self.userCmd = userCmd
         self.continuer = True
 
-    def __getmessage(self):
+    def getmessage(self):
         """Receives a 3-characters long message"""
         commande = bytes()
         commande += self.sock.recv(1024)
@@ -102,24 +92,16 @@ class Reception(Thread):
                 print("Fin communication")
                 self.continuer=False
             else:
-                self.__getmessage()
+                self.getmessage()
 
 
-if __name__ == "__main__":
-    Creation_1 = Create(Rectangle(Point(1, 3), Point(10, 100)))
-    Creation_2 = Create(Lign(Point(134, 27), Point(1439, 238)))
-    Creation_3 = Create(Circle(Point(43, 372), 37))
-    Creation_4 = Create(Square(Point(74, 23), 7))
+Creation_1 = Create(Rectangle(Point(1, 3), Point(10, 100), black, 2))
+Creation_2 = Create(Lign(Point(134, 27), Point(1439, 238)))
+Creation_3 = Create(Circle(Point(43, 372), 37))
 
-    string_1 = Creation_1.get_string()
-    string_2 = Creation_2.get_string()
-    string_3 = Creation_3.get_string()
-    string_4 = Creation_4.get_string()
-
-    Creation_1_R = string_to_command(string_1)
-    Creation_2_R = string_to_command(string_2)
-    Creation_3_R = string_to_command(string_3)
-    Creation_4_R = string_to_command(string_4)
+string_1 = Creation_1.get_string()
+string_2 = Creation_2.get_string()
+string_3 = Creation_3.get_string()
 
 client2 = Client()
 client2.clientRunning()
