@@ -12,9 +12,13 @@ from kivy.properties import NumericProperty
 
 from enum import Enum
 
+
+line_width = 5
 client_form_database = {}
 form_number = 0
 client_id = "yoann"
+
+
 
 
 class WhiteboardInstance(Widget):
@@ -36,7 +40,7 @@ class WhiteboardInstance(Widget):
 
         with self.canvas:
             if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=5)
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width= line_width)
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -89,7 +93,7 @@ class WhiteboardInstance(Widget):
         self.drawing = False
         global client_form_database
         global form_number
-        global client_id
+
 
         if self._selected_form == Forms.LINE:
             del touch.ud['line'].points[-2:]
@@ -133,12 +137,12 @@ class WhiteboardInstance(Widget):
             c = Point(
                 int((touch.x + self.touch_origin_x) / 2),
                 int((touch.y + self.touch_origin_y) / 2))
-            a = int(abs(touch.x - self.touch_origin_x) )
-            b = int(abs(touch.y - self.touch_origin_y) )
+            rx = int(abs(touch.x - self.touch_origin_x) /2 )
+            ry = int(abs(touch.y - self.touch_origin_y) /2 )
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
-                WB_Ellipse(c, a, b, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Ellipse(c, a, b, identifier=client_id +
+                WB_Ellipse(c, rx, ry, identifier=client_id + str(form_number))
+            self.sending_queue.put(WB_Ellipse(c, rx, ry, identifier=client_id +
                                               str(form_number)).get_string())
 
         elif self._selected_form == Forms.CIRCLE:
@@ -152,6 +156,7 @@ class WhiteboardInstance(Widget):
             self.sending_queue.put(WB_Circle(c, r, identifier=client_id +
                                              str(form_number)).get_string())
 
+
     def draw_form(self, form):
 
         with self.canvas:
@@ -161,18 +166,26 @@ class WhiteboardInstance(Widget):
                     form.a.y,
                     form.b.x,
                     form.b.y),
-                    width=5)
+                    width= line_width)
 
             elif isinstance(form, WB_Rectangle):
                 Rectangle(pos=(form.a.x, form.a.y),
-                          size=(form.b.x, form.b.y))
+                          size=(form.b.x - form.a.x, form.b.y - form.a.y))
 
             elif isinstance(form, WB_Square):
                 Rectangle(pos=(form.a.x, form.a.y),
-                          size=(form.b.x, form.b.y))
+                          size=(form.b.x - form.a.x, form.b.y - form.a.y))
 
             elif isinstance(form, WB_Circle):
-                pass
+                Ellipse(pos=(form.c.x - form.r, form.c.y - form.r),
+                          size=(form.r * 2, form.r * 2))
+
+            elif isinstance(form, WB_Ellipse):
+                Ellipse(pos=(form.c.x - form.rx / 2, form.c - form.ry /2),
+                          size=(form.rx * 2 , form.ry * 2))
+
+
+
 
     @property
     def selected_form(self):
