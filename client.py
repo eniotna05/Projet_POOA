@@ -4,20 +4,24 @@ from Command_class import *
 from string_to_class import *
 from Form_class import *
 import time
-from Widget import WhiteboardApp
+
 
 userCmd = ""
 
-class Client:
+
+class Client(Thread):
     """Class defining the client"""
-    def __init__(self):
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.sock.connect(('localhost',12800))
+    def __init__(self, sending_queue):
+        Thread.__init__(self)
         global userCmd
         self.userCmd = userCmd
         self.continuer = True
+        self.sending_queue = sending_queue
 
-    def clientRunning(self):
+    def run(self):
+
+        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.sock.connect(('localhost',12800))
 
         messageServeur = self.sock.recv(1024)
         if messageServeur != b"H":#tests if the server sends HLO
@@ -33,43 +37,44 @@ class Client:
         messageServeur=messageServeur.decode()
         print(messageServeur)
 
-        while self.continuer:
-            if self.userCmd =="END":
-                break
-            else:
-                drawing_window = WhiteboardApp()
-                drawing_window.run()
-                reception = Reception(self.sock)
-                reception.start()
-                envoi = Envoi(self.sock)
-                envoi.start()
-                reception.join()
-                envoi.join()
+        reception = Reception(self.sock)
+        reception.start()
+        envoi = Envoi(self.sock, self.sending_queue)
+        envoi.start()
+        reception.join()
+        envoi.join()
         print("End of the game")
+
 
 class Envoi(Thread):
     """Thread for sending messages to the server"""
-    def __init__(self,sock):
+    def __init__(self, sock, queue):
         Thread.__init__(self)
         self.sock = sock
+        self.form_queue = queue
         global userCmd
         self.userCmd = userCmd
 
-    def sendcommand(self,commande):
+    def sendcommand(self, commande):
         """Sends a message containing: the type of drawing and the associated data"""
         paquet = bytes()
         paquet += commande.encode()
         self.sock.send(paquet)
 
     def run(self):
-        #while True:
-            #if self.userCmd == "Q":
-            #    break
-            #else:
+        while True:
+            if self.userCmd == "Q":
+                break
+            else:
+                # try:
+                command = self.form_queue.get()
+                print("sending command to server", command)
+                self.sendcommand(command)
+
         #self.userCmd = input(">")
         #self.sendcommand(self.userCmd)
-        self.sendcommand(string_1)
-        self.sendcommand(string_2)
+        #self.sendcommand(string_1)
+        #self.sendcommand(string_2)
 
 
 class Reception(Thread):
@@ -105,7 +110,3 @@ Creation_3 = Create(WB_Circle(Point(43, 372), 37))
 string_1 = Creation_1.get_string()
 string_2 = Creation_2.get_string()
 string_3 = Creation_3.get_string()
-
-
-client2 = Client()
-client2.clientRunning()
