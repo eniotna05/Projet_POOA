@@ -1,5 +1,5 @@
-from Form_class import Point, Lign, Square, Circle
-from Form_class import Rectangle as OwnRectangle
+from Form_class import *
+
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -97,8 +97,8 @@ class WhiteboardInstance(Widget):
             b = Point(int(touch.x), int(touch.y))
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
-                Lign(a, b, identifier=client_id + str(form_number))
-            self.string_to_send = Lign(a, b, identifier=client_id +
+                WB_Line(a, b, identifier=client_id + str(form_number))
+            self.string_to_send = WB_Line(a, b, identifier=client_id +
                                        str(form_number)).get_string()
             print('dico', client_form_database)
 
@@ -107,8 +107,8 @@ class WhiteboardInstance(Widget):
             b = Point(int(touch.x), int(touch.y))
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
-                OwnRectangle(a, b, identifier=client_id + str(form_number))
-            self.string_to_send = OwnRectangle(a, b, identifier=client_id +
+                WB_Rectangle(a, b, identifier=client_id + str(form_number))
+            self.string_to_send = WB_Rectangle(a, b, identifier=client_id +
                                                str(form_number)).get_string()
             print('dico', client_form_database)
 
@@ -124,12 +124,23 @@ class WhiteboardInstance(Widget):
             b = Point(x_min + l, y_min + l)
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
-                Square(a, b, identifier=client_id + str(form_number))
+                WB_Square(a, b, identifier=client_id + str(form_number))
             self.string_to_send = \
-                Square(a, b, identifier=client_id + str(form_number)).get_string()
+                WB_Square(a, b, identifier=client_id + str(form_number)).get_string()
             print('dico', client_form_database)
 
         elif self._selected_form == Forms.ELLIPSE:
+            c = Point(
+                int((touch.x + self.touch_origin_x) / 2),
+                int((touch.y + self.touch_origin_y) / 2))
+            a = int(abs(touch.x - self.touch_origin_x) )
+            b = int(abs(touch.y - self.touch_origin_y) )                      
+            form_number += 1
+            client_form_database[client_id + str(form_number)] = \
+                WB_Ellipse(c, a, b, identifier=client_id + str(form_number))
+            self.string_to_send = \
+                WB_Ellipse(c, a, b, identifier=client_id + str(form_number)).get_string()
+            print('dico', client_form_database)
             pass
         elif self._selected_form == Forms.CIRCLE:
             c = Point(
@@ -138,31 +149,31 @@ class WhiteboardInstance(Widget):
             r = int(abs(touch.x - self.touch_origin_x) / 2)
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
-                Circle(c, r, identifier=client_id + str(form_number))
+                WB_Circle(c, r, identifier=client_id + str(form_number))
             self.string_to_send = \
-                Circle(c, r, identifier=client_id + str(form_number)).get_string()
+                WB_Circle(c, r, identifier=client_id + str(form_number)).get_string()
             print('dico', client_form_database)
 
     def draw_form(self, form):
 
         with self.canvas:
-            if isinstance(form, Lign):
+            if isinstance(form, WB_Line):
                 Line(points=(
-                    form.x.absciss,
-                    form.x.ordinate,
-                    form.y.absciss,
-                    form.y.ordinate),
+                    form.a.x,
+                    form.a.y,
+                    form.b.x,
+                    form.b.y),
                     width=5)
 
-            elif isinstance(form, OwnRectangle):
-                Rectangle(pos=(form.x.abciss, form.x.ordinate),
-                          size=(form.y.absciss, form.y.ordinate))
+            elif isinstance(form, WB_Rectangle):
+                Rectangle(pos=(form.a.x, form.a.y),
+                          size=(form.b.x, form.b.y))
 
-            elif isinstance(form, Square):
-                Rectangle(pos=(form.x.absciss, form.x.ordinate),
-                          size=(form.y.abciss, form.y.ordinate))
+            elif isinstance(form, WB_Square):
+                Rectangle(pos=(form.a.x, form.a.y),
+                          size=(form.b.x, form.b.y))
 
-            elif isinstance(form, Circle):
+            elif isinstance(form, WB_Circle):
                 pass
 
     @property
