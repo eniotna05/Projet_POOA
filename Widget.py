@@ -1,4 +1,6 @@
 from Form_class import *
+from queue import Queue
+from client import Client
 
 
 from kivy.app import App
@@ -24,10 +26,11 @@ class WhiteboardInstance(Widget):
     touch_origin_x = NumericProperty(0)
     touch_origin_y = NumericProperty(0)
 
-    def __init__(self):
+    def __init__(self, sending_queue):
         super().__init__()
         self.drawing = False
         self._selected_form = None
+        self.sending_queue = sending_queue
 
     def on_touch_down(self, touch):
         self.drawing = True
@@ -90,7 +93,7 @@ class WhiteboardInstance(Widget):
         self.drawing = False
         global client_form_database
         global form_number
-        
+
 
         if self._selected_form == Forms.LINE:
             del touch.ud['line'].points[-2:]
@@ -102,9 +105,8 @@ class WhiteboardInstance(Widget):
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
                 WB_Line(a, b, identifier=client_id + str(form_number))
-            self.string_to_send = WB_Line(a, b, identifier=client_id +
-                                       str(form_number)).get_string()
-            print('dico', client_form_database)
+            self.sending_queue.put(WB_Line(a, b, identifier=client_id +
+                                       str(form_number)).get_string())
 
         elif self._selected_form == Forms.RECT:
             a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
@@ -112,9 +114,8 @@ class WhiteboardInstance(Widget):
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
                 WB_Rectangle(a, b, identifier=client_id + str(form_number))
-            self.string_to_send = WB_Rectangle(a, b, identifier=client_id +
-                                               str(form_number)).get_string()
-            print('dico', client_form_database)
+            self.sending_queue.put(WB_Rectangle(a, b, identifier=client_id +
+                                               str(form_number)).get_string())
 
         elif self._selected_form == Forms.SQUARE:
             dx = touch.x - self.touch_origin_x
@@ -129,23 +130,21 @@ class WhiteboardInstance(Widget):
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
                 WB_Square(a, b, identifier=client_id + str(form_number))
-            self.string_to_send = \
-                WB_Square(a, b, identifier=client_id + str(form_number)).get_string()
-            print('dico', client_form_database)
+            self.sending_queue.put(WB_Square(a, b, identifier=client_id +
+                                             str(form_number)).get_string())
 
         elif self._selected_form == Forms.ELLIPSE:
             c = Point(
                 int((touch.x + self.touch_origin_x) / 2),
                 int((touch.y + self.touch_origin_y) / 2))
             rx = int(abs(touch.x - self.touch_origin_x) /2 )
-            ry = int(abs(touch.y - self.touch_origin_y) /2 )                      
+            ry = int(abs(touch.y - self.touch_origin_y) /2 )
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
                 WB_Ellipse(c, rx, ry, identifier=client_id + str(form_number))
-            self.string_to_send = \
-                WB_Ellipse(c, rx, ry, identifier=client_id + str(form_number)).get_string()
-            print('dico', client_form_database)
-            pass
+            self.sending_queue.put(WB_Ellipse(c, rx, ry, identifier=client_id +
+                                              str(form_number)).get_string())
+
         elif self._selected_form == Forms.CIRCLE:
             c = Point(
                 int((touch.x + self.touch_origin_x) / 2),
@@ -154,9 +153,8 @@ class WhiteboardInstance(Widget):
             form_number += 1
             client_form_database[client_id + str(form_number)] = \
                 WB_Circle(c, r, identifier=client_id + str(form_number))
-            self.string_to_send = \
-                WB_Circle(c, r, identifier=client_id + str(form_number)).get_string()
-            print('dico', client_form_database)
+            self.sending_queue.put(WB_Circle(c, r, identifier=client_id +
+                                             str(form_number)).get_string())
 
 
     def draw_form(self, form):
@@ -187,7 +185,7 @@ class WhiteboardInstance(Widget):
                           size=(form.rx * 2 , form.ry * 2))
 
 
-                
+
 
     @property
     def selected_form(self):
@@ -254,22 +252,3 @@ class Toolbar(BoxLayout):
 
     def clear_board(self, obj):
         self.white_board.canvas.clear()
-
-
-class WhiteboardApp(App):
-
-    def __init__(self):
-        super().__init__()
-        self.board = WhiteboardInstance()
-        self.toolbar = Toolbar(self.board)
-
-    def build(self):
-        parent = Widget()
-        parent.add_widget(self.toolbar)
-        parent.add_widget(self.board)
-        return parent
-
-
-if __name__ == '__main__':
-    MyApp = WhiteboardApp()
-    MyApp.run()
