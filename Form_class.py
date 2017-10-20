@@ -220,26 +220,27 @@ class WB_Circle(WB_Form):
 
 class WB_Ellipse(WB_Form):
 
-    """c is the center of the ellipse, a is the length of the horizontal axis, b is the length of the vertical axis
+    """c is the center of the ellipse, rx is the length of the horizontal radius,
+    ry is the length of the vertical radius
     """
-    def __init__(self, c, a, b ,  color=black, identifier=0):
+    def __init__(self, c, rx, ry ,  color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
-        if not isinstance(a, int):
+        if not isinstance(rx, int):
             raise TypeError("The second parameter has to be an integer")
-        if not isinstance(b, int):
+        if not isinstance(ry, int):
             raise TypeError("The second parameter has to be an integer")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
         self.c = c
-        self.a = a
-        self.b = b
+        self.rx = rx
+        self.ry = ry
         self.color = color
         self.identifier = identifier
 
     def __repr__(self):
-        return """Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {}
-        and of id: {}""".format(self.c, self.a,self.b, self.color, self.identifier)
+        return """Ellipse of center {}, of horizontal radius: {} , of vertical radius: {} and of color: {}
+        and of id: {}""".format(self.c, self.rx,self.ry, self.color, self.identifier)
 
     def get_string(self):
 
@@ -247,6 +248,6 @@ class WB_Ellipse(WB_Form):
         # Ex: Ellipse of center (17,5) and of horizontal axis 7 and of vertical axis 3 => string = "S17,5,7,3"
 
         string = "E" + str(self.c.x) + "," + str(self.c.y)
-        string += "," + str(self.a) + "," + str(self.b) + ","
+        string += "," + str(self.rx) + "," + str(self.ry) + ","
         string += str(self.identifier)
         return string
