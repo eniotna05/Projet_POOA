@@ -32,8 +32,8 @@ black = Color(0, 0, 0)
 class Point:
 
     """ x and y are the absciss and ordinate of the point on the white board
-    they have to be integer and have a max value depending on the board size and a min value of zero
-
+    they have to be integer and have a max value depending on the board size
+    and a min value of zero
 
     """
 
@@ -104,18 +104,36 @@ class WB_Line(WB_Form):
 
     def get_string(self):
 
-        # method to transform lign into string
-        # Ex: lign from (2,4) to (8,14) => string = "L2,4,8,14"
+        """method to transform lign into string
+        Ex: lign from (2,4) to (8,14) => string = L2,4,8,14"""
 
         string = "L" + str(self.a.x) + "," + str(self.a.y) + ","
         string += str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
+    def change_position(self, x, y):
 
+        """method to change position of the form
+        horizontal movement = x , vertical movement = y"""
+
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The second parameter has to be an integer")
+        
+        self.a.x += x
+        self.b.x += x
+        self.a.y += y
+        self.b.y += y
+        
+
+
+        
 class WB_Rectangle(WB_Form):
 
-    """a is one of the summit of the rectangle, b is the summit on the other side of the diagonal
+    """a is one of the summit of the rectangle,
+    b is the summit on the other side of the diagonal
     """
 
 
@@ -138,18 +156,34 @@ class WB_Rectangle(WB_Form):
 
     def get_string(self):
 
-        # method to transform rectangle into string
-        # Ex: rectangle from (2,4) to (8,14) => string = "R2,4,8,14"
+        """method to transform rectangle into string
+        Ex: rectangle from (2,4) to (8,14) => string = R2,4,8,14"""
 
         string = "R" + str(self.a.x) + "," + str(self.a.y) + ","
         string += str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
+    def change_position(self, x, y):
+
+        """method to change position of the form
+        horizontal movement = x , vertical movement = y"""
+
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The second parameter has to be an integer")
+        
+        self.a.x += x
+        self.b.x += x
+        self.a.y += y
+        self.b.y += y
+
 
 class WB_Square(WB_Form):
 
-    """a is one of the summit of the square, b is the summit on the other side of the diagonal
+    """a is one of the summit of the square,
+    b is the summit on the other side of the diagonal
     """
 
 
@@ -175,15 +209,29 @@ class WB_Square(WB_Form):
 
     def get_string(self):
 
-        # method to transform square into string
-        # Ex: rectangle of left upper corner (17,5) and of side length 2 =>
-        # string = "S17,5,2"
+        """method to transform square into string
+        Ex: rectangle of left upper corner (17,5) and of side length 2 =>
+        string = "S17,5,2"""
 
         string = "S" + str(self.a.x) + "," + str(self.a.y)
         string += "," + str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
+    def change_position(self, x, y):
+
+        """method to change position of the form
+        horizontal movement = x , vertical movement = y"""
+
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The second parameter has to be an integer")
+        
+        self.a.x += x
+        self.b.x += x
+        self.a.y += y
+        self.b.y += y
 
 class WB_Circle(WB_Form):
 
@@ -208,20 +256,33 @@ class WB_Circle(WB_Form):
 
     def get_string(self):
 
-        # method to transform circle into string
-        # Ex: Circle of center (17,5) and of radius 2 => string = "S17,5,2"
+        """method to transform circle into string
+        Ex: Circle of center (17,5) and of radius 2 => string = S17,5,2"""
 
         string = "C" + str(self.c.x) + "," + str(self.c.y)
         string += "," + str(self.r) + ","
         string += str(self.identifier)
         return string
 
+    def change_position(self, x, y):
+
+        """method to change position of the form
+        horizontal movement = x , vertical movement = y"""
+
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The second parameter has to be an integer")
+        
+        self.c.x += x
+        self.c.y += y
+
 
 
 class WB_Ellipse(WB_Form):
 
-    """c is the center of the ellipse, rx is the length of the horizontal radius,
-    ry is the length of the vertical radius
+    """c is the center of the ellipse, rx is the length of the horizontal
+    radius, ry is the length of the vertical radius
     """
     def __init__(self, c, rx, ry ,  color=black, identifier=0):
         if not isinstance(c, Point):
@@ -239,15 +300,30 @@ class WB_Ellipse(WB_Form):
         self.identifier = identifier
 
     def __repr__(self):
-        return """Ellipse of center {}, of horizontal radius: {} , of vertical radius: {} and of color: {}
-        and of id: {}""".format(self.c, self.rx,self.ry, self.color, self.identifier)
+        return """Ellipse of center {}, of horizontal radius: {},
+        of vertical radius: {} and of color: {} and of id: {}
+        """.format(self.c, self.rx,self.ry, self.color, self.identifier)
 
     def get_string(self):
 
-        # method to transform circle into string
-        # Ex: Ellipse of center (17,5) and of horizontal axis 7 and of vertical axis 3 => string = "S17,5,7,3"
+        """method to transform circle into string
+        Ex: Ellipse of center (17,5) and of horizontal axis 7
+        and of vertical axis 3 => string = "S17,5,7,3"""
 
         string = "E" + str(self.c.x) + "," + str(self.c.y)
         string += "," + str(self.rx) + "," + str(self.ry) + ","
         string += str(self.identifier)
         return string
+
+    def change_position(self, x, y):
+
+        """method to change position of the form
+        horizontal movement = x , vertical movement = y"""
+
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The second parameter has to be an integer")
+        
+        self.c.x += x
+        self.c.y += y
