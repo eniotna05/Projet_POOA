@@ -64,10 +64,10 @@ class Hello:
        
           
 if __name__ == "__main__":
-    Creation_1 = Create(Rectangle(Point(1,3),Point(10,100)))
-    Creation_2 = Create(Lign(Point(134,27),Point(1439,238)))
-    Creation_3 = Create(Circle(Point(43,372),37))
-    Creation_4 = Create(Square(Point(74,23),7))
+    Creation_1 = Create(WB_Rectangle(Point(1,3),Point(10,100)))
+    Creation_2 = Create(WB_Line(Point(134,27),Point(1439,238)))
+    Creation_3 = Create(WB_Circle(Point(43,372),37))
+    Creation_4 = Create(WB_Square(Point(74,23),7))
    
     print(Creation_1)
     print(Creation_2)

@@ -1,5 +1,3 @@
-#if __name__ == "__main__":
-
 from Form_class import *
 from Command_class import *
 
@@ -7,30 +5,29 @@ from Command_class import *
 
 def string_to_circle(string):
     parameters = string.split(",")
-    return Circle(Point(int(parameters[0]),int(parameters[1])),
+    return WB_Circle(Point(int(parameters[0]),int(parameters[1])),
     int(parameters[2]),identifier = parameters[3])
 
 def string_to_ellipse(string):
     parameters = string.split(",")
-    return Ellipse(Point(int(parameters[0]),int(parameters[1])),
+    return WB_Ellipse(Point(int(parameters[0]),int(parameters[1])),
     int(parameters[2]),int(parameters[3]),identifier = parameters[4])
 
 
 def string_to_square(string):
     parameters = string.split(",")
-    #return Square(Point(int(parameters[0]),int(parameters[1])),
-    #int(parameters[2]),identifier = parameters[3])
-    return Square(Point(int(parameters[0]),int(parameters[1])),int(parameters[2]),identifier = parameters[3])
+    return WB_Square(Point(int(parameters[0]),int(parameters[1])),
+    Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 
 def string_to_lign(string):
     parameters = string.split(",")
-    return Lign(Point(int(parameters[0]),int(parameters[1])),
+    return WB_Line(Point(int(parameters[0]),int(parameters[1])),
     Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 def string_to_rectangle(string):
     parameters = string.split(",")
-    return Rectangle(Point(int(parameters[0]),int(parameters[1])),
+    return WB_Rectangle(Point(int(parameters[0]),int(parameters[1])),
     Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 
@@ -73,10 +70,10 @@ if __name__ == "__main__":
    
 
     
-    Creation_1 = Create(Rectangle(Point(1,3),Point(10,100)))
-    Creation_2 = Create(Lign(Point(134,27),Point(1439,238)))
-    Creation_3 = Create(Circle(Point(43,372),37))
-    Creation_4 = Create(Square(Point(74,23),7))
+    Creation_1 = Create(WB_Rectangle(Point(1,3),Point(10,100)))
+    Creation_2 = Create(WB_Line(Point(134,27),Point(1439,238)))
+    Creation_3 = Create(WB_Circle(Point(43,372),37))
+    Creation_4 = Create(WB_Square(Point(74,23),7))
 
    
     print(Creation_1,"\n")

@@ -65,7 +65,7 @@ class Point:
                                                                 self.ordinate)
 
 
-class Form:
+class WB_Form:
 
     # Classe originelle dont hérite toutes les autres formes
     # Pas utilise en tant que tel pour l'instant
@@ -75,7 +75,7 @@ class Form:
         self.identifier = identifier
 
 
-class Lign(Form):
+class WB_Line(WB_Form):
 
     """ x and y are the two tip points of the line
     """
@@ -113,7 +113,7 @@ class Lign(Form):
         return string
 
 
-class Rectangle(Form):
+class WB_Rectangle(WB_Form):
 
     """x is one of the summit of the rectangle, y is the summit on the other side of the diagonal
     """
@@ -147,7 +147,7 @@ class Rectangle(Form):
         return string
 
 
-class Square(Form):
+class WB_Square(WB_Form):
 
     """x is one of the summit of the square, y is the summit on the other side of the diagonal
     """
@@ -185,7 +185,7 @@ class Square(Form):
         return string
 
 
-class Circle(Form):
+class WB_Circle(WB_Form):
 
     """c is the center of the circle, r is the radius
     """
@@ -218,7 +218,7 @@ class Circle(Form):
 
 
 
-class Ellipse(Form):
+class WB_Ellipse(WB_Form):
 
     """c is the center of the ellipse, a is the length of the horizontal axis, b is the length of the vertical axis
     """
