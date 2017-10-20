@@ -33,8 +33,9 @@ class Client:
         print(messageServeur)
 
         while self.continuer:
-            if self.userCmd =="END":
-                break
+            if self.userCmd =="Q":
+                self.sock.close()
+                self.continuer = False
             else:
                 reception = Reception(self.sock)
                 reception.start()
@@ -49,6 +50,7 @@ class Envoi(Thread):
     def __init__(self,sock):
         Thread.__init__(self)
         self.sock = sock
+        self.__continuer = True
         global userCmd
         self.userCmd = userCmd
 
@@ -59,13 +61,14 @@ class Envoi(Thread):
         self.sock.send(paquet)
 
     def run(self):
-        #while True:
-            #if self.userCmd == "Q":
-            #    break
-            #else:
+        #while self.__continuer:
+         #   if self.userCmd == "Q":
+          #      self.__continuer = False
+
         #self.userCmd = input(">")
         #self.sendcommand(self.userCmd)
-        self.sendcommand(string_3)
+        self.sendcommand(string_1)
+        self.sendcommand(string_2)
 
 
 class Reception(Thread):
@@ -101,6 +104,7 @@ Creation_3 = Create(WB_Circle(Point(43, 372), 37))
 string_1 = Creation_1.get_string()
 string_2 = Creation_2.get_string()
 string_3 = Creation_3.get_string()
+
 
 client2 = Client()
 client2.clientRunning()

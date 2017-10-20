@@ -26,8 +26,9 @@ class ExchangeThread(Thread):
     def getTableau(self):
         string = ""
         for socket in connexions:
-            string += connexions[socket].convertStockIntoStr()
-        return string+"Ok"
+            string += connexions[socket].convertStockIntoStr()+","
+        string = string[:-2]
+        return string.encode()
 
     def getmessage(self):
         data = bytes()
@@ -57,8 +58,13 @@ class ExchangeThread(Thread):
         message = self.getmessage()
         command = message[0]
         if command == "D":
-            identifiant = string[1:]
-            self.reception.deleteForm(identifiant)
+            id = message[1:]
+            for socket in connexions:
+                try:
+                    self.reception.deleteForm(id)
+                except KeyError:
+                    pass
+            self.sendmessage(message)
         elif command =="Q":
             self.stopListening()
         else:
@@ -89,8 +95,8 @@ class ExchangeThread(Thread):
 
         self.getUserName()
 
-        if len(connexions)>=1:
-            print(self.getTableau())
+        if len(connexions)>=2:
+            self.sock.send(self.getTableau())
 
         while self.continuer:
             self.analyzeCommand()
