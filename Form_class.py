@@ -5,7 +5,7 @@ ordinate_max = 10000
 
 class Color:
 
-""" parameters are colors HTML RGB codes in that order"""
+    """ parameters are colors HTML RGB codes in that order"""
 
     def __init__(self, R, G, B):
 
@@ -31,11 +31,11 @@ black = Color(0, 0, 0)
 
 class Point:
 
-""" absciss and ordinate are the absciss and ordinate of the point on the white board
-they have to be integer and have a max value depending on the board size and a min value of zero
+    """ absciss and ordinate are the absciss and ordinate of the point on the white board
+    they have to be integer and have a max value depending on the board size and a min value of zero
 
 
-"""
+    """
 
 
     def __init__(self, absciss, ordinate):
@@ -77,8 +77,8 @@ class Form:
 
 class Lign(Form):
 
-""" x and y are the two tip points of the line
-"""
+    """ x and y are the two tip points of the line
+    """
 
 
 
@@ -115,8 +115,8 @@ class Lign(Form):
 
 class Rectangle(Form):
 
-"""x is one of the summit of the rectangle, y is the summit on the other side of the diagonal
-"""
+    """x is one of the summit of the rectangle, y is the summit on the other side of the diagonal
+    """
 
 
     def __init__(self, x, y, color=black, identifier=0):
@@ -149,8 +149,8 @@ class Rectangle(Form):
 
 class Square(Form):
 
-"""x is one of the summit of the square, y is the summit on the other side of the diagonal
-"""
+    """x is one of the summit of the square, y is the summit on the other side of the diagonal
+    """
 
 
 
@@ -187,8 +187,8 @@ class Square(Form):
 
 class Circle(Form):
 
-"""c is the center of the circle, r is the radius
-"""
+    """c is the center of the circle, r is the radius
+    """
     def __init__(self, c, r, color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
@@ -220,8 +220,8 @@ class Circle(Form):
 
 class Ellipse(Form):
 
-"""c is the center of the ellipse, a is the length of the horizontal axis, b is the length of the vertical axis
-"""
+    """c is the center of the ellipse, a is the length of the horizontal axis, b is the length of the vertical axis
+    """
     def __init__(self, c, a, b ,  color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
@@ -238,9 +238,7 @@ class Ellipse(Form):
         self.identifier = identifier
 
     def __repr__(self):
-
-        return """Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {}
-        and of id: {}""".format(self.c, self.a, ,self.b, self.color, self.identifier)
+        return "Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {} and of id: {}".format(self.c, self.a,self.b, self.color, self.identifier)
 
     def get_string(self):
 
