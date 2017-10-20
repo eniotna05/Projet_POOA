@@ -31,38 +31,38 @@ black = Color(0, 0, 0)
 
 class Point:
 
-    """ absciss and ordinate are the absciss and ordinate of the point on the white board
+    """ x and y are the absciss and ordinate of the point on the white board
     they have to be integer and have a max value depending on the board size and a min value of zero
 
 
     """
 
 
-    def __init__(self, absciss, ordinate):
+    def __init__(self, x, y):
 
         global absciss_max
         global ordinate_max
 
-        if not isinstance(absciss, int):
+        if not isinstance(x, int):
             raise TypeError("THe first parameter has to be an integer")
-        if not isinstance(ordinate, int):
+        if not isinstance(y, int):
             raise TypeError("Le second parameter has to be an integer")
-        if absciss > absciss_max:
+        if x > absciss_max:
             raise ValueError("The absciss is too high")
-        if absciss < 0:
+        if x < 0:
             raise ValueError("THe absciss has to be positive")
-        if ordinate > ordinate_max:
+        if y > ordinate_max:
             raise ValueError("The ordinate is too high")
-        if ordinate < 0:
+        if y < 0:
             raise ValueError("The ordinate has to be positive")
 
-        self.absciss = absciss
-        self.ordinate = ordinate
+        self.x = x
+        self.y = y
 
     def __repr__(self):
 
-        return """Point of absciss {} and ordinate {}""".format(self.absciss,
-                                                                self.ordinate)
+        return """Point of absciss {} and ordinate {}""".format(self.x,
+                                                                self.y)
 
 
 class WB_Form:
@@ -77,101 +77,101 @@ class WB_Form:
 
 class WB_Line(WB_Form):
 
-    """ x and y are the two tip points of the line
+    """ a and b are the two tip points of the line
     """
 
 
 
 
 
-    def __init__(self, x, y, color=black, identifier=0):
-        if not isinstance(x, Point):
+    def __init__(self, a, b, color=black, identifier=0):
+        if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
-        if not isinstance(y, Point):
+        if not isinstance(b, Point):
             raise TypeError("The second parameter has to be a point")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
 
-        self.x = x
-        self.y = y
+        self.a = a
+        self.b = b
         self.color = color
         self.identifier = identifier
 
     def __repr__(self):
 
         return """Lign from {} to {} and of color: {}
-        and of id: {}""".format(self.x, self.y, self.color, self.identifier)
+        and of id: {}""".format(self.a, self.b, self.color, self.identifier)
 
     def get_string(self):
 
         # method to transform lign into string
         # Ex: lign from (2,4) to (8,14) => string = "L2,4,8,14"
 
-        string = "L" + str(self.x.absciss) + "," + str(self.x.ordinate) + ","
-        string += str(self.y.absciss) + "," + str(self.y.ordinate) + ","
+        string = "L" + str(self.a.x) + "," + str(self.a.y) + ","
+        string += str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
 
 class WB_Rectangle(WB_Form):
 
-    """x is one of the summit of the rectangle, y is the summit on the other side of the diagonal
+    """a is one of the summit of the rectangle, b is the summit on the other side of the diagonal
     """
 
 
-    def __init__(self, x, y, color=black, identifier=0):
-        if not isinstance(x, Point):
+    def __init__(self, a, b, color=black, identifier=0):
+        if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
-        if not isinstance(y, Point):
+        if not isinstance(b, Point):
             raise TypeError("The second parameter has to be a point")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
-        self.x = x
-        self.y = y
+        self.a = a
+        self.b = b
         self.color = color
         self.identifier = identifier
 
     def __repr__(self):
 
         return """Rectangle from {} to {} and of color: {}
-        and of id: {}""".format(self.x, self.y, self.color, self.identifier)
+        and of id: {}""".format(self.a, self.b, self.color, self.identifier)
 
     def get_string(self):
 
         # method to transform rectangle into string
         # Ex: rectangle from (2,4) to (8,14) => string = "R2,4,8,14"
 
-        string = "R" + str(self.x.absciss) + "," + str(self.x.ordinate) + ","
-        string += str(self.y.absciss) + "," + str(self.y.ordinate) + ","
+        string = "R" + str(self.a.x) + "," + str(self.a.y) + ","
+        string += str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
 
 class WB_Square(WB_Form):
 
-    """x is one of the summit of the square, y is the summit on the other side of the diagonal
+    """a is one of the summit of the square, b is the summit on the other side of the diagonal
     """
 
 
 
-    def __init__(self, x, y, color=black, identifier=0):
-        if not isinstance(x, Point):
+    def __init__(self, a, b, color=black, identifier=0):
+        if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
-        if not isinstance(y, Point):
+        if not isinstance(b, Point):
             raise TypeError("The second parameter has to be a point")
         if not isinstance(color, Color):
             raise TypeError("The third parameter has to be a color")
-        if abs(x.absciss - y.absciss) != abs(x.ordinate - y.ordinate):
+        if abs(a.x - b.x) != abs(a.y - b.y):
             raise ValueError("This is not a square !!!!")
-        self.x = x
-        self.y = y
+        self.a = a
+        self.b = b
         self.color = color
         self.identifier = identifier
 
     def __repr__(self):
 
         return """Square of corners {} and {} and of color: {}
-        and of id: {}""".format(self.x, self.y, self.color, self.identifier)
+        and of id: {}""".format(self.a, self.b, self.color, self.identifier)
 
     def get_string(self):
 
@@ -179,16 +179,16 @@ class WB_Square(WB_Form):
         # Ex: rectangle of left upper corner (17,5) and of side length 2 =>
         # string = "S17,5,2"
 
-        string = "S" + str(self.x.absciss) + "," + str(self.x.ordinate)
-        string += "," + str(self.y.absciss) + "," + str(self.y.ordinate) + ","
+        string = "S" + str(self.a.x) + "," + str(self.a.y)
+        string += "," + str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
 
 class WB_Circle(WB_Form):
 
-    """c is the center of the circle, r is the radius
-    """
+    """c is the center of the circle, r is the radius   """
+    
     def __init__(self, c, r, color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
@@ -211,7 +211,7 @@ class WB_Circle(WB_Form):
         # method to transform circle into string
         # Ex: Circle of center (17,5) and of radius 2 => string = "S17,5,2"
 
-        string = "C" + str(self.c.absciss) + "," + str(self.c.ordinate)
+        string = "C" + str(self.c.x) + "," + str(self.c.y)
         string += "," + str(self.r) + ","
         string += str(self.identifier)
         return string
@@ -238,14 +238,15 @@ class WB_Ellipse(WB_Form):
         self.identifier = identifier
 
     def __repr__(self):
-        return "Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {} and of id: {}".format(self.c, self.a,self.b, self.color, self.identifier)
+        return """Ellipse of center {}, of horizontal axis: {} , of vertical axis: {} and of color: {}
+        and of id: {}""".format(self.c, self.a,self.b, self.color, self.identifier)
 
     def get_string(self):
 
         # method to transform circle into string
         # Ex: Ellipse of center (17,5) and of horizontal axis 7 and of vertical axis 3 => string = "S17,5,7,3"
 
-        string = "E" + str(self.c.absciss) + "," + str(self.c.ordinate)
+        string = "E" + str(self.c.x) + "," + str(self.c.y)
         string += "," + str(self.a) + "," + str(self.b) + ","
         string += str(self.identifier)
         return string

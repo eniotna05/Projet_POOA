@@ -159,19 +159,19 @@ class WhiteboardInstance(Widget):
         with self.canvas:
             if isinstance(form, WB_Line):
                 Line(points=(
-                    form.x.absciss,
-                    form.x.ordinate,
-                    form.y.absciss,
-                    form.y.ordinate),
+                    form.a.x,
+                    form.a.y,
+                    form.b.x,
+                    form.b.y),
                     width=5)
 
             elif isinstance(form, WB_Rectangle):
-                Rectangle(pos=(form.x.abciss, form.x.ordinate),
-                          size=(form.y.absciss, form.y.ordinate))
+                Rectangle(pos=(form.a.x, form.a.y),
+                          size=(form.b.x, form.b.y))
 
             elif isinstance(form, WB_Square):
-                Rectangle(pos=(form.x.absciss, form.x.ordinate),
-                          size=(form.y.abciss, form.y.ordinate))
+                Rectangle(pos=(form.a.x, form.a.y),
+                          size=(form.b.x, form.b.y))
 
             elif isinstance(form, WB_Circle):
                 pass
