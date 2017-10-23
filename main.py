@@ -1,10 +1,15 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.graphics import Color
 from kivy.clock import Clock
 from queue import Queue
 
 
-from Widget import WhiteboardInstance, Toolbar
+from whiteboardInstance import WhiteboardInstance
+from toolbar import Toolbar
 from client import Client
 
 
@@ -17,12 +22,26 @@ class WhiteboardApp(App):
         self.client_thread = Client(self.sending_queue, self.receiving_queue)
         self.board = WhiteboardInstance(self.sending_queue)
         self.toolbar = Toolbar(self.board)
+        self.toolbar.size_hint = (0.2, 1)
+        self.board.size_hint = (0.8, 1)
+        # self.toolbar.pos_hint = {'x': self.toolbar.width}
+        # self.board.pos_hint = {'x': 0.2}
 
     def build(self):
-        parent = Widget()
+        parent = BoxLayout()
         self.client_thread.start()
-        parent.add_widget(self.toolbar)
+        # self.toolbar.size_hint = (None, None)
+        # self.toolbar.size = (200, 600)
+        # self.toolbar.pos = (0, 0)
+        # self.board.size_hint = (None, None)
+        # self.board.size = (600, 600)
+        # self.board.pos = (200, 0)
+        # self.toolbar.pos_hint = {}
+
+        # self.board.pos_hint = {'x': 0.2}
         parent.add_widget(self.board)
+        parent.add_widget(self.toolbar, 0)
+
         Clock.schedule_interval(self.draw_received_forms, 1 / 30)
 
         return parent
