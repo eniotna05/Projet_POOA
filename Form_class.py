@@ -71,7 +71,7 @@ class WB_Form:
     # Pas utilise en tant que tel pour l'instant
 
     def __init__(self, *point, identifier=0):
-        self.point_list = points
+        self.point_list = point
         self.identifier = identifier
 
 
