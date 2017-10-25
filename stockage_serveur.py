@@ -21,6 +21,9 @@ class Stock:
     def __iter__(self):
         return iter(self.stock)
 
+    def __delitem__(self, key):
+        del self.stock[key]
+
     def convertStrIntoForm(self,string):
         #converts an input into the right Form object
         letter = string[0]
@@ -38,7 +41,7 @@ class Stock:
 
     def deleteForm(self,identifier):
         del self.stock[identifier]
-        return "The object number {} has been deleted".format(identifier)
+        print("The object number {} has been deleted".format(identifier))
 
     def newObject(self,string):
         parametres = string.split(",")
@@ -54,8 +57,8 @@ class Stock:
         concatenateElements = ""
         for element in self.stock:
             string = self.stock[element].get_string()
-            concatenateElements += string
-        return concatenateElements
+            concatenateElements += string + ","
+        return concatenateElements[:-1]
 
 if __name__=="__main__":
 
@@ -70,7 +73,8 @@ if __name__=="__main__":
     essai = Stock("anais")
     essai.newObject(string_1)
     essai.newObject(string_2)
+    essai.newObject(string_3)
     print(essai.stock)
-    for element in essai.stock:
-        print(essai.stock[element])
+    print(essai.convertStockIntoStr())
+    essai.deleteForm("30")
     print(essai.convertStockIntoStr())

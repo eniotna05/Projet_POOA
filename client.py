@@ -4,6 +4,7 @@ from Command_class import *
 from string_to_class import *
 from Form_class import *
 import time
+from string_to_class import string_to_command
 
 
 userCmd = ""
@@ -11,12 +12,13 @@ userCmd = ""
 
 class Client(Thread):
     """Class defining the client"""
-    def __init__(self, sending_queue):
+    def __init__(self, sending_queue, receiving_queue):
         Thread.__init__(self)
         global userCmd
         self.userCmd = userCmd
         self.continuer = True
         self.sending_queue = sending_queue
+        self.receiving_queue = receiving_queue
 
     def run(self):
 
@@ -37,7 +39,7 @@ class Client(Thread):
         messageServeur=messageServeur.decode()
         print(messageServeur)
 
-        reception = Reception(self.sock)
+        reception = Reception(self.sock, self.receiving_queue)
         reception.start()
         envoi = Envoi(self.sock, self.sending_queue)
         envoi.start()
@@ -71,17 +73,13 @@ class Envoi(Thread):
                 print("sending command to server", command)
                 self.sendcommand(command)
 
-        #self.userCmd = input(">")
-        #self.sendcommand(self.userCmd)
-        #self.sendcommand(string_1)
-        #self.sendcommand(string_2)
-
 
 class Reception(Thread):
     """Thread for reception of messages from the server"""
-    def __init__(self,sock):
+    def __init__(self,sock, queue):
         Thread.__init__(self)
         self.sock = sock
+        self.form_queue = queue
         global userCmd
         self.userCmd = userCmd
         self.continuer = True
@@ -100,7 +98,9 @@ class Reception(Thread):
                 print("Fin communication")
                 self.continuer=False
             else:
-                self.getmessage()
+                message = self.getmessage()
+                self.form_queue.put(string_to_command(message).created_form)
+                print("created form", string_to_command(message).created_form)
 
 
 Creation_1 = Create(WB_Rectangle(Point(1, 3), Point(10, 100), black, 2))
