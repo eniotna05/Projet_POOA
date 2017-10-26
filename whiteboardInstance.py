@@ -1,18 +1,10 @@
-from Form_class import *
-from queue import Queue
-from client import Client
-
-
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty
-
-
-from enum import Enum
-
+from kivy.graphics import Color
+from formTypes import Forms
+from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
 
 line_width = 5
 client_form_database = {}
@@ -20,9 +12,8 @@ form_number = 0
 client_id = "yoann"
 
 
-
-
-class WhiteboardInstance(Widget):
+class WhiteboardInstance(RelativeLayout):
+    """Class defining the Widget that the user can draw on"""
 
     touch_origin_x = NumericProperty(0)
     touch_origin_y = NumericProperty(0)
@@ -32,6 +23,15 @@ class WhiteboardInstance(Widget):
         self.drawing = False
         self._selected_form = None
         self.sending_queue = sending_queue
+        with self.canvas:
+            self.back = Rectangle(pos=(0, 0), size=(self.width, self.height))
+            Color(rgba=(1, 0, 0, 1))
+
+        self.bind(pos=self.update_rect, size=self.update_rect)
+
+    def update_rect(self, value, three):
+        self.back.pos = self.pos
+        self.back.size = self.size
 
     def on_touch_down(self, touch):
         self.drawing = True
@@ -41,7 +41,7 @@ class WhiteboardInstance(Widget):
 
         with self.canvas:
             if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width= line_width)
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=line_width)
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -58,37 +58,41 @@ class WhiteboardInstance(Widget):
                 touch.ud['circle'] = Ellipse(
                     pos=(touch.x, touch.y),
                     size=(0, 0))
+        return True
 
     def on_touch_move(self, touch):
 
-        if self._selected_form == Forms.LINE:
-            if len(touch.ud['line'].points) <= 2:
-                touch.ud['line'].points += (touch.x, touch.y)
-            else:
-                del touch.ud['line'].points[-2:]
-                touch.ud['line'].points += [touch.x, touch.y]
+        if self.collide_point(touch.x, touch.y):
+            if self._selected_form == Forms.LINE:
+                if len(touch.ud['line'].points) <= 2:
+                    touch.ud['line'].points += (touch.x, touch.y)
+                else:
+                    del touch.ud['line'].points[-2:]
+                    touch.ud['line'].points += [touch.x, touch.y]
 
-        elif self._selected_form == Forms.RECT:
-            touch.ud['rect'].size = touch.x - self.touch_origin_x, \
-                touch.y - self.touch_origin_y
+            elif self._selected_form == Forms.RECT:
+                touch.ud['rect'].size = touch.x - self.touch_origin_x, \
+                    touch.y - self.touch_origin_y
 
-        elif self._selected_form == Forms.SQUARE:
-            dx = touch.x - self.touch_origin_x
-            dy = touch.y - self.touch_origin_y
-            l = max(abs(dx), abs(dy))
-            sign = lambda x: (1, -1)[x < 0]
-            touch.ud['square'].size = sign(dx) * l, sign(dy) * l
+            elif self._selected_form == Forms.SQUARE:
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                l = max(abs(dx), abs(dy))
+                sign = lambda x: (1, -1)[x < 0]
+                touch.ud['square'].size = sign(dx) * l, sign(dy) * l
 
-        elif self._selected_form == Forms.ELLIPSE:
-            touch.ud['ellipse'].size = touch.x - self.touch_origin_x, \
-                touch.y - self.touch_origin_y
+            elif self._selected_form == Forms.ELLIPSE:
+                touch.ud['ellipse'].size = touch.x - self.touch_origin_x, \
+                    touch.y - self.touch_origin_y
 
-        elif self._selected_form == Forms.CIRCLE:
-            dx = touch.x - self.touch_origin_x
-            dy = touch.y - self.touch_origin_y
-            l = max(abs(dx), abs(dy))
-            sign = lambda x: (1, -1)[x < 0]
-            touch.ud['circle'].size = sign(dx) * l, sign(dy) * l
+            elif self._selected_form == Forms.CIRCLE:
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                l = max(abs(dx), abs(dy))
+                sign = lambda x: (1, -1)[x < 0]
+                touch.ud['circle'].size = sign(dx) * l, sign(dy) * l
+
+        return True
 
     def on_touch_up(self, touch):
         self.drawing = False
@@ -97,16 +101,19 @@ class WhiteboardInstance(Widget):
 
 
         if self._selected_form == Forms.LINE:
-            del touch.ud['line'].points[-2:]
-            print('removing last point, line : ', touch.ud['line'].points)
-            touch.ud['line'].points += [touch.x, touch.y]
+            # prevents key error if for some reason the first click has not
+            # created a line object
+            if 'line' in touch.ud:
+                del touch.ud['line'].points[-2:]
+                print('removing last point, line : ', touch.ud['line'].points)
+                touch.ud['line'].points += [touch.x, touch.y]
 
-            a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-            b = Point(int(touch.x), int(touch.y))
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                WB_Line(a, b, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Line(a, b, identifier=client_id +
+                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                b = Point(int(touch.x), int(touch.y))
+                form_number += 1
+                client_form_database[client_id + str(form_number)] = \
+                    WB_Line(a, b, identifier=client_id + str(form_number))
+                self.sending_queue.put(WB_Line(a, b, identifier=client_id +
                                        str(form_number)).get_string())
 
         elif self._selected_form == Forms.RECT:
@@ -157,6 +164,7 @@ class WhiteboardInstance(Widget):
             self.sending_queue.put(WB_Circle(c, r, identifier=client_id +
                                              str(form_number)).get_string())
 
+        return True
 
     def draw_form(self, form):
 
@@ -182,7 +190,7 @@ class WhiteboardInstance(Widget):
                           size=(form.r * 2, form.r * 2))
 
             elif isinstance(form, WB_Ellipse):
-                Ellipse(pos=(form.c.x - form.rx / 2, form.c - form.ry /2),
+                Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
                           size=(form.rx * 2 , form.ry * 2))
 
 
@@ -195,61 +203,3 @@ class WhiteboardInstance(Widget):
     @selected_form.setter
     def selected_form(self, selected=None):
         self._selected_form = selected
-
-
-class Forms(Enum):
-    LINE = 1
-    RECT = 2
-    SQUARE = 3
-    ELLIPSE = 4
-    CIRCLE = 5
-
-
-class Toolbar(BoxLayout):
-
-    def __init__(self, white_board):
-        super().__init__(orientation='vertical')
-        self.white_board = white_board
-        self.selected_form = None
-
-        self.clear_btn = Button(text="Clear")
-        self.clear_btn.bind(on_release=self.clear_board)
-        self.add_widget(self.clear_btn)
-
-        self.select_line_btn = Button(text="Line")
-        self.select_line_btn.bind(on_release=self.select_line)
-        self.add_widget(self.select_line_btn)
-
-        self.select_rect_btn = Button(text="Rectangle")
-        self.select_rect_btn.bind(on_release=self.select_rect)
-        self.add_widget(self.select_rect_btn)
-
-        self.select_square_btn = Button(text="Square")
-        self.select_square_btn.bind(on_release=self.select_square)
-        self.add_widget(self.select_square_btn)
-
-        self.select_ellipse_btn = Button(text="Ellipse")
-        self.select_ellipse_btn.bind(on_release=self.select_ellipse)
-        self.add_widget(self.select_ellipse_btn)
-
-        self.select_circle_btn = Button(text="Circle")
-        self.select_circle_btn.bind(on_release=self.select_circle)
-        self.add_widget(self.select_circle_btn)
-
-    def select_line(self, obj):
-        self.white_board.selected_form = Forms.LINE
-
-    def select_rect(self, obj):
-        self.white_board.selected_form = Forms.RECT
-
-    def select_square(self, obj):
-        self.white_board.selected_form = Forms.SQUARE
-
-    def select_ellipse(self, obj):
-        self.white_board.selected_form = Forms.ELLIPSE
-
-    def select_circle(self, obj):
-        self.white_board.selected_form = Forms.CIRCLE
-
-    def clear_board(self, obj):
-        self.white_board.canvas.clear()

@@ -71,7 +71,7 @@ class WB_Form:
     # Pas utilise en tant que tel pour l'instant
 
     def __init__(self, *point, identifier=0):
-        self.point_list = points
+        self.point_list = point
         self.identifier = identifier
 
 
@@ -121,15 +121,15 @@ class WB_Line(WB_Form):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
-        
+
         self.a.x += x
         self.b.x += x
         self.a.y += y
         self.b.y += y
-        
 
 
-        
+
+
 class WB_Rectangle(WB_Form):
 
     """a is one of the summit of the rectangle,
@@ -173,7 +173,7 @@ class WB_Rectangle(WB_Form):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
-        
+
         self.a.x += x
         self.b.x += x
         self.a.y += y
@@ -227,7 +227,7 @@ class WB_Square(WB_Form):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
-        
+
         self.a.x += x
         self.b.x += x
         self.a.y += y
@@ -236,7 +236,7 @@ class WB_Square(WB_Form):
 class WB_Circle(WB_Form):
 
     """c is the center of the circle, r is the radius   """
-    
+
     def __init__(self, c, r, color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
@@ -273,10 +273,9 @@ class WB_Circle(WB_Form):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
-        
+
         self.c.x += x
         self.c.y += y
-
 
 
 class WB_Ellipse(WB_Form):
@@ -324,6 +323,6 @@ class WB_Ellipse(WB_Form):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
-        
+
         self.c.x += x
         self.c.y += y
