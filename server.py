@@ -1,25 +1,32 @@
-import socket
-from threading import Thread
 from exchange import *
-import queue
-
 
 class Server(Thread):
     """Class defining the server"""
 
-    def __init__(self):
+    def __init__(self, port):
         Thread.__init__(self)
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.sock.bind(('',12800))
-        self.continuer = True
+        if not isinstance(port, int):
+            print("Port is not an integer")
+        self.__port = port
+        self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__sock.bind(('', self.__port))
+        self.__continuer = True
+
+    @property
+    def portserveur(self):
+        return self.__port
+
+    @property
+    def socketserveur(self):
+        return self.__sock
 
     def run(self):
-        self.sock.listen(5)
+        self.__sock.listen(5)
         print("Waiting for a connection")
-        while self.continuer:
+        while self.__continuer:
             try:
-                connexion,client = self.sock.accept()
-                ExchangeThread(connexion).start() #Starts the exchange thread between a new client and the server
+                connexion, client = self.__sock.accept()
+                ExchangeThread(connexion).start()  # Starts the exchange thread between a new client and the server
             except OSError:
                 pass
             except IOError as e:
@@ -28,9 +35,10 @@ class Server(Thread):
         print("Server stops running")
 
     def __stopListening(self):
-        self.continuer = False
-        if self.sock:
-            self.sock.close()
+        self.__continuer = False
+        if self.__sock:
+            self.__sock.close()
 
-Serveurtest = Server()
-Serveurtest.start()
+
+server = Server(12800)
+server.start()

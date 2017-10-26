@@ -1,112 +1,38 @@
-from threading import Thread
-import socket
-from Command_class import *
-from string_to_class import *
-from Form_class import *
-import time
+from kivy.app import App
+from kivy.uix.widget import Widget
+from kivy.clock import Clock
+from queue import Queue
 
-userCmd = ""
 
-class Client:
-    """Class defining the client"""
+from Widget import WhiteboardInstance, Toolbar
+from client import Client
+
+
+class WhiteboardApp(App):
+
     def __init__(self):
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.sock.connect(('localhost',12800))
-        global userCmd
-        self.userCmd = userCmd
-        self.continuer = True
+        super().__init__()
+        self.sending_queue = Queue()
+        self.receiving_queue = Queue()
+        self.client_thread = Client(self.sending_queue, self.receiving_queue)
+        self.board = WhiteboardInstance(self.sending_queue)
+        self.toolbar = Toolbar(self.board)
 
-    def clientRunning(self):
+    def build(self):
+        parent = Widget()
+        self.client_thread.start()
+        parent.add_widget(self.toolbar)
+        parent.add_widget(self.board)
+        Clock.schedule_interval(self.draw_received_forms, 1 / 30)
 
-        messageServeur = self.sock.recv(1024)
-        if messageServeur != b"H":#tests if the server sends HLO
-            raise ValueError("Protocol error: H expected")
-        self.sock.send(u"H".encode())#Sends HLO back
+        return parent
 
-        messageServeur = self.sock.recv(1024)
-        messageServeur=messageServeur.decode()
-        print(messageServeur)
-        nomUtilisateur = input(">")
-        self.sock.send(nomUtilisateur.encode())
-        messageServeur = self.sock.recv(1024)
-        messageServeur=messageServeur.decode()
-        print(messageServeur)
-
-        while self.continuer:
-            if self.userCmd =="Q":
-                self.sock.close()
-                self.continuer = False
-            else:
-                reception = Reception(self.sock)
-                reception.start()
-                envoi = Envoi(self.sock)
-                envoi.start()
-                reception.join()
-                envoi.join()
-        print("End of the game")
-
-class Envoi(Thread):
-    """Thread for sending messages to the server"""
-    def __init__(self,sock):
-        Thread.__init__(self)
-        self.sock = sock
-        self.__continuer = True
-        global userCmd
-        self.userCmd = userCmd
-
-    def sendcommand(self,commande):
-        """Sends a message containing: the type of drawing and the associated data"""
-        paquet = bytes()
-        paquet += commande.encode()
-        self.sock.send(paquet)
-
-    def run(self):
-        #while self.__continuer:
-         #   if self.userCmd == "Q":
-          #      self.__continuer = False
-
-        #self.userCmd = input(">")
-        #self.sendcommand(self.userCmd)
-        self.sendcommand(string_1)
-        self.sendcommand(string_2)
+    def draw_received_forms(self, dt):
+        while not self.receiving_queue.empty():
+            new_form = self.receiving_queue.get()
+            self.board.draw_form(new_form)
 
 
-class Reception(Thread):
-    """Thread for reception of messages from the server"""
-    def __init__(self,sock):
-        Thread.__init__(self)
-        self.sock = sock
-        global userCmd
-        self.userCmd = userCmd
-        self.continuer = True
-
-    def getmessage(self):
-        """Receives a 3-characters long message"""
-        commande = bytes()
-        commande += self.sock.recv(1024)
-        print(commande.decode())
-        return commande.decode()
-
-    def run(self):
-        while self.continuer:
-            if self.userCmd == "Q":
-                self.sock.close()
-                print("Fin communication")
-                self.continuer=False
-            else:
-                self.getmessage()
-
-
-Creation_1 = Create(WB_Rectangle(Point(1, 3), Point(10, 100), black, 2))
-Creation_2 = Create(WB_Line(Point(134, 27), Point(1439, 238), black, 30))
-Creation_3 = Create(WB_Circle(Point(43, 372), 37))
-
-string_1 = Creation_1.get_string()
-string_2 = Creation_2.get_string()
-string_3 = Creation_3.get_string()
-
-
-client2 = Client()
-client2.clientRunning()
-
-
+if __name__ == '__main__':
+    MyApp = WhiteboardApp()
+    MyApp.run()

@@ -1,11 +1,9 @@
 from threading import Thread
 import socket
-import queue
-import struct
 from stockage_serveur import *
 
-connexions = {}#list of the clients connected to the server
-identifiant = 0
+connexions = {}  # Keys: sockets of the clients ; Values: message received from the clients
+identifier = 0
 
 class ExchangeThread(Thread):
     """Class defining the exchange process on the server side"""
@@ -14,19 +12,19 @@ class ExchangeThread(Thread):
         if not isinstance(sock, socket.socket) or sock is None:
             raise TypeError("Needs a real socket")
         self.sock = sock
-        global identifiant
-        self.identifiant = identifiant + 1
-        identifiant = identifiant + 1
+        global identifier
+        self.identifier = identifier + 1
+        identifier = identifier + 1
         self.continuer = True
-        self.nomUtilisateur = ""
-        self.reception = Stock(self.nomUtilisateur)
+        self.username = ""
+        self.reception = Stock(self.username)
         global connexions
         connexions[self.sock] = self.reception
 
     def getTableau(self):
         string = ""
         for socket in connexions:
-            string += connexions[socket].convertStockIntoStr()+","
+            string += connexions[socket].convertStockIntoStr() + ","
         string = string[:-2]
         return string.encode()
 
@@ -35,9 +33,9 @@ class ExchangeThread(Thread):
         data += self.sock.recv(1024)
         return data.decode()
 
-    def sendmessage(self,message,allUsers=False):
-        #If allUsers is True, a message is sent to all the client.
-        #If allUsers is False, the message is sent to everyone except the client associated to the exchange thread
+    def sendmessage(self, message, allUsers=False):
+        # If allUsers is True, a message is sent to all the client.
+        # If allUsers is False, the message is sent to everyone except the client associated to the exchange thread
         message = message.encode()
         if allUsers == True:
             for client in connexions:
@@ -47,7 +45,7 @@ class ExchangeThread(Thread):
                 if client != self.sock:
                     client.send(message)
 
-    def stockData(self,data):
+    def stockData(self, data):
         print(data)
         self.reception.newObject(data)
         for element in self.reception:
@@ -65,7 +63,7 @@ class ExchangeThread(Thread):
                 except KeyError:
                     pass
             self.sendmessage(message)
-        elif command =="Q":
+        elif command == "Q":
             self.stopListening()
         else:
             self.stockData(message)
@@ -73,18 +71,17 @@ class ExchangeThread(Thread):
 
     def getUserName(self):
         self.sock.send(b"Veuillez entrer un nom d'utilisateur:")
-        self.nomUtilisateur = self.getmessage()
-        message = "Merci " + self.nomUtilisateur
-        print("Start of the connection with {} ".format(self.nomUtilisateur))
+        self.username = self.getmessage()
+        message = "Merci " + self.username
+        print("Start of the connection with {} ".format(self.username))
         self.sock.send(message.encode())
 
     def stopListening(self):
         self.continuer = False
-        print("End of communication with client {}".format(self.identifiant))
-        self.sendmessage("The client {} has deconnected".format(self.identifiant))
+        print("End of communication with client {}".format(self.username))
+        self.sendmessage("The client {} has disconnected".format(self.username))
         if self.sock:
             self.sock.close()
-
 
     def run(self):
         self.sock.send("H".encode())
@@ -95,7 +92,7 @@ class ExchangeThread(Thread):
 
         self.getUserName()
 
-        if len(connexions)>=2:
+        if len(connexions) >= 2:
             self.sock.send(self.getTableau())
 
         while self.continuer:
