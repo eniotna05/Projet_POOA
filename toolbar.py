@@ -7,10 +7,15 @@ from formTypes import Forms
 class Toolbar(BoxLayout):
     """Class defining the buttons of the left-side toolbar"""
 
-    def __init__(self, white_board):
+    def __init__(self, white_board, client_thread_manager):
         super().__init__(orientation='vertical')
         self.white_board = white_board
         self.selected_form = None
+        self.client_thread_manager = client_thread_manager
+
+        self.quit_btn = Button(text="Quit")
+        self.quit_btn.bind(on_release=self.quit)
+        self.add_widget(self.quit_btn)
 
         self.clear_btn = Button(text="Clear")
         self.clear_btn.bind(on_release=self.clear_board)
@@ -36,6 +41,12 @@ class Toolbar(BoxLayout):
         self.select_circle_btn.bind(on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
 
+    def quit(self, obj):
+        self.client_thread_manager.quit()
+
+    def clear_board(self, obj):
+        self.white_board.canvas.clear()
+
     def select_line(self, obj):
         self.white_board.selected_form = Forms.LINE
 
@@ -50,6 +61,3 @@ class Toolbar(BoxLayout):
 
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
-
-    def clear_board(self, obj):
-        self.white_board.canvas.clear()

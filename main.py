@@ -1,3 +1,7 @@
+# This file handles the main thread of the client application
+# Before launching it, make sure that the server is launched with
+# "python server.py" command (therfore the client can connect)
+
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
@@ -21,7 +25,7 @@ class WhiteboardApp(App):
         self.receiving_queue = Queue()
         self.client_thread = Client(self.sending_queue, self.receiving_queue)
         self.board = WhiteboardInstance(self.sending_queue)
-        self.toolbar = Toolbar(self.board)
+        self.toolbar = Toolbar(self.board, self.client_thread)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
         # self.toolbar.pos_hint = {'x': self.toolbar.width}
@@ -46,6 +50,8 @@ class WhiteboardApp(App):
 
         return parent
 
+    # the main thread needs to be in charge of all the drawing, so we check
+    # regularly if the client has received new forms and draw them eventually
     def draw_received_forms(self, dt):
         while not self.receiving_queue.empty():
             new_form = self.receiving_queue.get()
