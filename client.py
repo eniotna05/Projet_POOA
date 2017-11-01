@@ -99,8 +99,11 @@ class Reception(Thread):
                 self.continuer=False
             else:
                 message = self.getmessage()
-                self.form_queue.put(string_to_command(message).created_form)
-                print("created form", string_to_command(message).created_form)
+                self.form_queue.put(string_to_command(message))
+
+                if type(string_to_command(message)) == "Create":
+
+                    print("created form", string_to_command(message).created_form)
 
 
 
