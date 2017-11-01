@@ -5,7 +5,7 @@ from Command_class import *
 
 def string_to_circle(string):
     parameters = string.split(",")
-    return WB_Circle(Point(int(parameters[0]),int(parameters[1])),
+    return WB_gitCircle(Point(int(parameters[0]),int(parameters[1])),
     int(parameters[2]),identifier = parameters[3])
 
 def string_to_ellipse(string):
