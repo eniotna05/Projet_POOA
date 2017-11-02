@@ -2,8 +2,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
-from kivy.uix.switch import Switch
 from kivy.clock import Clock
+from kivy.uix.colorpicker import ColorPicker
 
 from formTypes import Forms
 
@@ -35,6 +35,10 @@ class Toolbar(BoxLayout):
         self.clear_btn = Button(text="Clear")
         self.clear_btn.bind(on_release=self.clear_board)
         self.add_widget(self.clear_btn)
+
+        self.color_picker = ColorPicker(color=(1,0,0,1))
+        self.color_picker.bind(color=self.choose_color)
+        self.add_widget(self.color_picker)
 
         self.select_line_btn = Button(text="Line")
         self.select_line_btn.bind(on_release=self.select_line)
@@ -72,6 +76,9 @@ class Toolbar(BoxLayout):
 
     def clear_board(self, obj):
         self.white_board.canvas.clear()
+
+    def choose_color(self, instance, value):
+        self.white_board.drawing_color = value
 
     def select_line(self, obj):
         self.white_board.selected_form = Forms.LINE

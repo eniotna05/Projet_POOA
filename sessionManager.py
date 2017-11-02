@@ -32,7 +32,10 @@ class SessionManager():
         putting it into the sending queue (for the network thread to send it)
         """
         self._form_number += 1
-        form_id = self._client_id + str(self._form_number)
+        if self._is_connected:
+            form_id = self._client_id + str(self._form_number)
+        else:
+            form_id = str(self._form_number)
         form.identifier = form_id
         self.local_database[form_id] = form
         self.sending_queue.put(form.get_string())
