@@ -13,13 +13,18 @@ class Toolbar(BoxLayout):
         self.selected_form = None
         self.client_thread_manager = client_thread_manager
 
+        self.print_btn = Button(text="Print St")
+        self.print_btn.bind(on_release=self.print_status)
+        self.add_widget(self.print_btn)
+
+
         self.quit_btn = Button(text="Quit")
         self.quit_btn.bind(on_release=self.quit)
         self.add_widget(self.quit_btn)
 
-        self.clear_btn = Button(text="Clear")
-        self.clear_btn.bind(on_release=self.clear_board)
-        self.add_widget(self.clear_btn)
+        self.delete_btn = Button(text="Delete")
+        self.delete_btn.bind(on_release=self.delete_item)
+        self.add_widget(self.delete_btn)
 
         self.select_line_btn = Button(text="Line")
         self.select_line_btn.bind(on_release=self.select_line)
@@ -44,8 +49,20 @@ class Toolbar(BoxLayout):
     def quit(self, obj):
         self.client_thread_manager.quit()
 
-    def clear_board(self, obj):
-        self.white_board.canvas.clear()
+    def delete_item(self, obj):
+        self.white_board.canvas.remove_group("1")
+
+
+        """canvas_objects = self.white_board.canvas.get_group("1")
+        print(canvas_objects)
+        for k in canvas_objects:
+            self.white_board.canvas.remove(k)"""
+
+
+    def print_status(self, obj):
+        print(self.white_board.canvas.children)
+
+
 
     def select_line(self, obj):
         self.white_board.selected_form = Forms.LINE
@@ -61,3 +78,5 @@ class Toolbar(BoxLayout):
 
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
+
+

@@ -1,5 +1,6 @@
 from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix import scatter
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty
 from kivy.graphics import Color
@@ -10,6 +11,9 @@ line_width = 5
 client_form_database = {}
 form_number = 0
 client_id = "yoann"
+
+
+
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -45,7 +49,7 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
-                    size=(0, 0))
+                    size=(0, 0),group = "1")
             elif self._selected_form == Forms.SQUARE:
                 touch.ud['square'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -152,6 +156,7 @@ class WhiteboardInstance(RelativeLayout):
                 WB_Ellipse(c, rx, ry, identifier=client_id + str(form_number))
             self.sending_queue.put(WB_Ellipse(c, rx, ry, identifier=client_id +
                                               str(form_number)).get_string())
+
 
         elif self._selected_form == Forms.CIRCLE:
             c = Point(
