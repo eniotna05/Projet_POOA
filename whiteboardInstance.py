@@ -3,7 +3,6 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty
 from kivy.graphics import Color
-
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
 

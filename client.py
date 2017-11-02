@@ -115,12 +115,3 @@ class Reception(Thread):
     def quit(self):
         self._exit_request.set()
         self.sock.close()
-
-
-# Creation_1 = Create(WB_Rectangle(Point(1, 3), Point(10, 100), black, 2))
-# Creation_2 = Create(WB_Line(Point(134, 27), Point(1439, 238), black, 30))
-# Creation_3 = Create(WB_Circle(Point(43, 372), 37))
-#
-# string_1 = Creation_1.get_string()
-# string_2 = Creation_2.get_string()
-# string_3 = Creation_3.get_string()
