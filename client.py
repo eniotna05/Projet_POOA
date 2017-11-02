@@ -110,13 +110,16 @@ class Reception(Thread):
         return commande.decode()
 
     def run(self):
+
         while not self._exit_request.is_set():
             message = self.getmessage()
-            self.form_queue.put(string_to_command(message).created_form)
-            print("created form", string_to_command(message).created_form)
+            self.form_queue.put(string_to_command(message))
+            if isinstance(string_to_command(message), Create):
+                print("created form", string_to_command(message).created_form)
         self.sock.close()
         print("Fin communication")
 
     def quit(self):
         self._exit_request.set()
         self.sock.close()
+

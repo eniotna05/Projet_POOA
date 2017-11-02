@@ -15,6 +15,7 @@ from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
 from client import Client
+from Command_class import *
 
 
 class WhiteboardApp(App):
@@ -48,16 +49,23 @@ class WhiteboardApp(App):
         parent.add_widget(self.board)
         parent.add_widget(self.toolbar, 0)
 
-        Clock.schedule_interval(self.draw_received_forms, 1 / 30)
+        Clock.schedule_interval(self.execute_command, 1 / 30)
 
         return parent
 
+
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
-    def draw_received_forms(self, dt):
+
+    def execute_command(self, dt):
+
         while not self.receiving_queue.empty():
-            new_form = self.receiving_queue.get()
-            self.board.draw_form(new_form)
+            new_command = self.receiving_queue.get()
+
+
+
+            if isinstance(new_command,Create):
+                self.board.draw_form(new_command.created_form)
 
 
 if __name__ == '__main__':
