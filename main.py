@@ -11,7 +11,7 @@ from kivy.graphics import Color
 from kivy.clock import Clock
 from queue import Queue
 
-
+from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
 from client import Client
@@ -23,9 +23,11 @@ class WhiteboardApp(App):
         super().__init__()
         self.sending_queue = Queue()
         self.receiving_queue = Queue()
-        self.client_thread = Client(self.sending_queue, self.receiving_queue)
-        self.board = WhiteboardInstance(self.sending_queue)
-        self.toolbar = Toolbar(self.board, self.client_thread)
+        self.session_manager = SessionManager(self.sending_queue)
+        self.client_thread = Client(self.sending_queue, self.receiving_queue,
+                                    self.session_manager)
+        self.board = WhiteboardInstance(self.sending_queue, self.session_manager)
+        self.toolbar = Toolbar(self.board, self.client_thread, self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
         # self.toolbar.pos_hint = {'x': self.toolbar.width}

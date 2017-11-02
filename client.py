@@ -11,11 +11,12 @@ WAITING_QUEUE_TIMEOUT = 0.05
 
 class Client(Thread):
     """Class defining the client"""
-    def __init__(self, sending_queue, receiving_queue):
+    def __init__(self, sending_queue, receiving_queue, session_manager):
         Thread.__init__(self)
         self._exit_request = Event()
         self.sending_queue = sending_queue
         self.receiving_queue = receiving_queue
+        self.session_manager = session_manager
 
     def run(self):
 
@@ -30,8 +31,12 @@ class Client(Thread):
         messageServeur = self.sock.recv(1024)
         messageServeur=messageServeur.decode()
         print(messageServeur)
-        nomUtilisateur = input(">")
-        self.sock.send(nomUtilisateur.encode())
+
+        while self.session_manager.client_id == None:
+            time.sleep(0.1)
+
+        self.sock.send(self.session_manager.client_id.encode())
+
         messageServeur = self.sock.recv(1024)
         messageServeur=messageServeur.decode()
         print(messageServeur)

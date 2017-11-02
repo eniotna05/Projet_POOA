@@ -7,9 +7,6 @@ from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
 
 line_width = 5
-client_form_database = {}
-form_number = 0
-client_id = "yoann"
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -18,11 +15,12 @@ class WhiteboardInstance(RelativeLayout):
     touch_origin_x = NumericProperty(0)
     touch_origin_y = NumericProperty(0)
 
-    def __init__(self, sending_queue):
+    def __init__(self, sending_queue, session_manager):
         super().__init__()
         self.drawing = False
         self._selected_form = None
         self.sending_queue = sending_queue
+        self.session_manager = session_manager
         with self.canvas:
             self.back = Rectangle(pos=(0, 0), size=(self.width, self.height))
             Color(rgba=(1, 0, 0, 1))
@@ -30,6 +28,9 @@ class WhiteboardInstance(RelativeLayout):
         self.bind(pos=self.update_rect, size=self.update_rect)
 
     def update_rect(self, value, three):
+        """Function called whe resizing the window to ensure the white background
+        is also resized
+        """
         self.back.pos = self.pos
         self.back.size = self.size
 
@@ -96,9 +97,6 @@ class WhiteboardInstance(RelativeLayout):
 
     def on_touch_up(self, touch):
         self.drawing = False
-        global client_form_database
-        global form_number
-
 
         if self._selected_form == Forms.LINE:
             # prevents key error if for some reason the first click has not
@@ -110,20 +108,12 @@ class WhiteboardInstance(RelativeLayout):
 
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = Point(int(touch.x), int(touch.y))
-                form_number += 1
-                client_form_database[client_id + str(form_number)] = \
-                    WB_Line(a, b, identifier=client_id + str(form_number))
-                self.sending_queue.put(WB_Line(a, b, identifier=client_id +
-                                       str(form_number)).get_string())
+                self.session_manager.store_form(WB_Line(a, b))
 
         elif self._selected_form == Forms.RECT:
             a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
             b = Point(int(touch.x), int(touch.y))
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                WB_Rectangle(a, b, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Rectangle(a, b, identifier=client_id +
-                                               str(form_number)).get_string())
+            self.session_manager.store_form(WB_Rectangle(a, b))
 
         elif self._selected_form == Forms.SQUARE:
             dx = touch.x - self.touch_origin_x
@@ -135,11 +125,7 @@ class WhiteboardInstance(RelativeLayout):
             y_min = min(int(touch.y), int(self.touch_origin_y))
             a = Point(x_min, y_min)
             b = Point(x_min + l, y_min + l)
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                WB_Square(a, b, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Square(a, b, identifier=client_id +
-                                             str(form_number)).get_string())
+            self.session_manager.store_form(WB_Square(a, b))
 
         elif self._selected_form == Forms.ELLIPSE:
             c = Point(
@@ -147,22 +133,14 @@ class WhiteboardInstance(RelativeLayout):
                 int((touch.y + self.touch_origin_y) / 2))
             rx = int(abs(touch.x - self.touch_origin_x) /2 )
             ry = int(abs(touch.y - self.touch_origin_y) /2 )
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                WB_Ellipse(c, rx, ry, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Ellipse(c, rx, ry, identifier=client_id +
-                                              str(form_number)).get_string())
+            self.session_manager.store_form(WB_Ellipse(c, rx, ry))
 
         elif self._selected_form == Forms.CIRCLE:
             c = Point(
                 int((touch.x + self.touch_origin_x) / 2),
                 int((touch.y + self.touch_origin_y) / 2))
             r = int(abs(touch.x - self.touch_origin_x) / 2)
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                WB_Circle(c, r, identifier=client_id + str(form_number))
-            self.sending_queue.put(WB_Circle(c, r, identifier=client_id +
-                                             str(form_number)).get_string())
+            self.session_manager.store_form(WB_Circle(c, r))
 
         return True
 
