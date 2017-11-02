@@ -6,7 +6,7 @@ from kivy.graphics import Color
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
 
-line_width = 5
+LINE_WIDTH = 5
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -42,7 +42,7 @@ class WhiteboardInstance(RelativeLayout):
 
         with self.canvas:
             if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=line_width)
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=LINE_WIDTH)
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -153,7 +153,7 @@ class WhiteboardInstance(RelativeLayout):
                     form.a.y,
                     form.b.x,
                     form.b.y),
-                    width= line_width)
+                    width= LINE_WIDTH)
 
             elif isinstance(form, WB_Rectangle):
                 Rectangle(pos=(form.a.x, form.a.y),

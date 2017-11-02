@@ -40,6 +40,7 @@ class Client(Thread):
         messageServeur = self.sock.recv(1024)
         messageServeur=messageServeur.decode()
         print(messageServeur)
+        self.session_manager.is_connected = True
 
         self._reception = Reception(self.sock, self.receiving_queue)
         self._reception.start()
@@ -122,4 +123,3 @@ class Reception(Thread):
     def quit(self):
         self._exit_request.set()
         self.sock.close()
-

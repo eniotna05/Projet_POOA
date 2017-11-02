@@ -6,7 +6,7 @@ class SessionManager():
 
     def __init__(self, sending_queue):
         self._client_id = None
-        self._connected = False
+        self._is_connected = False
         self.local_database = {}
         self._form_number = 0
         self.sending_queue = sending_queue
@@ -20,12 +20,12 @@ class SessionManager():
         self._client_id = client_id
 
     @property
-    def connected(self):
-        return self._connected
+    def is_connected(self):
+        return self._is_connected
 
-    @connected.setter
-    def connected(self, connected=False):
-        self._connected = connected
+    @is_connected.setter
+    def is_connected(self, is_connected=False):
+        self._is_connected = is_connected
 
     def store_form(self, form):
         """Saving an object to a local dictionnary for future reference and
