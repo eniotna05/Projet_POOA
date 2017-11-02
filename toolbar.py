@@ -1,5 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
 
 from formTypes import Forms
 
@@ -7,11 +9,16 @@ from formTypes import Forms
 class Toolbar(BoxLayout):
     """Class defining the buttons of the left-side toolbar"""
 
-    def __init__(self, white_board, client_thread_manager):
+    def __init__(self, white_board, client_thread_manager, session_manager):
         super().__init__(orientation='vertical')
         self.white_board = white_board
         self.selected_form = None
         self.client_thread_manager = client_thread_manager
+        self.session_manager = session_manager
+
+        self.name_input = TextInput(text='', multiline=False)
+        self.name_input.bind(on_text_validate=self.set_name)
+        self.add_widget(self.name_input)
 
         self.print_btn = Button(text="Print St")
         self.print_btn.bind(on_release=self.print_status)
@@ -45,6 +52,9 @@ class Toolbar(BoxLayout):
         self.select_circle_btn = Button(text="Circle")
         self.select_circle_btn.bind(on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
+
+    def set_name(self, value):
+        self.session_manager.client_id = value.text
 
     def quit(self, obj):
         self.client_thread_manager.quit()
