@@ -53,19 +53,17 @@ class WhiteboardApp(App):
 
         return parent
 
-
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
-
     def execute_command(self, dt):
-
         while not self.receiving_queue.empty():
             new_command = self.receiving_queue.get()
-
-
-
-            if isinstance(new_command,Create):
+            if isinstance(new_command, Create):
                 self.board.draw_form(new_command.created_form)
+
+    def on_stop(self):
+        self.client_thread.quit()
+        self.client_thread.join()
 
 
 if __name__ == '__main__':
