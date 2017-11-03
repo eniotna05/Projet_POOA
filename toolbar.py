@@ -41,6 +41,10 @@ class Toolbar(BoxLayout):
         self.select_circle_btn.bind(on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
 
+        self.select_image_btn = Button(text="Image")
+        self.select_image_btn.bind(on_release=self.select_image)
+        self.add_widget(self.select_image_btn)
+
     def quit(self, obj):
         self.client_thread_manager.quit()
 
@@ -61,3 +65,6 @@ class Toolbar(BoxLayout):
 
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
+
+    def select_image(self, obj):
+        self.white_board.selected_form = Forms.IMAGE

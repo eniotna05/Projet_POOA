@@ -8,3 +8,4 @@ class Forms(Enum):
     SQUARE = 3
     ELLIPSE = 4
     CIRCLE = 5
+    IMAGE = 6

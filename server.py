@@ -40,5 +40,5 @@ class Server(Thread):
             self.__sock.close()
 
 
-server = Server(12800)
+server = Server(8080)
 server.start()

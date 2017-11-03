@@ -20,7 +20,7 @@ class Client(Thread):
     def run(self):
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('localhost',12800))
+        self.sock.connect(('localhost',8080))
 
         messageServeur = self.sock.recv(1024)
         if messageServeur != b"H":#tests if the server sends HLO

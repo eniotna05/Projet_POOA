@@ -31,7 +31,9 @@ def string_to_rectangle(string):
     Point(int(parameters[2]),int(parameters[3])), identifier = parameters[4])
 
 
-
+def string_to_image(string):
+    parameters = string.split(",")
+    return Pic(Point(int(parameters[0]),int(parameters[1])), identifier = parameters[2])
 
 def string_to_command(string):
 
@@ -52,6 +54,8 @@ def string_to_command(string):
         return Create(string_to_rectangle(string[1:]))
     elif FL == "L":
         return Create(string_to_lign(string[1:]))
+    elif FL == "P":
+        return Create(string_to_image(string[1:]))
     
     elif FL == "Q":
         return Quit()
