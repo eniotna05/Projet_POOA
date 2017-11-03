@@ -35,6 +35,8 @@ class Stock:
             return string_to_lign(string[1:])
         elif letter == "S":
             return string_to_square(string[1:])
+        elif letter == "P":
+            return string_to_image(string[1:])
 
     def _getForm(self, identifier):
         return self.stock[identifier]

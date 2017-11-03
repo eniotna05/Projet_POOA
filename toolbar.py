@@ -32,7 +32,6 @@ class Toolbar(BoxLayout):
         self.print_btn.bind(on_release=self.print_status)
         self.add_widget(self.print_btn)
 
-
         self.quit_btn = Button(text="Quit")
         self.quit_btn.bind(on_release=self.quit)
         self.add_widget(self.quit_btn)
@@ -41,7 +40,7 @@ class Toolbar(BoxLayout):
         self.delete_btn.bind(on_release=self.delete_item)
         self.add_widget(self.delete_btn)
 
-        self.color_picker = ColorPicker(color=(1,0,0,1), size_hint=(1, 5))
+        self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
         self.add_widget(self.color_picker)
 
@@ -65,13 +64,17 @@ class Toolbar(BoxLayout):
         self.select_circle_btn.bind(on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
 
+        self.select_image_btn = Button(text="Image")
+        self.select_image_btn.bind(on_release=self.select_image)
+        self.add_widget(self.select_image_btn)
+
     def update_network_status(self, dt):
         if self.session_manager.is_connected:
             self.connected_label.text = "Online"
-            self.connected_label.color = 0,1,0,1
+            self.connected_label.color = 0, 1, 0, 1
         else:
             self.connected_label.text = "Offline"
-            self.connected_label.color = 1,0,0,1
+            self.connected_label.color = 1, 0, 0, 1
 
     def set_name(self, value):
         self.session_manager.client_id = value.text
@@ -82,17 +85,13 @@ class Toolbar(BoxLayout):
     def delete_item(self, obj):
         self.white_board.canvas.remove_group("1")
 
-
         """canvas_objects = self.white_board.canvas.get_group("1")
         print(canvas_objects)
         for k in canvas_objects:
             self.white_board.canvas.remove(k)"""
 
-
     def print_status(self, obj):
         print(self.white_board.canvas.children)
-
-
 
     def choose_color(self, instance, value):
         self.white_board.drawing_color = value
@@ -111,3 +110,6 @@ class Toolbar(BoxLayout):
 
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
+
+    def select_image(self, obj):
+        self.white_board.selected_form = Forms.IMAGE

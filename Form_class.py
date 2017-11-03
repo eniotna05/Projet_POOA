@@ -1,3 +1,8 @@
+from kivy.uix.image import Image
+from pictures import *
+from kivy.lang import Builder
+from kivy.uix.scatter import  Scatter
+from kivy.properties import StringProperty
 
 absciss_max = 10000
 ordinate_max = 10000
@@ -300,5 +305,29 @@ class WB_Ellipse(WB_Form):
         if not isinstance(y, int):
             raise TypeError("The second parameter has to be an integer")
 
+        self.c.x += x
+        self.c.y += y
+
+class Pic:
+    
+    def __init__(self, c, identifier):
+        if not isinstance(c, Point):
+            raise TypeError("The first parameter has to be an integer")
+        self.c = c
+        self.identifier = identifier
+
+    def get_string(self):
+        string = "P" + str(self.c.x) + "," + str(self.c.y) + "," + str(self.identifier)
+        return string
+
+    def __repr__(self):
+        return """Image of center {} and of id {}
+        """.format(self.c, self.identifier)
+
+    def change_position(self):
+        if not isinstance(x, int):
+            raise TypeError("The first parameter has to be an integer")
+        if not isinstance(y, int):
+            raise TypeError("The first parameter has to be an integer")
         self.c.x += x
         self.c.y += y

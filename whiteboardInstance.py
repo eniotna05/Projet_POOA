@@ -5,7 +5,8 @@ from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from formTypes import Forms
-from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
+from kivy.uix.image import Image
+from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point, Pic
 
 LINE_WIDTH = 5
 
@@ -65,6 +66,11 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['circle'] = Ellipse(
                     pos=(touch.x, touch.y),
                     size=(0, 0))
+            elif self._selected_form == Forms.IMAGE:
+                touch.ud['image'] = Image(
+                    source="/home/anais/Pictures/snice.png",
+                    pos=(touch.x, touch.y))
+
         return True
 
     def on_touch_move(self, touch):
@@ -144,13 +150,16 @@ class WhiteboardInstance(RelativeLayout):
                 ry = int(abs(touch.y - self.touch_origin_y) /2 )
                 self.session_manager.store_form(WB_Ellipse(c, rx, ry))
 
-
             elif self._selected_form == Forms.CIRCLE:
                 c = Point(
                     int((touch.x + self.touch_origin_x) / 2),
                     int((touch.y + self.touch_origin_y) / 2))
                 r = int(abs(touch.x - self.touch_origin_x) / 2)
                 self.session_manager.store_form(WB_Circle(c, r))
+
+            elif self.selected_form == Forms.IMAGE:
+                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                self.session_manager.store_form(Pic(a))
 
         self.drawing = False
         return True
@@ -182,7 +191,9 @@ class WhiteboardInstance(RelativeLayout):
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
                           size=(form.rx * 2 , form.ry * 2))
 
-
+            elif isinstance(form,Pic):
+                Image(source="/home/anais/Pictures/snice.png",
+                      pos=(form.c.x, form.c.y))
 
 
     @property

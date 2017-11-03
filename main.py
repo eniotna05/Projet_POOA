@@ -10,6 +10,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Color
 from kivy.clock import Clock
 from queue import Queue
+from kivy.uix.image import Image
 
 from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
