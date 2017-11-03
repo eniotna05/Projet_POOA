@@ -50,7 +50,7 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
-                    size=(0, 0),group = "1")
+                    size=(0, 0))
             elif self._selected_form == Forms.SQUARE:
                 touch.ud['square'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -117,7 +117,10 @@ class WhiteboardInstance(RelativeLayout):
         elif self._selected_form == Forms.RECT:
             a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
             b = Point(int(touch.x), int(touch.y))
-            self.session_manager.store_form(WB_Rectangle(a, b))
+            touch.ud['rect'].group = self.session_manager.store_form(WB_Rectangle(a, b))
+            print(touch.ud['rect'].group)
+            print(type(touch.ud['rect'].group))
+
 
         elif self._selected_form == Forms.SQUARE:
             dx = touch.x - self.touch_origin_x

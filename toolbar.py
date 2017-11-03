@@ -2,6 +2,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
+from sessionManager import SessionManager
 
 from formTypes import Forms
 
@@ -29,9 +30,9 @@ class Toolbar(BoxLayout):
         self.quit_btn.bind(on_release=self.quit)
         self.add_widget(self.quit_btn)
 
-        self.delete_btn = Button(text="Delete")
-        self.delete_btn.bind(on_release=self.delete_item)
-        self.add_widget(self.delete_btn)
+        self.delete_last_btn = Button(text="Delete Last")
+        self.delete_last_btn.bind(on_release=self.delete_last)
+        self.add_widget(self.delete_last_btn)
 
         self.select_line_btn = Button(text="Line")
         self.select_line_btn.bind(on_release=self.select_line)
@@ -59,14 +60,10 @@ class Toolbar(BoxLayout):
     def quit(self, obj):
         self.client_thread_manager.quit()
 
-    def delete_item(self, obj):
-        self.white_board.canvas.remove_group("1")
-
-
-        """canvas_objects = self.white_board.canvas.get_group("1")
-        print(canvas_objects)
-        for k in canvas_objects:
-            self.white_board.canvas.remove(k)"""
+    def delete_last(self, obj):
+        group_name = str(SessionManager.client_id)\
+                     + str(SessionManager.form_number)
+        self.white_board.canvas.remove_group(group_name)
 
 
     def print_status(self, obj):

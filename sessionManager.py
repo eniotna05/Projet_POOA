@@ -12,6 +12,10 @@ class SessionManager():
         self.sending_queue = sending_queue
 
     @property
+    def form_number(self):
+        return self._form_number
+
+    @property
     def client_id(self):
         return self._client_id
 
@@ -36,3 +40,4 @@ class SessionManager():
         form.identifier = form_id
         self.local_database[form_id] = form
         self.sending_queue.put(form.get_string())
+        return form_id
