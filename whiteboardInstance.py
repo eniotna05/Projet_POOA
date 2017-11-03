@@ -102,84 +102,97 @@ class WhiteboardInstance(RelativeLayout):
         return True
 
     def on_touch_up(self, touch):
-        self.drawing = False
+        if self.drawing:
+            if self._selected_form == Forms.LINE:
+                # prevents key error if for some reason the first click has not
+                # created a line object
+                if 'line' in touch.ud:
+                    del touch.ud['line'].points[-2:]
+                    print('removing last point, line : ', touch.ud['line'].points)
+                    touch.ud['line'].points += [touch.x, touch.y]
 
-        if self._selected_form == Forms.LINE:
-            # prevents key error if for some reason the first click has not
-            # created a line object
-            if 'line' in touch.ud:
-                del touch.ud['line'].points[-2:]
-                print('removing last point, line : ', touch.ud['line'].points)
-                touch.ud['line'].points += [touch.x, touch.y]
+                    a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                    b = Point(int(touch.x), int(touch.y))
+                    group_name = self.session_manager.store_internal_form(WB_Line(a, b))
+                    touch.ud['line'].group = group_name
 
+            elif self._selected_form == Forms.RECT:
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = Point(int(touch.x), int(touch.y))
-                self.session_manager.store_form(WB_Line(a, b))
-
-        elif self._selected_form == Forms.RECT:
-            a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-            b = Point(int(touch.x), int(touch.y))
-            touch.ud['rect'].group = self.session_manager.store_form(WB_Rectangle(a, b))
-            print(touch.ud['rect'].group)
-            print(type(touch.ud['rect'].group))
+                group_name = self.session_manager.store_internal_form(WB_Rectangle(a, b))
+                touch.ud['rect'].group = group_name
+                print(touch.ud['rect'].group)
 
 
-        elif self._selected_form == Forms.SQUARE:
-            dx = touch.x - self.touch_origin_x
-            dy = touch.y - self.touch_origin_y
-            l = int(max(abs(dx), abs(dy)))
-            # take the bottom left corner so the coordinates will be positive
-            # the square object takes only positive coordinates
-            x_min = min(int(touch.x), int(self.touch_origin_x))
-            y_min = min(int(touch.y), int(self.touch_origin_y))
-            a = Point(x_min, y_min)
-            b = Point(x_min + l, y_min + l)
-            self.session_manager.store_form(WB_Square(a, b))
 
-        elif self._selected_form == Forms.ELLIPSE:
-            c = Point(
-                int((touch.x + self.touch_origin_x) / 2),
-                int((touch.y + self.touch_origin_y) / 2))
-            rx = int(abs(touch.x - self.touch_origin_x) /2 )
-            ry = int(abs(touch.y - self.touch_origin_y) /2 )
-            self.session_manager.store_form(WB_Ellipse(c, rx, ry))
+            elif self._selected_form == Forms.SQUARE:
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                l = int(max(abs(dx), abs(dy)))
+                # take the bottom left corner so the coordinates will be positive
+                # the square object takes only positive coordinates
+                x_min = min(int(touch.x), int(self.touch_origin_x))
+                y_min = min(int(touch.y), int(self.touch_origin_y))
+                a = Point(x_min, y_min)
+                b = Point(x_min + l, y_min + l)
+                group_name = self.session_manager.store_internal_form(WB_Square(a, b))
+                touch.ud['square'].group = group_name
+
+            elif self._selected_form == Forms.ELLIPSE:
+                c = Point(
+                    int((touch.x + self.touch_origin_x) / 2),
+                    int((touch.y + self.touch_origin_y) / 2))
+                rx = int(abs(touch.x - self.touch_origin_x) /2 )
+                ry = int(abs(touch.y - self.touch_origin_y) /2 )
+                group_name = self.session_manager.store_internal_form(WB_Ellipse(c, rx, ry))
+                touch.ud['ellipse'].group = group_name
 
 
-        elif self._selected_form == Forms.CIRCLE:
-            c = Point(
-                int((touch.x + self.touch_origin_x) / 2),
-                int((touch.y + self.touch_origin_y) / 2))
-            r = int(abs(touch.x - self.touch_origin_x) / 2)
-            self.session_manager.store_form(WB_Circle(c, r))
+            elif self._selected_form == Forms.CIRCLE:
+                c = Point(
+                    int((touch.x + self.touch_origin_x) / 2),
+                    int((touch.y + self.touch_origin_y) / 2))
+                r = int(abs(touch.x - self.touch_origin_x) / 2)
+                group_name = self.session_manager.store_internal_form(WB_Circle(c, r))
+                touch.ud['circle'].group = group_name
+
+        self.drawing = False
 
         return True
 
     def draw_form(self, form):
 
         with self.canvas:
+            group_name = self.session_manager.store_external_form(form)
             if isinstance(form, WB_Line):
                 Line(points=(
                     form.a.x,
                     form.a.y,
                     form.b.x,
                     form.b.y),
-                    width= LINE_WIDTH)
+                    width= LINE_WIDTH, group = group_name)
 
             elif isinstance(form, WB_Rectangle):
+                group_name = self.session_manager.store_external_form(form)
                 Rectangle(pos=(form.a.x, form.a.y),
-                          size=(form.b.x - form.a.x, form.b.y - form.a.y))
+                          size=(form.b.x - form.a.x, form.b.y - form.a.y),
+                          group = group_name)
 
             elif isinstance(form, WB_Square):
+                group_name = self.session_manager.store_external_form(form)
                 Rectangle(pos=(form.a.x, form.a.y),
-                          size=(form.b.x - form.a.x, form.b.y - form.a.y))
+                          size=(form.b.x - form.a.x, form.b.y - form.a.y),
+                        group = group_name)
 
             elif isinstance(form, WB_Circle):
+                group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.r, form.c.y - form.r),
-                          size=(form.r * 2, form.r * 2))
+                          size=(form.r * 2, form.r * 2),group = group_name)
 
             elif isinstance(form, WB_Ellipse):
+                group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
-                          size=(form.rx * 2 , form.ry * 2))
+                          size=(form.rx * 2 , form.ry * 2), group = group_name)
 
 
 

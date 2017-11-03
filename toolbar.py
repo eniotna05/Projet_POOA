@@ -32,6 +32,10 @@ class Toolbar(BoxLayout):
         self.name_input.bind(on_text_validate=self.set_name)
         self.add_widget(self.name_input)
 
+        self.print_local_database_btn = Button(text="Print Local Data")
+        self.print_local_database_btn.bind(on_release=self.print_local_database)
+        self.add_widget(self.print_local_database_btn)
+
         self.print_btn = Button(text="Print St")
         self.print_btn.bind(on_release=self.print_status)
         self.add_widget(self.print_btn)
@@ -84,11 +88,18 @@ class Toolbar(BoxLayout):
         self.client_thread_manager.quit()
 
     def delete_last(self, obj):
-        group_name = str(SessionManager.client_id)\
-                     + str(SessionManager.form_number)
+        group_name = str(self.session_manager.client_id)\
+                     + str(self.session_manager.form_number)
+        print(group_name)
         self.white_board.canvas.remove_group(group_name)
 
+    # A supprimer apres
+    def print_local_database(self,obj):
+        print(self.session_manager.local_database)
 
+
+
+    # A supprimer apres
     def print_status(self, obj):
         print(self.white_board.canvas.children)
 
