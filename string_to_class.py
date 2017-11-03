@@ -1,5 +1,5 @@
 from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, Point
-from Command_class import Create, Delete, Move, Quit, Hello
+from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend
 
 
 def string_to_circle(string):
@@ -61,8 +61,11 @@ def string_to_command(string):
     elif FL == "H":
         return Hello()
     elif FL == "D":
+        parameter = string[1:]
+        return Delete(parameter)
+    elif FL == "Z":
         parameters = string[1:].split(",")
-        return Delete(parameters[0], parameters[1])
+        return Delete_demend(parameters[0], parameters[1])
     elif FL == "M":
         parameters = string[1:].split(",")
         return Move(parameters[0], int(parameters[1]), int(parameters[2]))
@@ -72,7 +75,30 @@ def string_to_command(string):
 
 
 # Zone de test
-# if __name__ == "__main__":
+if __name__ == "__main__":
+
+
+    Deletion1 = Delete("Antoine5")
+    Deletion_demend1 = Delete_demend(("Anais3"),"Antoine")
+    print(Deletion1,"\n")
+    print(Deletion_demend1,"\n")
+
+    string1 = Deletion1.get_string()
+    string2 = Deletion_demend1.get_string()
+
+    print(string1)
+    print(string2)
+
+    Deletion1R = string_to_command(string1)
+
+    Deletion_demend1R = string_to_command(string2)
+
+    print(Deletion1R,"\n")
+    print(Deletion_demend1R,"\n")
+
+
+
+
 #
 #     Creation_1 = Create(WB_Rectangle(Point(1,3),Point(10,100)))
 #     Creation_2 = Create(WB_Line(Point(134,27),Point(322,238)))

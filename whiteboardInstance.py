@@ -213,6 +213,10 @@ class WhiteboardInstance(RelativeLayout):
                       pos=(form.c.x, form.c.y))
 
 
+    def delete_form_in_canvas(self,form_id,source):
+        self.canvas.remove_group(form_id)
+        self.session_manager.delete_form(form_id,source)
+
     @property
     def selected_form(self):
         return self._selected_form

@@ -12,23 +12,25 @@ class Create:
         return self.created_form.get_string()
 
 
-class Delete:
+class Delete_demend:
+    """Class to ask permission to delete an item that is not yours"""
 
     def __init__(self, form_id, requester):
         """form_id is like antoine3, requester is like yoann"""
         if not isinstance(form_id, str):
             raise TypeError("The parameter has to be a string")
         self._form_id = form_id
-        self._symbol = "D"
+        self._symbol = "Z"
         self._requester = requester
 
     def __repr__(self):
-        return """Deletion of the form id: """.format(self.form)
+        return """Demend of deletion of the form id: {} 
+        requested by {} """.format(self.form_id, self.requester)
 
     def get_string(self):
         """method to transform command into string
-        Ex: deletion of Form 45, owned by antoine, request emmited by yoann
-        => return Dantoine45,yoann"""
+        Ex: ask of deletion of Form 45, owned by antoine, request emmited by yoann
+        => return Zantoine45,yoann"""
         return self._symbol + self._form_id + "," + self._requester
 
     @property
@@ -38,6 +40,31 @@ class Delete:
     @property
     def requester(self):
         return self._requester
+
+
+class Delete:
+    """Order to remove an item from other server"""
+
+    def __init__(self, form_id):
+        """form_id is like antoine3"""
+        if not isinstance(form_id, str):
+            raise TypeError("The parameter has to be a string")
+        self._form_id = form_id
+        self._symbol = "D"
+
+    def __repr__(self):
+        return """Deletion of the form id:{} """.format(self.form_id)
+
+    def get_string(self):
+        """method to transform command into string
+        Ex: deletion of Form 45, owned by antoine
+        => return Dantoine45"""
+        return self._symbol + self._form_id
+
+    @property
+    def form_id(self):
+        return self._form_id
+
 
 
 class Quit:
@@ -84,5 +111,5 @@ class Move:
     def get_string(self):
         """method to transform command into string
         return string of created form"""
-        return self.symbol + self.form_id + ","
+        return self.symbol + self.form_id + "," \
         + str(self.x) + "," + str(self.y)

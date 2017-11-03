@@ -44,9 +44,9 @@ class Toolbar(BoxLayout):
         self.quit_btn.bind(on_release=self.quit)
         self.add_widget(self.quit_btn)
 
-        self.delete_last_btn = Button(text="Delete Last")
-        self.delete_last_btn.bind(on_release=self.delete_last)
-        self.add_widget(self.delete_last_btn)
+        self.delete_input_btn = Button(text="Delete Input")
+        self.delete_input_btn.bind(on_release=self.delete_input)
+        self.add_widget(self.delete_input_btn)
 
         self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
@@ -90,11 +90,9 @@ class Toolbar(BoxLayout):
     def quit(self, obj):
         self.client_thread_manager.quit()
 
-    def delete_last(self, obj):
-        group_name = str(self.session_manager.client_id)\
-                     + str(self.session_manager.form_number)
-        print(group_name)
-        self.white_board.canvas.remove_group(group_name)
+    def delete_input(self, obj):
+        form_id = str(input("Which form do you want to remove"))
+        self.white_board.delete_form_in_canvas(form_id,"int")
 
 
     def print_local_database(self,obj):
