@@ -27,8 +27,10 @@ class Client(Thread):
             time.sleep(0.1)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.sock.settimeout(SOCKET_TIMEOUT)
         self.sock.connect((SERVER_URL, SERVER_PORT))
+
 
         # tests if the server sends HLO
         messageServeur = self.sock.recv(1024)
