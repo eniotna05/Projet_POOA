@@ -12,6 +12,10 @@ class SessionManager():
         self.sending_queue = sending_queue
 
     @property
+    def form_number(self):
+        return self._form_number
+
+    @property
     def client_id(self):
         return self._client_id
 
@@ -27,9 +31,10 @@ class SessionManager():
     def is_connected(self, is_connected=False):
         self._is_connected = is_connected
 
-    def store_form(self, form):
-        """Saving an object to a local dictionnary for future reference and
-        putting it into the sending queue (for the network thread to send it)
+    def store_internal_form(self, form):
+        """Saving an internally created object to a local dictionnary for future
+        reference and putting it into the sending queue
+        (for the network thread to send it)
         """
         self._form_number += 1
         if self._is_connected:
@@ -39,3 +44,12 @@ class SessionManager():
         form.identifier = form_id
         self.local_database[form_id] = form
         self.sending_queue.put(form.get_string())
+        return form_id
+
+    def store_external_form(self, form):
+        """Saving a received object to a local dictionnary for future reference
+        """
+
+        self.local_database[form.identifier] = form
+
+        return form.identifier

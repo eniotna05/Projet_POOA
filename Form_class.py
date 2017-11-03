@@ -11,7 +11,6 @@ ordinate_max = 10000
 class Color:
 
     """ parameters are colors HTML RGB codes in that order"""
-
     def __init__(self, R, G, B):
 
         if (not isinstance(R, int) or not isinstance(G, int) or
@@ -25,12 +24,10 @@ class Color:
         self.B = B
 
     def __repr__(self):
-
         return """Color of RGB code: {}.{}.{}""".format(self.R, self.G, self.B)
 
 
 white = Color(255, 255, 255)
-
 black = Color(0, 0, 0)
 
 
@@ -39,10 +36,7 @@ class Point:
     """ x and y are the absciss and ordinate of the point on the white board
     they have to be integer and have a max value depending on the board size
     and a min value of zero
-
     """
-
-
     def __init__(self, x, y):
 
         global absciss_max
@@ -65,16 +59,14 @@ class Point:
         self.y = y
 
     def __repr__(self):
-
         return """Point of absciss {} and ordinate {}""".format(self.x,
                                                                 self.y)
 
 
 class WB_Form:
 
-    # Classe originelle dont hérite toutes les autres formes
-    # Pas utilise en tant que tel pour l'instant
-
+    """Classe originelle dont hérite toutes les autres formes
+    Pas utilise en tant que tel pour l'instant"""
     def __init__(self, *point, identifier=0):
         self.point_list = point
         self.identifier = identifier
@@ -84,11 +76,6 @@ class WB_Line(WB_Form):
 
     """ a and b are the two tip points of the line
     """
-
-
-
-
-
     def __init__(self, a, b, color=black, identifier=0):
         if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
@@ -103,25 +90,20 @@ class WB_Line(WB_Form):
         self.identifier = identifier
 
     def __repr__(self):
-
         return """Lign from {} to {} and of color: {}
         and of id: {}""".format(self.a, self.b, self.color, self.identifier)
 
     def get_string(self):
-
         """method to transform lign into string
         Ex: lign from (2,4) to (8,14) => string = L2,4,8,14"""
-
         string = "L" + str(self.a.x) + "," + str(self.a.y) + ","
         string += str(self.b.x) + "," + str(self.b.y) + ","
         string += str(self.identifier)
         return string
 
     def change_position(self, x, y):
-
         """method to change position of the form
         horizontal movement = x , vertical movement = y"""
-
         if not isinstance(x, int):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
@@ -138,8 +120,6 @@ class WB_Rectangle(WB_Form):
     """a is one of the summit of the rectangle,
     b is the summit on the other side of the diagonal
     """
-
-
     def __init__(self, a, b, color=black, identifier=0):
         if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
@@ -188,9 +168,6 @@ class WB_Square(WB_Form):
     """a is one of the summit of the square,
     b is the summit on the other side of the diagonal
     """
-
-
-
     def __init__(self, a, b, color=black, identifier=0):
         if not isinstance(a, Point):
             raise TypeError("The first parameter has to be a point")
@@ -287,7 +264,7 @@ class WB_Ellipse(WB_Form):
     """c is the center of the ellipse, rx is the length of the horizontal
     radius, ry is the length of the vertical radius
     """
-    def __init__(self, c, rx, ry ,  color=black, identifier=0):
+    def __init__(self, c, rx, ry, color=black, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(rx, int):
@@ -305,7 +282,7 @@ class WB_Ellipse(WB_Form):
     def __repr__(self):
         return """Ellipse of center {}, of horizontal radius: {},
         of vertical radius: {} and of color: {} and of id: {}
-        """.format(self.c, self.rx,self.ry, self.color, self.identifier)
+        """.format(self.c, self.rx, self.ry, self.color, self.identifier)
 
     def get_string(self):
 
