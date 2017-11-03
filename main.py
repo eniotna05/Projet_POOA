@@ -15,7 +15,7 @@ from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
 from client import Client
-from Command_class import *
+from Command_class import Create, Delete
 
 
 class WhiteboardApp(App):
@@ -60,6 +60,12 @@ class WhiteboardApp(App):
             new_command = self.receiving_queue.get()
             if isinstance(new_command, Create):
                 self.board.draw_form(new_command.created_form)
+
+            if isinstance(new_command, Delete):
+                if new_command.form_id.find(self.session_manager.client_id):
+                    # aka I am the owner
+                    # ask me if I want to delete
+                    pass
 
     def on_stop(self):
         self.client_thread.quit()

@@ -102,53 +102,57 @@ class WhiteboardInstance(RelativeLayout):
         return True
 
     def on_touch_up(self, touch):
-        self.drawing = False
 
-        if self._selected_form == Forms.LINE:
-            # prevents key error if for some reason the first click has not
-            # created a line object
-            if 'line' in touch.ud:
-                del touch.ud['line'].points[-2:]
-                print('removing last point, line : ', touch.ud['line'].points)
-                touch.ud['line'].points += [touch.x, touch.y]
+        # Sometimes on_touch_up is fired even if on_touch_down has not been fired
+        # This condition prevents from drawing a form in this case.
+        if self.drawing:
 
+            if self._selected_form == Forms.LINE:
+                # prevents key error if for some reason the first click has not
+                # created a line object
+                if 'line' in touch.ud:
+                    del touch.ud['line'].points[-2:]
+                    print('removing last point, line : ', touch.ud['line'].points)
+                    touch.ud['line'].points += [touch.x, touch.y]
+
+                    a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                    b = Point(int(touch.x), int(touch.y))
+                    self.session_manager.store_form(WB_Line(a, b))
+
+            elif self._selected_form == Forms.RECT:
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = Point(int(touch.x), int(touch.y))
-                self.session_manager.store_form(WB_Line(a, b))
+                self.session_manager.store_form(WB_Rectangle(a, b))
 
-        elif self._selected_form == Forms.RECT:
-            a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-            b = Point(int(touch.x), int(touch.y))
-            self.session_manager.store_form(WB_Rectangle(a, b))
+            elif self._selected_form == Forms.SQUARE:
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                l = int(max(abs(dx), abs(dy)))
+                # take the bottom left corner so the coordinates will be positive
+                # the square object takes only positive coordinates
+                x_min = min(int(touch.x), int(self.touch_origin_x))
+                y_min = min(int(touch.y), int(self.touch_origin_y))
+                a = Point(x_min, y_min)
+                b = Point(x_min + l, y_min + l)
+                self.session_manager.store_form(WB_Square(a, b))
 
-        elif self._selected_form == Forms.SQUARE:
-            dx = touch.x - self.touch_origin_x
-            dy = touch.y - self.touch_origin_y
-            l = int(max(abs(dx), abs(dy)))
-            # take the bottom left corner so the coordinates will be positive
-            # the square object takes only positive coordinates
-            x_min = min(int(touch.x), int(self.touch_origin_x))
-            y_min = min(int(touch.y), int(self.touch_origin_y))
-            a = Point(x_min, y_min)
-            b = Point(x_min + l, y_min + l)
-            self.session_manager.store_form(WB_Square(a, b))
-
-        elif self._selected_form == Forms.ELLIPSE:
-            c = Point(
-                int((touch.x + self.touch_origin_x) / 2),
-                int((touch.y + self.touch_origin_y) / 2))
-            rx = int(abs(touch.x - self.touch_origin_x) /2 )
-            ry = int(abs(touch.y - self.touch_origin_y) /2 )
-            self.session_manager.store_form(WB_Ellipse(c, rx, ry))
+            elif self._selected_form == Forms.ELLIPSE:
+                c = Point(
+                    int((touch.x + self.touch_origin_x) / 2),
+                    int((touch.y + self.touch_origin_y) / 2))
+                rx = int(abs(touch.x - self.touch_origin_x) /2 )
+                ry = int(abs(touch.y - self.touch_origin_y) /2 )
+                self.session_manager.store_form(WB_Ellipse(c, rx, ry))
 
 
-        elif self._selected_form == Forms.CIRCLE:
-            c = Point(
-                int((touch.x + self.touch_origin_x) / 2),
-                int((touch.y + self.touch_origin_y) / 2))
-            r = int(abs(touch.x - self.touch_origin_x) / 2)
-            self.session_manager.store_form(WB_Circle(c, r))
+            elif self._selected_form == Forms.CIRCLE:
+                c = Point(
+                    int((touch.x + self.touch_origin_x) / 2),
+                    int((touch.y + self.touch_origin_y) / 2))
+                r = int(abs(touch.x - self.touch_origin_x) / 2)
+                self.session_manager.store_form(WB_Circle(c, r))
 
+        self.drawing = False
         return True
 
     def draw_form(self, form):
