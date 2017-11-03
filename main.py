@@ -12,7 +12,7 @@ from kivy.clock import Clock
 from queue import Queue
 from kivy.uix.image import Image
 
-
+from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
 from client import Client
@@ -25,9 +25,11 @@ class WhiteboardApp(App):
         super().__init__()
         self.sending_queue = Queue()
         self.receiving_queue = Queue()
-        self.client_thread = Client(self.sending_queue, self.receiving_queue)
-        self.board = WhiteboardInstance(self.sending_queue)
-        self.toolbar = Toolbar(self.board, self.client_thread)
+        self.session_manager = SessionManager(self.sending_queue)
+        self.client_thread = Client(self.sending_queue, self.receiving_queue,
+                                    self.session_manager)
+        self.board = WhiteboardInstance(self.sending_queue, self.session_manager)
+        self.toolbar = Toolbar(self.board, self.client_thread, self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
         # self.toolbar.pos_hint = {'x': self.toolbar.width}
@@ -52,19 +54,17 @@ class WhiteboardApp(App):
 
         return parent
 
-
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
-
     def execute_command(self, dt):
-
         while not self.receiving_queue.empty():
             new_command = self.receiving_queue.get()
-
-
-
-            if isinstance(new_command,Create):
+            if isinstance(new_command, Create):
                 self.board.draw_form(new_command.created_form)
+
+    def on_stop(self):
+        self.client_thread.quit()
+        self.client_thread.join()
 
 
 if __name__ == '__main__':

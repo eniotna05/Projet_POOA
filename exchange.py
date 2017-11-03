@@ -1,21 +1,21 @@
-from threading import Thread
+from threading import Thread, Event
 import socket
-from stockage_serveur import *
+from stockage_serveur import Stock
 
-connexions = {}  # Keys: sockets of the clients ; Values: message received from the clients
-identifier = 0
+# Keys: sockets of the clients ; Values: message received from the clients
+connexions = {}
+
 
 class ExchangeThread(Thread):
     """Class defining the exchange process on the server side"""
-    def __init__(self,sock):
+
+    def __init__(self, sock):
         Thread.__init__(self)
         if not isinstance(sock, socket.socket) or sock is None:
             raise TypeError("Needs a real socket")
+
         self.sock = sock
-        global identifier
-        self.identifier = identifier + 1
-        identifier = identifier + 1
-        self.continuer = True
+        self.__exit_request = Event()
         self.username = ""
         self.reception = Stock(self.username)
         global connexions
@@ -70,18 +70,14 @@ class ExchangeThread(Thread):
             self.sendmessage(message)
 
     def getUserName(self):
-        self.sock.send(b"Veuillez entrer un nom d'utilisateur:")
+
         self.username = self.getmessage()
-        message = "Merci " + self.username
         print("Start of the connection with {} ".format(self.username))
-        self.sock.send(message.encode())
+        self.sock.send("O".encode())
 
     def stopListening(self):
-        self.continuer = False
+        self.__exit_request.set()
         print("End of communication with client {}".format(self.username))
-        self.sendmessage("The client {} has disconnected".format(self.username))
-        if self.sock:
-            self.sock.close()
 
     def run(self):
         self.sock.send("H".encode())
@@ -89,14 +85,19 @@ class ExchangeThread(Thread):
         commande = commande.decode()
         if commande != "H":
             print("End of communication")
+        self.sock.send("O".encode())
 
         self.getUserName()
 
         if len(connexions) >= 2:
             self.sock.send(self.getTableau())
 
-        while self.continuer:
+        while not self.__exit_request.is_set():
             self.analyzeCommand()
 
+        self.sock.send("O".encode())
         self.sock.close()
         print("socket closed")
+
+    def quit(self):
+        self.__exit_request.set()

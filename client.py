@@ -8,33 +8,48 @@ from queue import Empty
 from string_to_class import string_to_command
 
 WAITING_QUEUE_TIMEOUT = 0.05
+SOCKET_TIMEOUT = 0.5
+SERVER_URL = 'localhost'
+SERVER_PORT = 12800
+
 
 class Client(Thread):
     """Class defining the client"""
-    def __init__(self, sending_queue, receiving_queue):
+    def __init__(self, sending_queue, receiving_queue, session_manager):
         Thread.__init__(self)
-        self._exit_request = Event()
         self.sending_queue = sending_queue
         self.receiving_queue = receiving_queue
+        self.session_manager = session_manager
 
     def run(self):
 
+        while self.session_manager.client_id == None:
+            time.sleep(0.1)
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('localhost',8080))
 
+        self.sock.settimeout(SOCKET_TIMEOUT)
+        self.sock.connect((SERVER_URL, SERVER_PORT))
+
+
+        # tests if the server sends HLO
         messageServeur = self.sock.recv(1024)
-        if messageServeur != b"H":#tests if the server sends HLO
+        if messageServeur != b"H":
             raise ValueError("Protocol error: H expected")
-        self.sock.send(u"H".encode())#Sends HLO back
+
+        # Sends HLO back & waits for confirmation
+        self.sock.send(u"H".encode())
+        messageServeur = self.sock.recv(1024)
+        if messageServeur != b"O":
+            raise ValueError("Protocol error: O expected")
+
+        # Sends client_id
+        self.sock.send(self.session_manager.client_id.encode())
 
         messageServeur = self.sock.recv(1024)
-        messageServeur=messageServeur.decode()
-        print(messageServeur)
-        nomUtilisateur = input(">")
-        self.sock.send(nomUtilisateur.encode())
-        messageServeur = self.sock.recv(1024)
-        messageServeur=messageServeur.decode()
-        print(messageServeur)
+        if messageServeur != b"O":
+            raise ValueError("Protocol error: O expected")
+        self.session_manager.is_connected = True
 
         self._reception = Reception(self.sock, self.receiving_queue)
         self._reception.start()
@@ -42,17 +57,24 @@ class Client(Thread):
         self._envoi.start()
         self._reception.join()
         self._envoi.join()
+
+        self.sock.send(u"Q".encode())
+        try:
+            server_msg = self.sock.recv(1024)
+            if server_msg != b"O":
+                raise ValueError("Protocol error: O expected")
+        except socket.timeout:
+            pass
+        self.session_manager.is_connected = False
         print("End of the game")
 
     def quit(self):
-        self._exit_request.set()
-        print('Exit request in client set')
-
         # TODO : refactor code and remove these conditions
         if self._reception:
             self._reception.quit()
         if self._envoi:
             self._envoi.quit()
+        print('Exit request in client set')
 
 
 class Envoi(Thread):
@@ -76,7 +98,7 @@ class Envoi(Thread):
                 command = self.form_queue.get(timeout=WAITING_QUEUE_TIMEOUT)
                 print("sending command to server", command)
                 self.sendcommand(command)
-            except Empty :
+            except Empty:
                 # the timeout is here just in case the user wants to exit the app
                 pass
 
@@ -100,21 +122,24 @@ class Reception(Thread):
         # TODO : This function is blocking, so it prenvents from quitting the app
         # properly. We need to modify that behaviour (server closes connection,
         # non-blocking socket or socket timeout)
-        commande += self.sock.recv(1024)
+        try:
+            commande += self.sock.recv(1024)
+        except socket.timeout:
+            raise socket.timeout
         print(commande.decode())
         return commande.decode()
 
     def run(self):
 
         while not self._exit_request.is_set():
-            message = self.getmessage()
-            self.form_queue.put(string_to_command(message))
-            if isinstance(string_to_command(message), Create):
-                print("created form", string_to_command(message).created_form)
-        self.sock.close()
-        print("Fin communication")
+            try:
+                message = self.getmessage()
+                self.form_queue.put(string_to_command(message))
+                if isinstance(string_to_command(message), Create):
+                    print("created form", string_to_command(message).created_form)
+
+            except socket.timeout:
+                pass
 
     def quit(self):
         self._exit_request.set()
-        self.sock.close()
-
