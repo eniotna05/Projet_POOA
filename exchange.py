@@ -90,7 +90,8 @@ class ExchangeThread(Thread):
         self.getUserName()
 
         if len(connexions) >= 2:
-            self.sock.send(self.getTableau())
+            if self.getTableau() != None:
+                self.sock.send(self.getTableau())
 
         while not self.__exit_request.is_set():
             self.analyzeCommand()

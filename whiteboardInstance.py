@@ -68,7 +68,7 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0))
             elif self._selected_form == Forms.IMAGE:
                 touch.ud['image'] = Image(
-                    source="/home/anais/Pictures/snice.png",
+                    source="./images/snice.png",
                     pos=(touch.x, touch.y))
 
         return True
@@ -156,11 +156,8 @@ class WhiteboardInstance(RelativeLayout):
             self.session_manager.store_form(WB_Circle(c, r))
 
         elif self.selected_form == Forms.IMAGE:
-            a = Point(int(self.touch_origin_x),int(self.touch_origin_y))
-            form_number += 1
-            client_form_database[client_id + str(form_number)] = \
-                Pic(a, identifier = client_id + str(form_number))
-            self.sending_queue.put(Pic(a, identifier=client_id + str(form_number)).get_string())
+            c = Point(int(self.touch_origin_x),int(self.touch_origin_y))
+            self.session_manager.store_form(Pic(c))
 
         return True
 
@@ -192,7 +189,7 @@ class WhiteboardInstance(RelativeLayout):
                           size=(form.rx * 2 , form.ry * 2))
 
             elif isinstance(form,Pic):
-                Image(source="/home/anais/Pictures/snice.png",
+                Image(source='./images/snice.png',
                       pos=(form.c.x, form.c.y))
 
 

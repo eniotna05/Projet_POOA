@@ -117,9 +117,6 @@ class Toolbar(BoxLayout):
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
 
-<<<<<<< HEAD
     def select_image(self, obj):
         self.white_board.selected_form = Forms.IMAGE
-=======
 
->>>>>>> 9ffc1ec1a02ea50e5fade9329147b271ce88b385
