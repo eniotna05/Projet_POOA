@@ -2,7 +2,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
+
 from sessionManager import SessionManager
+
+from kivy.clock import Clock
+from kivy.uix.colorpicker import ColorPicker
+
 
 from formTypes import Forms
 
@@ -17,7 +22,13 @@ class Toolbar(BoxLayout):
         self.client_thread_manager = client_thread_manager
         self.session_manager = session_manager
 
-        self.name_input = TextInput(text='', multiline=False)
+        Clock.schedule_interval(self.update_network_status, 1 / 30)
+
+        self.connected_label = Label(text="Offline")
+        self.add_widget(self.connected_label)
+
+        self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
+                                    multiline=False)
         self.name_input.bind(on_text_validate=self.set_name)
         self.add_widget(self.name_input)
 
@@ -33,6 +44,10 @@ class Toolbar(BoxLayout):
         self.delete_last_btn = Button(text="Delete Last")
         self.delete_last_btn.bind(on_release=self.delete_last)
         self.add_widget(self.delete_last_btn)
+
+        self.color_picker = ColorPicker(color=(1,0,0,1))
+        self.color_picker.bind(color=self.choose_color)
+        self.add_widget(self.color_picker)
 
         self.select_line_btn = Button(text="Line")
         self.select_line_btn.bind(on_release=self.select_line)
@@ -54,6 +69,14 @@ class Toolbar(BoxLayout):
         self.select_circle_btn.bind(on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
 
+    def update_network_status(self, dt):
+        if self.session_manager.is_connected:
+            self.connected_label.text = "Online"
+            self.connected_label.color = 0,1,0,1
+        else:
+            self.connected_label.text = "Offline"
+            self.connected_label.color = 1,0,0,1
+
     def set_name(self, value):
         self.session_manager.client_id = value.text
 
@@ -70,6 +93,9 @@ class Toolbar(BoxLayout):
         print(self.white_board.canvas.children)
 
 
+
+    def choose_color(self, instance, value):
+        self.white_board.drawing_color = value
 
     def select_line(self, obj):
         self.white_board.selected_form = Forms.LINE

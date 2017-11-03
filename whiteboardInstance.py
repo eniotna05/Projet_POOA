@@ -2,12 +2,12 @@ from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix import scatter
 from kivy.graphics import Rectangle, Line, Ellipse
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point
 
-line_width = 5
+LINE_WIDTH = 5
 
 
 
@@ -18,6 +18,7 @@ class WhiteboardInstance(RelativeLayout):
 
     touch_origin_x = NumericProperty(0)
     touch_origin_y = NumericProperty(0)
+    drawing_color = ListProperty([1,0,0,1])
 
     def __init__(self, sending_queue, session_manager):
         super().__init__()
@@ -27,7 +28,7 @@ class WhiteboardInstance(RelativeLayout):
         self.session_manager = session_manager
         with self.canvas:
             self.back = Rectangle(pos=(0, 0), size=(self.width, self.height))
-            Color(rgba=(1, 0, 0, 1))
+            Color(rgba=(1,0,0,1))
 
         self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -45,8 +46,9 @@ class WhiteboardInstance(RelativeLayout):
         print("down", touch.x, touch.y)
 
         with self.canvas:
+            Color(rgba=self.drawing_color)
             if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=line_width)
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=LINE_WIDTH)
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -161,7 +163,7 @@ class WhiteboardInstance(RelativeLayout):
                     form.a.y,
                     form.b.x,
                     form.b.y),
-                    width= line_width)
+                    width= LINE_WIDTH)
 
             elif isinstance(form, WB_Rectangle):
                 Rectangle(pos=(form.a.x, form.a.y),
