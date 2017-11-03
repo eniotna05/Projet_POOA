@@ -48,6 +48,10 @@ class Toolbar(BoxLayout):
         self.delete_input_btn.bind(on_release=self.delete_input)
         self.add_widget(self.delete_input_btn)
 
+        self.delete_selected_btn = Button(text="Delete Selected")
+        self.delete_selected_btn.bind(on_release=self.delete_selected)
+        self.add_widget(self.delete_selected_btn)
+
         self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
         self.add_widget(self.color_picker)
@@ -94,6 +98,8 @@ class Toolbar(BoxLayout):
         form_id = str(input("Which form do you want to remove"))
         self.white_board.delete_form_in_canvas(form_id,"int")
 
+    def delete_selected(self, obj):
+        self.white_board.selected_form = Forms.DELETE
 
     def print_local_database(self,obj):
         print(self.session_manager.local_database)

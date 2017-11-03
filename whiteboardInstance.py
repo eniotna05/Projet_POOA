@@ -71,6 +71,14 @@ class WhiteboardInstance(RelativeLayout):
                     source="./images/snice.png",
                     pos=(touch.x, touch.y))
 
+        if self._selected_form == Forms.DELETE:
+            result = self.session_manager.extract_top_form(touch.x, touch.y)
+            print(result)
+            if result == False:
+                pass
+            else:
+                self.delete_form_in_canvas(result.identifier, "int")
+
         return True
 
     def on_touch_move(self, touch):

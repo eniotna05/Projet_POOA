@@ -147,6 +147,17 @@ class WB_Rectangle(WB_Form):
         string += str(self.identifier)
         return string
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectange"""
+        if x_selection < max(self.a.x, self.b.x) and \
+           x_selection > min(self.a.x, self.b.x) and \
+           y_selection < max(self.a.y, self.b.y) and \
+           y_selection > min(self.a.y, self.b.y):
+            return True
+        else:
+            return False
+
     def change_position(self, x, y):
 
         """method to change position of the form
@@ -198,6 +209,17 @@ class WB_Square(WB_Form):
         string += str(self.identifier)
         return string
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the square"""
+        if x_selection < max(self.a.x, self.b.x) and \
+           x_selection > min(self.a.x, self.b.x) and \
+           y_selection < max(self.a.y, self.b.y) and \
+           y_selection > min(self.a.y, self.b.y):
+            return True
+        else:
+            return False
+
     def change_position(self, x, y):
 
         """method to change position of the form
@@ -245,6 +267,14 @@ class WB_Circle(WB_Form):
         string += str(self.identifier)
         return string
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the circle"""
+        if (x_selection - self.c.x)**2 + (y_selection - self.c.y)**2 < self.r**2:
+            return True
+        else:
+            return False
+
     def change_position(self, x, y):
 
         """method to change position of the form
@@ -287,13 +317,22 @@ class WB_Ellipse(WB_Form):
     def get_string(self):
 
         """method to transform circle into string
-        Ex: Ellipse of center (17,5) and of horizontal axis 7
-        and of vertical axis 3 => string = "S17,5,7,3"""
+        Ex: Ellipse of center (17,5) and of horizontal radius 7
+        and of vertical radius 3 => string = "S17,5,7,3"""
 
         string = "E" + str(self.c.x) + "," + str(self.c.y)
         string += "," + str(self.rx) + "," + str(self.ry) + ","
         string += str(self.identifier)
         return string
+
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the circle"""
+        if (x_selection - self.c.x)**2 / self. rx**2 \
+            + (y_selection - self.c.y)**2 / self.ry**2 < 1:
+            return True
+        else:
+            return False
 
     def change_position(self, x, y):
 

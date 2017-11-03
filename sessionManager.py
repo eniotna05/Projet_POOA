@@ -4,13 +4,16 @@ from Command_class import Delete, Delete_demend
 class SessionManager():
 
     """This class is used to exchange data between the network-related thread
-    client and the kivy objects like whiteboard and toolbar
+    client and the kivy objects like whiteboard and toolbar.
+    It stores the forms both in a dictionnary and in pile and update them
+    simultaneously
     """
 
     def __init__(self, sending_queue):
         self._client_id = None
         self._is_connected = False
         self.local_database = {}
+        self.form_pile = []
         self._form_number = 0
         self.sending_queue = sending_queue
 
@@ -46,7 +49,10 @@ class SessionManager():
             form_id = str(self._form_number)
         form.identifier = form_id
         self.local_database[form_id] = form
+        self.form_pile.insert(0, form.identifier)
+
         self.sending_queue.put(form.get_string())
+
         return form_id
 
     def store_external_form(self, form):
@@ -54,6 +60,7 @@ class SessionManager():
         """
 
         self.local_database[form.identifier] = form
+        self.form_pile.insert(0, form.identifier)
 
         return form.identifier
 
@@ -66,7 +73,23 @@ class SessionManager():
          """
         if source == "int":
             self.sending_queue.put(Delete(form_id).get_string())
-
+        self.form_pile.remove(form_id)
         del self.local_database[form_id]
+
+    def extract_top_form(self, x, y):
+
+        print(x)
+        print(y)
+        for k in self.form_pile:
+            print(k)
+            if self.local_database[k].check_inclusion(x,y)== True:
+                return self.local_database[k]
+        return False
+
+
+
+
+
+        pass
 
 
