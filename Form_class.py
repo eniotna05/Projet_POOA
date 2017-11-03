@@ -310,7 +310,7 @@ class WB_Ellipse(WB_Form):
 
 class Pic:
     
-    def __init__(self, c, identifier):
+    def __init__(self, c, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be an integer")
         self.c = c

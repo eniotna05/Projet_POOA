@@ -68,7 +68,7 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0))
             elif self._selected_form == Forms.IMAGE:
                 touch.ud['image'] = Image(
-                    source="/home/anais/Pictures/snice.png",
+                    source="./images/snice.png",
                     pos=(touch.x, touch.y))
 
         return True
@@ -209,7 +209,7 @@ class WhiteboardInstance(RelativeLayout):
                           size=(form.rx * 2 , form.ry * 2), group = group_name)
 
             elif isinstance(form,Pic):
-                Image(source="/home/anais/Pictures/snice.png",
+                Image(source='./images/snice.png',
                       pos=(form.c.x, form.c.y))
 
 
