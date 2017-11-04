@@ -27,6 +27,11 @@ class Toolbar(BoxLayout):
         self.connected_label = Label(text="Offline")
         self.add_widget(self.connected_label)
 
+        self.server_ip_input = TextInput(text='', hint_text='Server IP',
+                                         multiline=False)
+        self.server_ip_input.bind(on_text_validate=self.set_server_ip)
+        self.add_widget(self.server_ip_input)
+
         self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
                                     multiline=False)
         self.name_input.bind(on_text_validate=self.set_name)
@@ -83,6 +88,9 @@ class Toolbar(BoxLayout):
         else:
             self.connected_label.text = "Offline"
             self.connected_label.color = 1, 0, 0, 1
+
+    def set_server_ip(self, value):
+        self.session_manager.server_ip = value.text
 
     def set_name(self, value):
         self.session_manager.client_id = value.text

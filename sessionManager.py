@@ -10,6 +10,7 @@ class SessionManager():
         self.local_database = {}
         self._form_number = 0
         self.sending_queue = sending_queue
+        self._server_ip = None
 
     @property
     def form_number(self):
@@ -30,6 +31,14 @@ class SessionManager():
     @is_connected.setter
     def is_connected(self, is_connected=False):
         self._is_connected = is_connected
+
+    @property
+    def server_ip(self):
+        return self._server_ip
+
+    @server_ip.setter
+    def server_ip(self, ip):
+        self._server_ip = ip
 
     def store_internal_form(self, form):
         """Saving an internally created object to a local dictionnary for future

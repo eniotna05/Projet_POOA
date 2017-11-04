@@ -9,7 +9,6 @@ from string_to_class import string_to_command
 
 WAITING_QUEUE_TIMEOUT = 0.05
 SOCKET_TIMEOUT = 0.5
-SERVER_URL = 'localhost'
 SERVER_PORT = 12800
 
 
@@ -23,13 +22,13 @@ class Client(Thread):
 
     def run(self):
 
-        while self.session_manager.client_id == None:
+        while self.session_manager.client_id is None or self.session_manager.server_ip is None:
             time.sleep(0.1)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.sock.settimeout(SOCKET_TIMEOUT)
-        self.sock.connect((SERVER_URL, SERVER_PORT))
+        self.sock.connect((self.session_manager.server_ip, SERVER_PORT))
 
 
         # tests if the server sends HLO
