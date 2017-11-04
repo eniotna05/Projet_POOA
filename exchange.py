@@ -24,8 +24,12 @@ class ExchangeThread(Thread):
     def getTableau(self):
         string = ""
         for socket in connexions:
-            string += connexions[socket].convertStockIntoStr() + ","
+            try:
+                string += connexions[socket].convertStockIntoStr()
+            except AttributeError:
+                pass
         string = string[:-2]
+        print(string)
         return string.encode()
 
     def getmessage(self):
@@ -46,28 +50,37 @@ class ExchangeThread(Thread):
                     client.send(message)
 
     def stockData(self, data):
-        print(data)
         self.reception.newObject(data)
-        for element in self.reception:
-            print(self.reception[element])
         return self.reception
 
     def analyzeCommand(self):
         message = self.getmessage()
-        command = message[0]
-        if command == "D":
-            id = message[1:]
-            for socket in connexions:
-                try:
-                    self.reception.deleteForm(id)
-                except KeyError:
-                    pass
-            self.sendmessage(message)
-        elif command == "Q":
-            self.stopListening()
+        if message != "":
+            firstmessage = ""
+            i = 0
+            letter = message[0]
+            while letter != ".":
+                firstmessage = firstmessage + letter
+                i += 1
+                letter = message[i]
+            message = message[i+1:]
+            command = firstmessage[0]
+            if command == "D":
+                id = message[1:]
+                for socket in connexions:
+                    try:
+                        self.reception.deleteForm(id)
+                    except KeyError:
+                        pass
+                self.sendmessage(firstmessage)
+            elif command == "Q":
+                self.stopListening()
+            else:
+                self.stockData(firstmessage)
+                if len(connexions)>=2:
+                    self.sendmessage(firstmessage)
         else:
-            self.stockData(message)
-            self.sendmessage(message)
+            pass
 
     def getUserName(self):
 
@@ -90,8 +103,8 @@ class ExchangeThread(Thread):
         self.getUserName()
 
         if len(connexions) >= 2:
-            if self.getTableau() != None:
-                self.sock.send(self.getTableau())
+            print("envoi tableau")
+            self.sock.send(self.getTableau())
 
         while not self.__exit_request.is_set():
             self.analyzeCommand()

@@ -10,7 +10,7 @@ from string_to_class import string_to_command
 WAITING_QUEUE_TIMEOUT = 0.05
 SOCKET_TIMEOUT = 0.5
 SERVER_URL = 'localhost'
-SERVER_PORT = 12805
+SERVER_PORT = 12802
 
 
 class Client(Thread):
@@ -96,8 +96,9 @@ class Envoi(Thread):
         while not self._exit_request.is_set():
             try:
                 command = self.form_queue.get(timeout=WAITING_QUEUE_TIMEOUT)
-                print("sending command to server", command)
+                command = command + "."
                 self.sendcommand(command)
+                print("sending command to server", command)
             except Empty:
                 # the timeout is here just in case the user wants to exit the app
                 pass
@@ -134,9 +135,11 @@ class Reception(Thread):
         while not self._exit_request.is_set():
             try:
                 message = self.getmessage()
-                self.form_queue.put(string_to_command(message))
-                if isinstance(string_to_command(message), Create):
-                    print("created form", string_to_command(message).created_form)
+                liste_message = message.split(".")
+                for element in liste_message:
+                    self.form_queue.put(string_to_command(element))
+                    if isinstance(string_to_command(element), Create):
+                        print("created form", string_to_command(element).created_form)
 
             except socket.timeout:
                 pass

@@ -1,5 +1,23 @@
-from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, Point
+from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, Point, Pic
 from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend, Negative_answer
+
+
+
+
+
+def convertStrIntoForm(string):
+    # Converts an input into the right Form object
+    letter = string[0]
+    if letter == "R":
+        return string_to_rectangle(string[1:])
+    elif letter == "C":
+        return string_to_circle(string[1:])
+    elif letter == "L":
+        return string_to_lign(string[1:])
+    elif letter == "S":
+        return string_to_square(string[1:])
+    elif letter == "P":
+        return string_to_image(string[1:])
 
 
 def string_to_circle(string):
@@ -36,6 +54,12 @@ def string_to_rectangle(string):
                         identifier=parameters[4])
 
 
+def string_to_image(string):
+    parameters = string.split(",")
+    return Pic(Point(int(parameters[0]), int(parameters[1])),
+               identifier=parameters[2])
+
+
 def string_to_command(string):
 
     """Function to transform a string into appropriate command"""
@@ -55,6 +79,8 @@ def string_to_command(string):
         return Create(string_to_rectangle(string[1:]))
     elif FL == "L":
         return Create(string_to_lign(string[1:]))
+    elif FL == "P":
+        return  Create(string_to_image(string[1:]))
 
     elif FL == "Q":
         return Quit()
