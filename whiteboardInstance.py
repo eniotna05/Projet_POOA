@@ -168,7 +168,8 @@ class WhiteboardInstance(RelativeLayout):
 
             elif self.selected_form == Forms.IMAGE:
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-                self.session_manager.store_form(Pic(a))
+                group_name = self.session_manager.store_internal_form(Pic(a))
+                touch.ud['image'].group = group_name
 
         self.drawing = False
 
