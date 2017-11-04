@@ -63,10 +63,8 @@ class WhiteboardApp(App):
                 self.board.draw_form(new_command.created_form)
 
             if isinstance(new_command, Delete):
-                if new_command.form_id.find(self.session_manager.client_id):
-                    # aka I am the owner
-                    # ask me if I want to delete
-                    pass
+                self.board.delete_form_in_canvas(new_command.form_id,"ext")
+
 
     def on_stop(self):
         self.client_thread.quit()

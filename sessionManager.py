@@ -1,3 +1,6 @@
+from Command_class import Delete, Delete_demend
+
+
 class SessionManager():
 
     """This class is used to exchange data between the network-related thread
@@ -53,3 +56,17 @@ class SessionManager():
         self.local_database[form.identifier] = form
 
         return form.identifier
+
+    def delete_form(self, form_id, source):
+        """Delete a form from the local database.
+         Source is either "ext", you received an order to delete from the server
+         or "int" if
+         If source is "int", order to delete will also be sent to server
+         so that other client can delete it
+         """
+        if source == "int":
+            self.sending_queue.put(Delete(form_id).get_string())
+
+        del self.local_database[form_id]
+
+
