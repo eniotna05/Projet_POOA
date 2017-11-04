@@ -1,5 +1,5 @@
 from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, Point
-from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend
+from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend, Negative_answer
 
 
 def string_to_circle(string):
@@ -66,6 +66,9 @@ def string_to_command(string):
     elif FL == "Z":
         parameters = string[1:].split(",")
         return Delete_demend(parameters[0], parameters[1])
+    elif FL == "N":
+        parameters = string[1:].split(",")
+        return Negative_answer(parameters[0], parameters[1])
     elif FL == "M":
         parameters = string[1:].split(",")
         return Move(parameters[0], int(parameters[1]), int(parameters[2]))
@@ -79,22 +82,22 @@ if __name__ == "__main__":
 
 
     Deletion1 = Delete("Antoine5")
-    Deletion_demend1 = Delete_demend(("Anais3"),"Antoine")
+    Negative_answer1 = Negative_answer(("Anais3"),"Antoine")
     print(Deletion1,"\n")
-    print(Deletion_demend1,"\n")
+    print(Negative_answer1,"\n")
 
     string1 = Deletion1.get_string()
-    string2 = Deletion_demend1.get_string()
+    string2 = Negative_answer1.get_string()
 
     print(string1)
     print(string2)
 
     Deletion1R = string_to_command(string1)
 
-    Deletion_demend1R = string_to_command(string2)
+    Negative_answer11R = string_to_command(string2)
 
     print(Deletion1R,"\n")
-    print(Deletion_demend1R,"\n")
+    print(Negative_answer1,"\n")
 
 
 

@@ -44,7 +44,7 @@ class SessionManager():
         """
         self._form_number += 1
         if self._is_connected:
-            form_id = self._client_id + str(self._form_number)
+            form_id = self._client_id + "-" + str(self._form_number)
         else:
             form_id = str(self._form_number)
         form.identifier = form_id
@@ -71,6 +71,7 @@ class SessionManager():
          If source is "int", order to delete will also be sent to server
          so that other client can delete it
          """
+
         if source == "int":
             self.sending_queue.put(Delete(form_id).get_string())
         self.form_pile.remove(form_id)
@@ -78,18 +79,18 @@ class SessionManager():
 
     def extract_top_form(self, x, y):
 
-        print(x)
-        print(y)
         for k in self.form_pile:
-            print(k)
             if self.local_database[k].check_inclusion(x,y)== True:
                 return self.local_database[k]
         return False
 
 
-
-
-
         pass
+
+    def extract_last_created(self):
+        for k in self.form_pile:
+            if k.split("-")[0] == self.client_id:
+                return k
+        return False
 
 

@@ -1,12 +1,16 @@
+
 from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix import scatter
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
-from formTypes import Forms
 from kivy.uix.image import Image
-from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, WB_Circle, Point, Pic
+
+from formTypes import Forms
+from Form_class import WB_Line, WB_Rectangle, \
+    WB_Square, WB_Ellipse, WB_Circle, Point, Pic
+from Command_class import Delete_demend
 
 LINE_WIDTH = 5
 
@@ -72,12 +76,23 @@ class WhiteboardInstance(RelativeLayout):
                     pos=(touch.x, touch.y))
 
         if self._selected_form == Forms.DELETE:
+            # We return the top (last created) form
+            # that includes the point we clicked
             result = self.session_manager.extract_top_form(touch.x, touch.y)
             print(result)
             if result == False:
                 pass
             else:
-                self.delete_form_in_canvas(result.identifier, "int")
+                # We check if this form was created by us
+                #  if it is, deletion is immediate
+                # if not permission is asked to owner
+                if self.session_manager.client_id == \
+                        result.identifier.split("-")[0]:
+                    self.delete_form_in_canvas(result.identifier, "int")
+                else:
+                    self.sending_queue.put(Delete_demend(result.identifier,
+                                            self.session_manager.client_id ).get_string())
+
 
         return True
 
@@ -185,8 +200,9 @@ class WhiteboardInstance(RelativeLayout):
     def draw_form(self, form):
 
         with self.canvas:
-            group_name = self.session_manager.store_external_form(form)
+
             if isinstance(form, WB_Line):
+                group_name = self.session_manager.store_external_form(form)
                 Line(points=(
                     form.a.x,
                     form.a.y,

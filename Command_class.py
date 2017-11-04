@@ -65,6 +65,33 @@ class Delete:
     def form_id(self):
         return self._form_id
 
+class Negative_answer:
+    """Class to inform another client that his deletion demend is refused"""
+
+
+    def __init__(self, form_id, receptor):
+        """form_id is the id of the form concerned like antoine3,
+        receptor is the client that made the demend like yoann"""
+        if not isinstance(form_id, str):
+            raise TypeError("The parameter has to be a string")
+        self._form_id = form_id
+        self.receptor = receptor
+        self._symbol = "N"
+
+    def __repr__(self):
+        return """Refusal to delete message of form 
+        of form id:{} to receptor:{} """.format(self._form_id, self.receptor)
+
+    def get_string(self):
+        """method to transform command into string
+        Ex: negative answer of Form 45, owned by antoine to yoann
+        => return Aantoine45,yoann"""
+        return self._symbol + self._form_id + "," + self.receptor
+
+    @property
+    def form_id(self):
+        return self._form_id
+
 
 
 class Quit:
