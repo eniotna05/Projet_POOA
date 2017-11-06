@@ -59,9 +59,9 @@ class WhiteboardApp(App):
 
 
     def on_start(self):
-        self.popup = WB_Popup()
-        self.popup.content.close_button.bind(on_release=self.on_answer)
+        self.popup = Start_Popup()
         self.popup.open()
+        self.popup.content.button.bind(on_release=self.popup.close)
 
 
     # the main thread needs to be in charge of all the drawing, so we check
@@ -96,9 +96,6 @@ class WhiteboardApp(App):
                           .format(emettor,new_command.form_id))
 
 
-
-    def on_answer(self, instance):
-        self.popup.dismiss()
 
     def on_stop(self):
         self.client_thread.quit()
