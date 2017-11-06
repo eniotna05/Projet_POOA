@@ -7,7 +7,7 @@ from sessionManager import SessionManager
 
 from kivy.clock import Clock
 from kivy.uix.colorpicker import ColorPicker
-
+from kivy.uix.popup import Popup
 
 from formTypes import Forms
 
@@ -26,11 +26,6 @@ class Toolbar(BoxLayout):
 
         self.connected_label = Label(text="Offline")
         self.add_widget(self.connected_label)
-
-        self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
-                                    multiline=False)
-        self.name_input.bind(on_text_validate=self.set_name)
-        self.add_widget(self.name_input)
 
         self.print_local_database_btn = Button(text="Print Local Data")
         self.print_local_database_btn.bind(on_release=self.print_local_database)
@@ -79,6 +74,7 @@ class Toolbar(BoxLayout):
         self.select_image_btn = Button(text="Image")
         self.select_image_btn.bind(on_release=self.select_image)
         self.add_widget(self.select_image_btn)
+
 
     def update_network_status(self, dt):
         if self.session_manager.is_connected:
