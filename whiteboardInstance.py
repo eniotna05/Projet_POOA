@@ -1,7 +1,6 @@
 
 from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix import scatter
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
@@ -12,7 +11,8 @@ from Form_class import WB_Line, WB_Rectangle, \
     WB_Square, WB_Ellipse, WB_Circle, Point, Pic
 from Command_class import Delete_demend
 
-LINE_WIDTH = 5
+from Form_class import Line_Width
+
 
 
 
@@ -248,8 +248,9 @@ class WhiteboardInstance(RelativeLayout):
                         size=(form.rx * 2 , form.ry * 2), group = group_name)
 
             elif isinstance(form,Pic):
+                group_name = self.session_manager.store_external_form(form)
                 Image(source='./images/snice.png',
-                      pos=(form.c.x, form.c.y))
+                      pos=(form.c.x, form.c.y), group = group_name)
 
 
     def delete_form_in_canvas(self,form_id,source):

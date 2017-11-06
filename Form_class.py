@@ -6,6 +6,7 @@ from kivy.properties import StringProperty
 
 absciss_max = 10000
 ordinate_max = 10000
+LINE_WIDTH = 5
 
 
 class Color:
