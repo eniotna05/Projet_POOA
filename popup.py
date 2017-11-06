@@ -77,12 +77,26 @@ class Error_Popup(WB_Popup):
     def close(self,value):
         self.dismiss()
 
+class Delete_Popup(WB_Popup):
+
+    def __init__(self, requester, form):
+        self.requester = requester
+        self.form = form
+        WB_Popup.__init__(self)
+        self.popup_content = Popup_Content(self.requester + " wishes to delete one of\n"
+                                                            "the form that you created: \n"
+                                                            + self.form +
+                                                            "\nPress Ok to accept and No to refuse",
+                                           "Ok")
+        self.popup_content.add_widget(Button(text="Nope"))
+        self.content = self.popup_content
+
 
 
 class MyApp(App):
 
     def build(self):
-        self.popup = Start_Popup()
+        self.popup = Delete_Popup("antoine","fewr")
         self.popup.open()
 
 
