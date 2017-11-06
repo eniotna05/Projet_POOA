@@ -390,6 +390,17 @@ class WB_Label(WB_Form):
             str(self.b.x) + "," + str(self.b.y) + "," + \
             self.text_input + "," + str(self.identifier)
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectangle defining the label"""
+        if x_selection < max(self.a.x, self.b.x) and \
+           x_selection > min(self.a.x, self.b.x) and \
+           y_selection < max(self.a.y, self.b.y) and \
+           y_selection > min(self.a.y, self.b.y):
+            return True
+        else:
+            return False
+
     def __repr__(self):
         return """Label of point {} to point {} and content '{}'.
         """.format(self.a, self.b, self.text_input)
