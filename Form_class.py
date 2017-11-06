@@ -101,6 +101,27 @@ class WB_Line(WB_Form):
         string += str(self.identifier)
         return string
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectange"""
+
+        if self.a.x < self.b.x:
+            point1 = self.a
+            point2 = self.b
+        else:
+            point1 = self.b
+            point2 = self.a
+
+        driving_vector = (point2.y - point1.y)/ (point2.x - point1.x)
+        perpendicular_vector = - 1/ driving_vector
+        if x_selection < max(self.a.x, self.b.x) and \
+           x_selection > min(self.a.x, self.b.x) and \
+           y_selection < max(self.a.y, self.b.y) and \
+           y_selection > min(self.a.y, self.b.y):
+            return True
+        else:
+            return False
+
     def change_position(self, x, y):
         """method to change position of the form
         horizontal movement = x , vertical movement = y"""

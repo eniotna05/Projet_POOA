@@ -38,8 +38,8 @@ class WhiteboardInstance(RelativeLayout):
         self.bind(pos=self.update_rect, size=self.update_rect)
 
     def update_rect(self, value, three):
-        """Function called whe resizing the window to ensure the white background
-        is also resized
+        """Function called whe resizing the window to ensure the white
+        background is also resized
         """
         self.back.pos = self.pos
         self.back.size = self.size
@@ -53,7 +53,8 @@ class WhiteboardInstance(RelativeLayout):
         with self.canvas:
             Color(rgba=self.drawing_color)
             if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=LINE_WIDTH)
+                touch.ud['line'] = Line(points=(touch.x, touch.y),
+                                        width=LINE_WIDTH)
             elif self._selected_form == Forms.RECT:
                 touch.ud['rect'] = Rectangle(
                     pos=(touch.x, touch.y),
@@ -91,7 +92,10 @@ class WhiteboardInstance(RelativeLayout):
                     self.delete_form_in_canvas(result.identifier, "int")
                 else:
                     self.sending_queue.put(Delete_demend(result.identifier,
-                                            self.session_manager.client_id ).get_string())
+                            self.session_manager.client_id ).get_string())
+                    print("""This form belongs to {}. Authorization to 
+                    delete is being asked
+                    """.format(result.identifier.split("-")[0]))
 
 
         return True
@@ -132,28 +136,34 @@ class WhiteboardInstance(RelativeLayout):
 
     def on_touch_up(self, touch):
 
-        # Sometimes on_touch_up is fired even if on_touch_down has not been fired
+        # Sometimes on_touch_up is fired
+        # even if on_touch_down has not been fired
         # This condition prevents from drawing a form in this case.
         if self.drawing:
 
             if self._selected_form == Forms.LINE:
-                # prevents key error if for some reason the first click has not
+                # prevents key error if for some reason
+                # the first click has not
                 # created a line object
                 if 'line' in touch.ud:
                     del touch.ud['line'].points[-2:]
-                    print('removing last point, line : ', touch.ud['line'].points)
+                    print('removing last point, line : ',
+                                    touch.ud['line'].points)
                     touch.ud['line'].points += [touch.x, touch.y]
 
-                    a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                    a = Point(int(self.touch_origin_x), int(
+                                        self.touch_origin_y))
                     b = Point(int(touch.x), int(touch.y))
-                    group_name = self.session_manager.store_internal_form(WB_Line(a, b))
+                    group_name = self.session_manager.store_internal_form(
+                                                            WB_Line(a, b))
                     touch.ud['line'].group = group_name
 
 
             elif self._selected_form == Forms.RECT:
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = Point(int(touch.x), int(touch.y))
-                group_name = self.session_manager.store_internal_form(WB_Rectangle(a, b))
+                group_name = self.session_manager.store_internal_form(
+                                                    WB_Rectangle(a, b))
                 touch.ud['rect'].group = group_name
 
 
@@ -161,13 +171,15 @@ class WhiteboardInstance(RelativeLayout):
                 dx = touch.x - self.touch_origin_x
                 dy = touch.y - self.touch_origin_y
                 l = int(max(abs(dx), abs(dy)))
-                # take the bottom left corner so the coordinates will be positive
+                # take the bottom left corner
+                # so the coordinates will be positive
                 # the square object takes only positive coordinates
                 x_min = min(int(touch.x), int(self.touch_origin_x))
                 y_min = min(int(touch.y), int(self.touch_origin_y))
                 a = Point(x_min, y_min)
                 b = Point(x_min + l, y_min + l)
-                group_name = self.session_manager.store_internal_form(WB_Square(a, b))
+                group_name = self.session_manager.store_internal_form(
+                                                        WB_Square(a, b))
                 touch.ud['square'].group = group_name
 
             elif self._selected_form == Forms.ELLIPSE:
@@ -176,7 +188,8 @@ class WhiteboardInstance(RelativeLayout):
                     int((touch.y + self.touch_origin_y) / 2))
                 rx = int(abs(touch.x - self.touch_origin_x) /2 )
                 ry = int(abs(touch.y - self.touch_origin_y) /2 )
-                group_name = self.session_manager.store_internal_form(WB_Ellipse(c, rx, ry))
+                group_name = self.session_manager.store_internal_form(
+                                                WB_Ellipse(c, rx, ry))
                 touch.ud['ellipse'].group = group_name
 
 
@@ -186,7 +199,8 @@ class WhiteboardInstance(RelativeLayout):
                     int((touch.x + self.touch_origin_x) / 2),
                     int((touch.y + self.touch_origin_y) / 2))
                 r = int(abs(touch.x - self.touch_origin_x) / 2)
-                group_name = self.session_manager.store_internal_form(WB_Circle(c, r))
+                group_name = self.session_manager.store_internal_form(
+                                                        WB_Circle(c, r))
                 touch.ud['circle'].group = group_name
 
             elif self.selected_form == Forms.IMAGE:
@@ -231,7 +245,7 @@ class WhiteboardInstance(RelativeLayout):
             elif isinstance(form, WB_Ellipse):
                 group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
-                          size=(form.rx * 2 , form.ry * 2), group = group_name)
+                        size=(form.rx * 2 , form.ry * 2), group = group_name)
 
             elif isinstance(form,Pic):
                 Image(source='./images/snice.png',
@@ -241,6 +255,7 @@ class WhiteboardInstance(RelativeLayout):
     def delete_form_in_canvas(self,form_id,source):
         self.canvas.remove_group(form_id)
         self.session_manager.delete_form(form_id,source)
+
 
     @property
     def selected_form(self):
