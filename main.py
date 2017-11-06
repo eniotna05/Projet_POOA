@@ -2,6 +2,8 @@
 # Before launching it, make sure that the server is launched with
 # "python server.py" command (therfore the client can connect)
 
+from queue import Queue
+
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
@@ -11,12 +13,12 @@ from kivy.graphics import Color
 from kivy.clock import Clock
 from queue import Queue
 from popup import *
-
+from popup import *
 from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
 from client import Client
-from Command_class import Create, Delete
+from Command_class import Create, Delete, Delete_demend, Negative_answer
 
 
 class WhiteboardApp(App):
@@ -67,11 +69,32 @@ class WhiteboardApp(App):
     def execute_command(self, dt):
         while not self.receiving_queue.empty():
             new_command = self.receiving_queue.get()
+
             if isinstance(new_command, Create):
                 self.board.draw_form(new_command.created_form)
 
             if isinstance(new_command, Delete):
                 self.board.delete_form_in_canvas(new_command.form_id,"ext")
+
+            if isinstance(new_command, Delete_demend):
+                if new_command.form_id.split("-")[0] == \
+                        self.session_manager.client_id:
+                    response =str(input("""{} wishes to delete one of the form that you created: {}, 
+                                           type o to accept and n to refuse \n
+                                           """.format(new_command.requester,new_command.form_id)))
+                    if response == "n" or response == "N" :
+                        self.sending_queue.put(Negative_answer
+                            (new_command.form_id,new_command.requester).get_string())
+                    else:
+                        self.board.delete_form_in_canvas(new_command.form_id, "int")
+
+            if isinstance(new_command, Negative_answer):
+                if new_command.receptor == \
+                        self.session_manager.client_id:
+                    emettor = new_command.form_id.split("-")[0]
+                    print("{} does not wish you to delete his form: {}"
+                          .format(emettor,new_command.form_id))
+
 
 
     def on_answer(self, instance):

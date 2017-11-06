@@ -36,17 +36,17 @@ class Toolbar(BoxLayout):
         self.print_local_database_btn.bind(on_release=self.print_local_database)
         self.add_widget(self.print_local_database_btn)
 
-        self.print_btn = Button(text="Print St")
-        self.print_btn.bind(on_release=self.print_status)
-        self.add_widget(self.print_btn)
-
         self.quit_btn = Button(text="Quit")
         self.quit_btn.bind(on_release=self.quit)
         self.add_widget(self.quit_btn)
 
-        self.delete_input_btn = Button(text="Delete Input")
-        self.delete_input_btn.bind(on_release=self.delete_input)
-        self.add_widget(self.delete_input_btn)
+        self.delete_last_btn = Button(text="Delete Last")
+        self.delete_last_btn.bind(on_release=self.delete_last)
+        self.add_widget(self.delete_last_btn)
+
+        self.delete_selected_btn = Button(text="Delete Selected")
+        self.delete_selected_btn.bind(on_release=self.delete_selected)
+        self.add_widget(self.delete_selected_btn)
 
         self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
@@ -91,19 +91,18 @@ class Toolbar(BoxLayout):
     def quit(self, obj):
         self.client_thread_manager.quit()
 
-    def delete_input(self, obj):
-        form_id = str(input("Which form do you want to remove"))
-        self.white_board.delete_form_in_canvas(form_id,"int")
+    def delete_last(self, obj):
+        last_form_id = self.session_manager.extract_last_created()
+        if last_form_id != False:
+            self.white_board.delete_form_in_canvas(last_form_id, "int")
 
+    def delete_selected(self, obj):
+        self.white_board.selected_form = Forms.DELETE
 
     def print_local_database(self,obj):
         print(self.session_manager.local_database)
+        print(self.session_manager.form_pile)
 
-
-
-
-    def print_status(self, obj):
-        print(self.white_board.canvas.children)
 
     def choose_color(self, instance, value):
         self.white_board.drawing_color = value
