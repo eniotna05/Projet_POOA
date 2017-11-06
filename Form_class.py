@@ -6,6 +6,7 @@ from kivy.properties import StringProperty
 
 absciss_max = 10000
 ordinate_max = 10000
+LINE_WIDTH = 5
 
 
 class Color:
@@ -103,7 +104,15 @@ class WB_Line(WB_Form):
 
     def check_inclusion(self, x_selection, y_selection):
         """method to check if selected point (x_selection, y_selection)
-         is inside the rectange"""
+         is inside the line"""
+
+        # This code determines the cordinates of c:
+        # the intersection point between the line
+        # and the perpendicular line crossing the selection point
+        # We have to deal with some specific cases
+        #  to avoid division by zero error
+
+        print (x_selection, y_selection)
 
         if self.a.x < self.b.x:
             point1 = self.a
@@ -112,12 +121,31 @@ class WB_Line(WB_Form):
             point1 = self.b
             point2 = self.a
 
-        driving_vector = (point2.y - point1.y)/ (point2.x - point1.x)
-        perpendicular_vector = - 1/ driving_vector
-        if x_selection < max(self.a.x, self.b.x) and \
-           x_selection > min(self.a.x, self.b.x) and \
-           y_selection < max(self.a.y, self.b.y) and \
-           y_selection > min(self.a.y, self.b.y):
+        # Special case 1: the lign is parralel to the ordinate line
+        if point2.x == point1.x:
+            if point2.x - x_selection <= LINE_WIDTH:
+                return True
+            else:
+                return False
+
+        # Special case 2: the lign is parralel to the absiss line
+        if point2.y == point1.y:
+            if point2.y - y_selection <= LINE_WIDTH:
+                return True
+            else:
+                return False
+
+        a1 = (point2.y - point1.y) / (point2.x - point1.x)
+        b1 = point1.y - a1 * point1.x
+        a2 = -1/a1
+        b2 = y_selection - a2 * x_selection
+        cx = (b2 - b1) / (a1 - a2)
+        cy = cx * a1 + b1
+
+        # Now we check if the distance between this point and selection
+        # point is less than LINE_WIDTH parameter
+        # (which is half of actual line with)
+        if (cy - y_selection)**2 + (cx - x_selection)**2 <= (LINE_WIDTH)**2:
             return True
         else:
             return False
@@ -368,7 +396,7 @@ class WB_Ellipse(WB_Form):
         self.c.x += x
         self.c.y += y
 
-class Pic:
+class Pic(WB_Form):
     
     def __init__(self, c, identifier=0):
         if not isinstance(c, Point):
@@ -391,3 +419,4 @@ class Pic:
             raise TypeError("The first parameter has to be an integer")
         self.c.x += x
         self.c.y += y
+
