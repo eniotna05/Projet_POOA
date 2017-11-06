@@ -11,8 +11,9 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Color
 from kivy.clock import Clock
-from kivy.uix.image import Image
-
+from queue import Queue
+from popup import *
+from popup import *
 from sessionManager import SessionManager
 from whiteboardInstance import WhiteboardInstance
 from toolbar import Toolbar
@@ -36,6 +37,7 @@ class WhiteboardApp(App):
         # self.toolbar.pos_hint = {'x': self.toolbar.width}
         # self.board.pos_hint = {'x': 0.2}
 
+
     def build(self):
         parent = BoxLayout()
         self.client_thread.start()
@@ -47,13 +49,20 @@ class WhiteboardApp(App):
         # self.board.pos = (200, 0)
         # self.toolbar.pos_hint = {}
 
-        # self.board.pos_hint = {'x': 0.2}
+        # self.board.pos_hint = {'x': 0.2})
         parent.add_widget(self.board)
         parent.add_widget(self.toolbar, 0)
 
         Clock.schedule_interval(self.execute_command, 1 / 30)
 
         return parent
+
+
+    def on_start(self):
+        self.popup = WB_Popup()
+        self.popup.content.close_button.bind(on_release=self.on_answer)
+        self.popup.open()
+
 
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
@@ -87,6 +96,9 @@ class WhiteboardApp(App):
                           .format(emettor,new_command.form_id))
 
 
+
+    def on_answer(self, instance):
+        self.popup.dismiss()
 
     def on_stop(self):
         self.client_thread.quit()

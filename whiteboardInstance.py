@@ -5,13 +5,12 @@ from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
-
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, \
     WB_Square, WB_Ellipse, WB_Circle, Point, Pic
 from Command_class import Delete_demend
 
-from Form_class import Line_Width
+from Form_class import LINE_WIDTH
 
 
 
@@ -31,11 +30,14 @@ class WhiteboardInstance(RelativeLayout):
         self._selected_form = None
         self.sending_queue = sending_queue
         self.session_manager = session_manager
+        self._open_popup = True
+
         with self.canvas:
             self.back = Rectangle(pos=(0, 0), size=(self.width, self.height))
             Color(rgba=(1,0,0,1))
 
         self.bind(pos=self.update_rect, size=self.update_rect)
+
 
     def update_rect(self, value, three):
         """Function called whe resizing the window to ensure the white

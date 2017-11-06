@@ -7,7 +7,7 @@ from sessionManager import SessionManager
 
 from kivy.clock import Clock
 from kivy.uix.colorpicker import ColorPicker
-
+from kivy.uix.popup import Popup
 
 from formTypes import Forms
 
@@ -75,6 +75,7 @@ class Toolbar(BoxLayout):
         self.select_image_btn = Button(text="Image")
         self.select_image_btn.bind(on_release=self.select_image)
         self.add_widget(self.select_image_btn)
+
 
     def update_network_status(self, dt):
         if self.session_manager.is_connected:
