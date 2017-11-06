@@ -48,6 +48,10 @@ class Toolbar(BoxLayout):
         self.delete_selected_btn.bind(on_release=self.delete_selected)
         self.add_widget(self.delete_selected_btn)
 
+        self.select_text_btn = Button(text="Write Text")
+        self.select_text_btn.bind(on_release=self.select_text)
+        self.add_widget(self.select_text_btn)
+
         self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
         self.add_widget(self.color_picker)
@@ -102,6 +106,8 @@ class Toolbar(BoxLayout):
         print(self.session_manager.local_database)
         print(self.session_manager.form_pile)
 
+    def select_text(self, instance):
+        self.white_board.selected_form = Forms.TEXT
 
     def choose_color(self, instance, value):
         self.white_board.drawing_color = value

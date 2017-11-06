@@ -3,13 +3,14 @@ from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix import scatter
 from kivy.graphics import Rectangle, Line, Ellipse
+from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, \
-    WB_Square, WB_Ellipse, WB_Circle, Point, Pic
+    WB_Square, WB_Ellipse, WB_Circle, WB_Label, Point, Pic
 from Command_class import Delete_demend
 
 LINE_WIDTH = 5
@@ -74,6 +75,11 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['image'] = Image(
                     source="./images/snice.png",
                     pos=(touch.x, touch.y))
+            elif self._selected_form == Forms.TEXT:
+                touch.ud['text'] = Rectangle(
+                    pos=(touch.x, touch.y),
+                    size=(0, 0),
+                    group='tmp_text_rectangle')
 
         if self._selected_form == Forms.DELETE:
             # We return the top (last created) form
@@ -127,6 +133,10 @@ class WhiteboardInstance(RelativeLayout):
                 l = max(abs(dx), abs(dy))
                 sign = lambda x: (1, -1)[x < 0]
                 touch.ud['circle'].size = sign(dx) * l, sign(dy) * l
+
+            elif self._selected_form == Forms.TEXT:
+                touch.ud['text'].size = touch.x - self.touch_origin_x, \
+                    touch.y - self.touch_origin_y
 
         return True
 
@@ -194,6 +204,25 @@ class WhiteboardInstance(RelativeLayout):
                 group_name = self.session_manager.store_internal_form(Pic(a))
                 touch.ud['image'].group = group_name
 
+            elif self.selected_form == Forms.TEXT:
+                # ask usr for text input
+                text_input = 'CONTENU'
+                self.canvas.remove_group('tmp_text_rectangle')
+
+                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                b = Point(int(touch.x), int(touch.y))
+
+                with self.canvas:
+                    label = Label(text=text_input,
+                                  color=(1, 0, 0, 1),
+                                  size=(touch.x - self.touch_origin_x,
+                                        touch.y - self.touch_origin_y),
+                                  pos=(self.touch_origin_x, self.touch_origin_y))
+
+                group_name = self.session_manager.store_internal_form(
+                    WB_Label(a, b, text_input))
+                label.group = group_name
+
         self.drawing = False
 
         return True
@@ -232,6 +261,13 @@ class WhiteboardInstance(RelativeLayout):
                 group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
                           size=(form.rx * 2 , form.ry * 2), group = group_name)
+
+            elif isinstance(form, WB_Label):
+                group_name = self.session_manager.store_external_form(form)
+                Label(text=form.text_input,
+                      color=(1, 0, 0, 1),
+                      size=(form.b.x - form.a.x, form.b.y - form.a.y),
+                      pos=(form.a.x, form.a.y))
 
             elif isinstance(form,Pic):
                 Image(source='./images/snice.png',

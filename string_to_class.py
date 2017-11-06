@@ -1,4 +1,4 @@
-from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, Point, Pic
+from Form_class import WB_Circle, WB_Ellipse, WB_Rectangle, WB_Square, WB_Line, WB_Label, Point, Pic
 from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend, Negative_answer
 
 
@@ -53,6 +53,11 @@ def string_to_rectangle(string):
                         Point(int(parameters[2]), int(parameters[3])),
                         identifier=parameters[4])
 
+def string_to_label(string):
+    parameters = string.split(",")
+    return WB_Label(Point(int(parameters[0]), int(parameters[1])),
+                    Point(int(parameters[2]), int(parameters[3])),
+                    parameters[4], identifier=parameters[5])
 
 def string_to_image(string):
     parameters = string.split(",")
@@ -80,7 +85,9 @@ def string_to_command(string):
     elif FL == "L":
         return Create(string_to_lign(string[1:]))
     elif FL == "P":
-        return  Create(string_to_image(string[1:]))
+        return Create(string_to_image(string[1:]))
+    elif FL == "T":
+        return Create(string_to_label(string[1:]))
 
     elif FL == "Q":
         return Quit()

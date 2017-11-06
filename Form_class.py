@@ -348,7 +348,7 @@ class WB_Ellipse(WB_Form):
         self.c.y += y
 
 class Pic:
-    
+
     def __init__(self, c, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be an integer")
@@ -370,3 +370,26 @@ class Pic:
             raise TypeError("The first parameter has to be an integer")
         self.c.x += x
         self.c.y += y
+
+
+class WB_Label(WB_Form):
+
+    def __init__(self, a, b, text_input, identifier=0):
+        if not isinstance(a, Point):
+            raise TypeError("The first parameter has to be a point")
+        if not isinstance(text_input, str):
+            raise TypeError("The first parameter has to be a string")
+
+        self.a = a
+        self.b = b
+        self.text_input = text_input
+        self.identifier = identifier
+
+    def get_string(self):
+        return "T" + str(self.a.x) + "," + str(self.a.y) + "," + \
+            str(self.b.x) + "," + str(self.b.y) + "," + \
+            self.text_input + "," + str(self.identifier)
+
+    def __repr__(self):
+        return """Label of point {} to point {} and content '{}'.
+        """.format(self.a, self.b, self.text_input)

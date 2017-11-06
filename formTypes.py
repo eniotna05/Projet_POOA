@@ -10,3 +10,4 @@ class Forms(Enum):
     CIRCLE = 5
     IMAGE = 6
     DELETE = 7
+    TEXT = 8
