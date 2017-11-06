@@ -62,6 +62,7 @@ class WhiteboardApp(App):
         self.popup = Start_Popup()
         self.popup.open()
         self.popup.content.button.bind(on_release=self.popup.close)
+        self.session_manager.client_id = self.popup.popup_content.output.text
 
 
     # the main thread needs to be in charge of all the drawing, so we check

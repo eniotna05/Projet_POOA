@@ -27,11 +27,6 @@ class Toolbar(BoxLayout):
         self.connected_label = Label(text="Offline")
         self.add_widget(self.connected_label)
 
-        self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
-                                    multiline=False)
-        self.name_input.bind(on_text_validate=self.set_name)
-        self.add_widget(self.name_input)
-
         self.print_local_database_btn = Button(text="Print Local Data")
         self.print_local_database_btn.bind(on_release=self.print_local_database)
         self.add_widget(self.print_local_database_btn)
