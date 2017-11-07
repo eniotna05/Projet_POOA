@@ -75,6 +75,8 @@ class ExchangeThread(Thread):
                 self.sendmessage(firstmessage)
             elif command == "Q":
                 self.stopListening()
+            elif command == "Z":
+                self.sendmessage(firstmessage)
             else:
                 self.stockData(firstmessage)
                 if len(connexions)>=2:
