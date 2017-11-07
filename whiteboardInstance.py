@@ -6,13 +6,12 @@ from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
+
 from formTypes import Forms
-from Form_class import WB_Line, WB_Rectangle, \
-    WB_Square, WB_Ellipse, WB_Circle, WB_Label, Point, Pic
+from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, \
+    WB_Circle, Point, Pic, LINE_WIDTH, Image_size , WB_Label
+
 from Command_class import Delete_demend
-
-from Form_class import LINE_WIDTH
-
 
 class WhiteboardInstance(RelativeLayout):
     """Class defining the Widget that the user can draw on"""
@@ -71,14 +70,20 @@ class WhiteboardInstance(RelativeLayout):
                     pos=(touch.x, touch.y),
                     size=(0, 0))
             elif self._selected_form == Forms.IMAGE:
+                a = Point(int(touch.x - Image_size / 2), int(touch.y - Image_size / 2))
+                group_name = self.session_manager.store_internal_form(Pic(a))
                 touch.ud['image'] = Image(
                     source="./images/snice.png",
-                    pos=(touch.x, touch.y))
+                    pos=(touch.x - Image_size/2, touch.y - Image_size/2),
+                    size = (Image_size, Image_size))
+                touch.ud['image'].canvas.group = group_name
+
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'] = Rectangle(
                     pos=(touch.x, touch.y),
                     size=(0, 0),
                     group='tmp_text_rectangle')
+
 
         if self._selected_form == Forms.DELETE:
             # We return the top (last created) form
@@ -210,10 +215,8 @@ class WhiteboardInstance(RelativeLayout):
                                                         WB_Circle(c, r))
                 touch.ud['circle'].group = group_name
 
-            elif self.selected_form == Forms.IMAGE:
-                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-                group_name = self.session_manager.store_internal_form(Pic(a))
-                touch.ud['image'].group = group_name
+
+
 
             elif self.selected_form == Forms.TEXT:
                 # ask usr for text input
@@ -284,7 +287,8 @@ class WhiteboardInstance(RelativeLayout):
             elif isinstance(form, Pic):
                 group_name = self.session_manager.store_external_form(form)
                 Image(source='./images/snice.png',
-                      pos=(form.c.x, form.c.y), group = group_name)
+                      pos=(form.c.x, form.c.y), group = group_name, size = (
+                                                    Image_size, Image_size))
 
     def delete_form_in_canvas(self, form_id, source):
 
