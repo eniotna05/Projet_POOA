@@ -105,7 +105,7 @@ class WhiteboardInstance(RelativeLayout):
                 # if not permission is asked to owner
                 if self.session_manager.client_id == \
                         result.identifier.split("-")[0]:
-                    self.delete_form_in_canvas(result.identifier, "int")
+                    self.delete_form_in_canvas(result.identifier, send_to_server=True)
                 else:
                     self.sending_queue.put(
                         Delete_demend(result.identifier,
@@ -293,12 +293,12 @@ class WhiteboardInstance(RelativeLayout):
                               size=(STICKER_SIZE, STICKER_SIZE))
                 image.canvas.group = group_name
 
-    def delete_form_in_canvas(self, form_id, source):
+    def delete_form_in_canvas(self, form_id, send_to_server=False):
         """Method called to remove a form from the canvas and from the local
         storage"""
 
         self.canvas.remove_group(form_id)
-        self.session_manager.delete_form(form_id, source)
+        self.session_manager.delete_form(form_id, send_to_server)
 
     @property
     def selected_form(self):

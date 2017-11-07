@@ -75,19 +75,19 @@ class WhiteboardApp(App):
                 self.board.draw_form(new_command.created_form)
 
             if isinstance(new_command, Delete):
-                self.board.delete_form_in_canvas(new_command.form_id,"ext")
+                self.board.delete_form_in_canvas(new_command.form_id)
 
             if isinstance(new_command, Delete_demend):
                 if new_command.form_id.split("-")[0] == \
                         self.session_manager.client_id:
-                    response =str(input("""{} wishes to delete one of the form that you created: {}, 
+                    response =str(input("""{} wishes to delete one of the form that you created: {},
                                            type o to accept and n to refuse \n
                                            """.format(new_command.requester,new_command.form_id)))
                     if response == "n" or response == "N" :
                         self.sending_queue.put(Negative_answer
                             (new_command.form_id,new_command.requester).get_string())
                     else:
-                        self.board.delete_form_in_canvas(new_command.form_id, "int")
+                        self.board.delete_form_in_canvas(new_command.form_id, send_to_server=True)
 
             if isinstance(new_command, Negative_answer):
                 if new_command.receptor == \

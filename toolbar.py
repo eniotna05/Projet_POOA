@@ -103,16 +103,18 @@ class Toolbar(BoxLayout):
 
     def delete_last(self, obj):
         last_form_id = self.session_manager.extract_last_created()
-        if last_form_id != False:
+        if last_form_id is not None:
             self.white_board.delete_form_in_canvas(last_form_id, "int")
 
     def delete_selected(self, obj):
         self.white_board.selected_form = Forms.DELETE
 
+    # TODO : remove this funtion / button
     def print_canvas(self,obj):
         print(self.white_board.canvas.children)
 
 
+    # TODO : remove this funtion / button
     def print_local_database(self,obj):
         print(self.session_manager.local_database)
         print(self.session_manager.form_pile)
