@@ -2,19 +2,16 @@
 from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
+from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
 from formTypes import Forms
 from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, \
-    WB_Circle, Point, Pic, LINE_WIDTH, Image_size
+    WB_Circle, Point, Pic, LINE_WIDTH, Image_size , WB_Label
 
 from Command_class import Delete_demend
-
-
-
-
 
 class WhiteboardInstance(RelativeLayout):
     """Class defining the Widget that the user can draw on"""
@@ -29,6 +26,7 @@ class WhiteboardInstance(RelativeLayout):
         self._selected_form = None
         self.sending_queue = sending_queue
         self.session_manager = session_manager
+        self.__label_index = {}
         self._open_popup = True
 
         with self.canvas:
@@ -36,7 +34,6 @@ class WhiteboardInstance(RelativeLayout):
             Color(rgba=(1,0,0,1))
 
         self.bind(pos=self.update_rect, size=self.update_rect)
-
 
     def update_rect(self, value, three):
         """Function called whe resizing the window to ensure the white
@@ -81,12 +78,19 @@ class WhiteboardInstance(RelativeLayout):
                     size = (Image_size, Image_size))
                 touch.ud['image'].canvas.group = group_name
 
+            elif self._selected_form == Forms.TEXT:
+                touch.ud['text'] = Rectangle(
+                    pos=(touch.x, touch.y),
+                    size=(0, 0),
+                    group='tmp_text_rectangle')
+
+
         if self._selected_form == Forms.DELETE:
             # We return the top (last created) form
             # that includes the point we clicked
             result = self.session_manager.extract_top_form(touch.x, touch.y)
             print(result)
-            if result == False:
+            if not result:
                 pass
             else:
                 # We check if this form was created by us
@@ -96,12 +100,12 @@ class WhiteboardInstance(RelativeLayout):
                         result.identifier.split("-")[0]:
                     self.delete_form_in_canvas(result.identifier, "int")
                 else:
-                    self.sending_queue.put(Delete_demend(result.identifier,
-                            self.session_manager.client_id ).get_string())
-                    print("""This form belongs to {}. Authorization to 
+                    self.sending_queue.put(
+                        Delete_demend(result.identifier,
+                                      self.session_manager.client_id ).get_string())
+                    print("""This form belongs to {}. Authorization to
                     delete is being asked
                     """.format(result.identifier.split("-")[0]))
-
 
         return True
 
@@ -136,6 +140,10 @@ class WhiteboardInstance(RelativeLayout):
                 l = max(abs(dx), abs(dy))
                 sign = lambda x: (1, -1)[x < 0]
                 touch.ud['circle'].size = sign(dx) * l, sign(dy) * l
+
+            elif self._selected_form == Forms.TEXT:
+                touch.ud['text'].size = touch.x - self.touch_origin_x, \
+                    touch.y - self.touch_origin_y
 
         return True
 
@@ -211,6 +219,31 @@ class WhiteboardInstance(RelativeLayout):
 
 
 
+            elif self.selected_form == Forms.TEXT:
+                # ask usr for text input
+                text_input = 'CONTENU'
+                self.canvas.remove_group('tmp_text_rectangle')
+
+                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
+                b = Point(int(touch.x), int(touch.y))
+
+                # Label inherits "Widget" and not "Instructions" like other
+                # forms, so we cannot add it to a canvas. So we will add it as
+                # a widget on the board, and keep reference of it in a
+                # dictionnary, to remove it later
+                label_id = self.session_manager.store_internal_form(
+                    WB_Label(a, b, text_input))
+
+                # FIXME : it is possible to add the Label to a canvas but not
+                # to remove it from here
+                with self.canvas:
+                    self.__label_index[label_id] = \
+                        Label(text=text_input,
+                              color=(1, 0, 0, 1),
+                              size=(touch.x - self.touch_origin_x,
+                                    touch.y - self.touch_origin_y),
+                              pos=(self.touch_origin_x, self.touch_origin_y))
+
         self.drawing = False
 
         return True
@@ -250,17 +283,31 @@ class WhiteboardInstance(RelativeLayout):
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry /2),
                         size=(form.rx * 2 , form.ry * 2), group = group_name)
 
-            elif isinstance(form,Pic):
+            elif isinstance(form, WB_Label):
+                label_id = self.session_manager.store_external_form(form)
+                self.__label_index[label_id] = \
+                    Label(text=form.text_input,
+                          color=(1, 0, 0, 1),
+                          size=(form.b.x - form.a.x, form.b.y - form.a.y),
+                          pos=(form.a.x, form.a.y))
+
+            elif isinstance(form, Pic):
                 group_name = self.session_manager.store_external_form(form)
                 Image(source='./images/snice.png',
                       pos=(form.c.x, form.c.y), group = group_name, size = (
                                                     Image_size, Image_size))
 
+    def delete_form_in_canvas(self, form_id, source):
 
-    def delete_form_in_canvas(self,form_id,source):
-        self.canvas.remove_group(form_id)
-        self.session_manager.delete_form(form_id,source)
+        if form_id in self.__label_index:
+            # FIXME : We cannot use remove_group because the Label is a Widget,
+            # but remove_widget does nothing because the label has not been added
+            # to the parent
+            self.remove_widget(self.__label_index[form_id])
+        else:
+            self.canvas.remove_group(form_id)
 
+        self.session_manager.delete_form(form_id, source)
 
     @property
     def selected_form(self):

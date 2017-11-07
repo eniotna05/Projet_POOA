@@ -10,7 +10,7 @@ from string_to_class import string_to_command
 WAITING_QUEUE_TIMEOUT = 0.05
 SOCKET_TIMEOUT = 0.5
 SERVER_URL = 'localhost'
-SERVER_PORT = 12802
+SERVER_PORT = 12800
 
 
 class Client(Thread):
