@@ -32,6 +32,10 @@ class Toolbar(BoxLayout):
         self.name_input.bind(on_text_validate=self.set_name)
         self.add_widget(self.name_input)
 
+        self.print_canvas_btn = Button(text="Print Canvas")
+        self.print_canvas_btn.bind(on_release=self.print_canvas)
+        self.add_widget(self.print_canvas_btn)
+
         self.print_local_database_btn = Button(text="Print Local Data")
         self.print_local_database_btn.bind(on_release=self.print_local_database)
         self.add_widget(self.print_local_database_btn)
@@ -98,6 +102,10 @@ class Toolbar(BoxLayout):
 
     def delete_selected(self, obj):
         self.white_board.selected_form = Forms.DELETE
+
+    def print_canvas(self,obj):
+        print(self.white_board.canvas.children)
+
 
     def print_local_database(self,obj):
         print(self.session_manager.local_database)

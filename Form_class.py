@@ -7,6 +7,7 @@ from kivy.properties import StringProperty
 absciss_max = 10000
 ordinate_max = 10000
 LINE_WIDTH = 5
+Image_size = 50
 
 
 class Color:
@@ -397,7 +398,9 @@ class WB_Ellipse(WB_Form):
         self.c.y += y
 
 class Pic(WB_Form):
-    
+    """c is the left bottom point of the pic (Image size is a fixed parameter),
+    """
+
     def __init__(self, c, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be an integer")
@@ -411,6 +414,17 @@ class Pic(WB_Form):
     def __repr__(self):
         return """Image of center {} and of id {}
         """.format(self.c, self.identifier)
+
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectange"""
+        if x_selection < self.c.x + Image_size and \
+           x_selection > self.c.x  and \
+           y_selection < self.c.y + Image_size and \
+           y_selection > self.c.y:
+            return True
+        else:
+            return False
 
     def change_position(self):
         if not isinstance(x, int):
