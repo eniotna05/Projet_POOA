@@ -201,7 +201,6 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['ellipse'].group = group_name
 
 
-
             elif self._selected_form == Forms.CIRCLE:
                 c = Point(
                     int((touch.x + self.touch_origin_x) / 2),
@@ -224,22 +223,16 @@ class WhiteboardInstance(RelativeLayout):
                 a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = Point(int(touch.x), int(touch.y))
 
-                # Label inherits "Widget" and not "Instructions" like other
-                # forms, so we cannot add it to a canvas. So we will add it as
-                # a widget on the board, and keep reference of it in a
-                # dictionnary, to remove it later
-                label_id = self.session_manager.store_internal_form(
+                group_id = self.session_manager.store_internal_form(
                     WB_Label(a, b, text_input))
 
-                # FIXME : it is possible to add the Label to a canvas but not
-                # to remove it from here
                 with self.canvas:
-                    self.__label_index[label_id] = \
-                        Label(text=text_input,
-                              color=(1, 0, 0, 1),
-                              size=(touch.x - self.touch_origin_x,
-                                    touch.y - self.touch_origin_y),
-                              pos=(self.touch_origin_x, self.touch_origin_y))
+                    label = Label(text=text_input,
+                                  color=(1, 0, 0, 1),
+                                  size=(touch.x - self.touch_origin_x,
+                                        touch.y - self.touch_origin_y),
+                                  pos=(self.touch_origin_x, self.touch_origin_y))
+                label.canvas.group = group_id
 
         self.drawing = False
 
@@ -281,12 +274,12 @@ class WhiteboardInstance(RelativeLayout):
                         size=(form.rx * 2 , form.ry * 2), group = group_name)
 
             elif isinstance(form, WB_Label):
-                label_id = self.session_manager.store_external_form(form)
-                self.__label_index[label_id] = \
-                    Label(text=form.text_input,
-                          color=(1, 0, 0, 1),
-                          size=(form.b.x - form.a.x, form.b.y - form.a.y),
-                          pos=(form.a.x, form.a.y))
+                group_id = self.session_manager.store_external_form(form)
+                label = Label(text=form.text_input,
+                              color=(1, 0, 0, 1),
+                              size=(form.b.x - form.a.x, form.b.y - form.a.y),
+                              pos=(form.a.x, form.a.y))
+                label.canvas.group = group_id
 
             elif isinstance(form, Pic):
                 group_name = self.session_manager.store_external_form(form)
@@ -295,14 +288,7 @@ class WhiteboardInstance(RelativeLayout):
 
     def delete_form_in_canvas(self, form_id, source):
 
-        if form_id in self.__label_index:
-            # FIXME : We cannot use remove_group because the Label is a Widget,
-            # but remove_widget does nothing because the label has not been added
-            # to the parent
-            self.remove_widget(self.__label_index[form_id])
-        else:
-            self.canvas.remove_group(form_id)
-
+        self.canvas.remove_group(form_id)
         self.session_manager.delete_form(form_id, source)
 
     @property
