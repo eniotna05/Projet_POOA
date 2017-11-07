@@ -82,7 +82,7 @@ class SessionManager():
         for k in self.form_pile:
             if self.local_database[k].check_inclusion(x,y)== True:
                 return self.local_database[k]
-        return False
+        return None
 
 
         pass
@@ -92,5 +92,3 @@ class SessionManager():
             if k.split("-")[0] == self.client_id:
                 return k
         return False
-
-

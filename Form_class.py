@@ -7,7 +7,8 @@ from kivy.properties import StringProperty
 absciss_max = 10000
 ordinate_max = 10000
 LINE_WIDTH = 5
-Image_size = 50
+STICKER_SIZE = 50
+STICKER_URL = './images/snice.png'
 
 
 class Color:
@@ -420,9 +421,9 @@ class Pic(WB_Form):
     def check_inclusion(self, x_selection, y_selection):
         """method to check if selected point (x_selection, y_selection)
          is inside the rectange"""
-        if x_selection < self.c.x + Image_size and \
+        if x_selection < self.c.x + STICKER_SIZE and \
            x_selection > self.c.x  and \
-           y_selection < self.c.y + Image_size and \
+           y_selection < self.c.y + STICKER_SIZE and \
            y_selection > self.c.y:
             return True
         else:
