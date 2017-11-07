@@ -5,21 +5,6 @@ from Command_class import Create, Delete, Move, Quit, Hello, Delete_demend, Nega
 
 
 
-def convertStrIntoForm(string):
-    # Converts an input into the right Form object
-    letter = string[0]
-    if letter == "R":
-        return string_to_rectangle(string[1:])
-    elif letter == "C":
-        return string_to_circle(string[1:])
-    elif letter == "L":
-        return string_to_lign(string[1:])
-    elif letter == "S":
-        return string_to_square(string[1:])
-    elif letter == "P":
-        return string_to_image(string[1:])
-
-
 def string_to_circle(string):
     parameters = string.split(",")
     return WB_Circle(Point(int(parameters[0]), int(parameters[1])),
