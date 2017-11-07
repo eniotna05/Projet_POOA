@@ -27,6 +27,17 @@ class Toolbar(BoxLayout):
         self.connected_label = Label(text="Offline")
         self.add_widget(self.connected_label)
 
+
+        self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
+                                    multiline=False)
+        self.name_input.bind(on_text_validate=self.set_name)
+        self.add_widget(self.name_input)
+
+        self.print_canvas_btn = Button(text="Print Canvas")
+        self.print_canvas_btn.bind(on_release=self.print_canvas)
+        self.add_widget(self.print_canvas_btn)
+
+
         self.print_local_database_btn = Button(text="Print Local Data")
         self.print_local_database_btn.bind(on_release=self.print_local_database)
         self.add_widget(self.print_local_database_btn)
@@ -42,6 +53,10 @@ class Toolbar(BoxLayout):
         self.delete_selected_btn = Button(text="Delete Selected")
         self.delete_selected_btn.bind(on_release=self.delete_selected)
         self.add_widget(self.delete_selected_btn)
+
+        self.select_text_btn = Button(text="Write Text")
+        self.select_text_btn.bind(on_release=self.select_text)
+        self.add_widget(self.select_text_btn)
 
         self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
         self.color_picker.bind(color=self.choose_color)
@@ -94,10 +109,16 @@ class Toolbar(BoxLayout):
     def delete_selected(self, obj):
         self.white_board.selected_form = Forms.DELETE
 
+    def print_canvas(self,obj):
+        print(self.white_board.canvas.children)
+
+
     def print_local_database(self,obj):
         print(self.session_manager.local_database)
         print(self.session_manager.form_pile)
 
+    def select_text(self, instance):
+        self.white_board.selected_form = Forms.TEXT
 
     def choose_color(self, instance, value):
         self.white_board.drawing_color = value

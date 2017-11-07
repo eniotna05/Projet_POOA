@@ -61,6 +61,6 @@ class Server(Thread):
 
 
 if __name__ == '__main__':
-    server = Server(12802)
+    server = Server(12800)
     server.start()
     server.join()

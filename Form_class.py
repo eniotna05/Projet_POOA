@@ -7,6 +7,8 @@ from kivy.properties import StringProperty
 absciss_max = 10000
 ordinate_max = 10000
 LINE_WIDTH = 5
+STICKER_SIZE = 50
+STICKER_URL = './images/snice.png'
 
 
 class Color:
@@ -396,8 +398,12 @@ class WB_Ellipse(WB_Form):
         self.c.x += x
         self.c.y += y
 
+
 class Pic(WB_Form):
-    
+
+    """c is the left bottom point of the pic (Image size is a fixed parameter),
+    """
+
     def __init__(self, c, identifier=0):
         if not isinstance(c, Point):
             raise TypeError("The first parameter has to be an integer")
@@ -412,6 +418,17 @@ class Pic(WB_Form):
         return """Image of center {} and of id {}
         """.format(self.c, self.identifier)
 
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectange"""
+        if x_selection < self.c.x + STICKER_SIZE and \
+           x_selection > self.c.x  and \
+           y_selection < self.c.y + STICKER_SIZE and \
+           y_selection > self.c.y:
+            return True
+        else:
+            return False
+
     def change_position(self):
         if not isinstance(x, int):
             raise TypeError("The first parameter has to be an integer")
@@ -420,3 +437,36 @@ class Pic(WB_Form):
         self.c.x += x
         self.c.y += y
 
+
+class WB_Label(WB_Form):
+
+    def __init__(self, a, b, text_input, identifier=0):
+        if not isinstance(a, Point):
+            raise TypeError("The first parameter has to be a point")
+        if not isinstance(text_input, str):
+            raise TypeError("The first parameter has to be a string")
+
+        self.a = a
+        self.b = b
+        self.text_input = text_input
+        self.identifier = identifier
+
+    def get_string(self):
+        return "T" + str(self.a.x) + "," + str(self.a.y) + "," + \
+            str(self.b.x) + "," + str(self.b.y) + "," + \
+            self.text_input + "," + str(self.identifier)
+
+    def check_inclusion(self, x_selection, y_selection):
+        """method to check if selected point (x_selection, y_selection)
+         is inside the rectangle defining the label"""
+        if x_selection < max(self.a.x, self.b.x) and \
+           x_selection > min(self.a.x, self.b.x) and \
+           y_selection < max(self.a.y, self.b.y) and \
+           y_selection > min(self.a.y, self.b.y):
+            return True
+        else:
+            return False
+
+    def __repr__(self):
+        return """Label of point {} to point {} and content '{}'.
+        """.format(self.a, self.b, self.text_input)

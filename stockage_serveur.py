@@ -10,16 +10,20 @@ class Stock:
         self.username = username
         # Dict with the identifier of the form as key, and the form
         self.stock = {}
+        self.form_pile = []
 
     def newObject(self, string):
-        parametres = string.split(",")
-        identifiant = parametres[-1]
-        objet = convertStrIntoForm(string)
-        self.insertForm(identifiant, objet)
+        parameter = string.split(",")
+        identifier = parameter[-1]
+        form = string_to_command(string).created_form
+        self.insertForm(identifier, form)
+        print(self.stock)
+        print(self.form_pile)
         return self.stock
 
     def insertForm(self, identifier, form):
         self.stock[identifier] = form
+        self.form_pile.insert(0, identifier)
         return self.stock[identifier]
 
     def __getitem__(self, identifier):
@@ -37,15 +41,22 @@ class Stock:
 
     def deleteForm(self, identifier):
         del self.stock[identifier]
+        self.form_pile.remove(identifier)
         print("The object number {} has been deleted".format(identifier))
+        print(self.stock)
+        print(self.form_pile)
 
 
     def convertStockIntoStr(self):
-        concatenateElements = ""
-        for element in self.stock:
-            string = self.stock[element].get_string()
-            concatenateElements += string + "."
-        return concatenateElements[:-1]
+        #TODO : Check that this sends forms in the right order
+        """Transforms all the form data stocked in the server into a string
+        for sending to new clients
+        """
+        concatenate_elements = ""
+        for id in self.form_pile:
+            string = self.stock[id].get_string()
+            concatenate_elements += string + "."
+        return concatenate_elements[:-1]
 
 
 if __name__ == "__main__":
