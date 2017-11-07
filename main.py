@@ -61,6 +61,10 @@ class WhiteboardApp(App):
 
     def on_start(self):
         self.start_popup.open()
+        # TODO : à améliorer
+        # pas très clean ça, d'accéder à un objet et de bind une de ses propriétés
+        # à l'extérieur. Mieux vaut écouter on_dismiss de l'objet Popup et
+        # récupérer la valeur stockée dans Popup à ce moment là;-)
         self.start_popup.text_input.bind(on_text_validate=self.update_username)
 
     def update_username(self, instance):
