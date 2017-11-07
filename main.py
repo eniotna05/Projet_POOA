@@ -36,6 +36,7 @@ class WhiteboardApp(App):
         self.board.size_hint = (0.8, 1)
         # self.toolbar.pos_hint = {'x': self.toolbar.width}
         # self.board.pos_hint = {'x': 0.2}
+        self.start_popup = Start_Popup()
 
 
     def build(self):
@@ -59,10 +60,11 @@ class WhiteboardApp(App):
 
 
     def on_start(self):
-        self.popup = Start_Popup()
-        self.popup.open()
-        self.popup.content.button.bind(on_release=self.popup.close)
-        self.session_manager.client_id = self.popup.popup_content.output.text
+        self.start_popup.open()
+        self.start_popup.text_input.bind(on_text_validate=self.update_username)
+
+    def update_username(self, instance):
+        self.session_manager.client_id = self.start_popup.text_input.text
 
 
     # the main thread needs to be in charge of all the drawing, so we check
