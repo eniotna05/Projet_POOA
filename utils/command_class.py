@@ -1,4 +1,9 @@
+# This file defines different classes that correspond to different commands
+# that can be executed on the client
+
+
 class Create:
+    """Command to create an item"""
 
     def __init__(self, created_form):
         self.created_form = created_form
@@ -12,7 +17,7 @@ class Create:
         return self.created_form.get_string()
 
 
-class Delete_demend:
+class DeleteRequest:
     """Class to ask permission to delete an item that is not yours"""
 
     def __init__(self, form_id, requester):
@@ -24,7 +29,7 @@ class Delete_demend:
         self._requester = requester
 
     def __repr__(self):
-        return """Demend of deletion of the form id: {} 
+        return """Demend of deletion of the form id: {}
         requested by {} """.format(self.form_id, self.requester)
 
     def get_string(self):
@@ -43,7 +48,7 @@ class Delete_demend:
 
 
 class Delete:
-    """Order to remove an item from other server"""
+    """Class defining an order to remove an item from connected clients"""
 
     def __init__(self, form_id):
         """form_id is like antoine3"""
@@ -65,9 +70,9 @@ class Delete:
     def form_id(self):
         return self._form_id
 
-class Negative_answer:
-    """Class to inform another client that his deletion demend is refused"""
 
+class NegativeAnswer:
+    """Class to inform another client that his deletion demend is refused"""
 
     def __init__(self, form_id, receptor):
         """form_id is the id of the form concerned like antoine3,
@@ -75,23 +80,22 @@ class Negative_answer:
         if not isinstance(form_id, str):
             raise TypeError("The parameter has to be a string")
         self._form_id = form_id
-        self.receptor = receptor
+        self._receptor = _receptor
         self._symbol = "N"
 
     def __repr__(self):
-        return """Refusal to delete message of form 
-        of form id:{} to receptor:{} """.format(self._form_id, self.receptor)
+        return """Refusal to delete message of form
+        of form id:{} to receptor:{} """.format(self._form_id, self._receptor)
 
     def get_string(self):
         """method to transform command into string
         Ex: negative answer of Form 45, owned by antoine to yoann
         => return Aantoine45,yoann"""
-        return self._symbol + self._form_id + "," + self.receptor
+        return self._symbol + self._form_id + "," + self._receptor
 
     @property
     def form_id(self):
         return self._form_id
-
 
 
 class Quit:
@@ -114,6 +118,7 @@ class Hello:
         return self.symbol
 
 
+# Ununsed for now
 class Move:
     """ horizontal movement and y = vertical movement
     x an y are integers and can be negative """
@@ -126,17 +131,21 @@ class Move:
         if not isinstance(y, int):
             raise TypeError("The parameter has to be a string")
 
-        self.form_id = form_id
-        self.x = x
-        self. y = y
-        self.symbol = "M"
+        self._form_id = form_id
+        self._x = x
+        self._y = y
+        self._symbol = "M"
 
     def __repr__(self):
         return """Moving of the form: {}, horizontal movement = {},
-        vertical movement = {}""".format(self.form_id, self.x, self. y)
+        vertical movement = {}""".format(self._form_id, self._x, self._y)
 
     def get_string(self):
         """method to transform command into string
         return string of created form"""
-        return self.symbol + self.form_id + "," \
-        + str(self.x) + "," + str(self.y)
+        return self._symbol + self._form_id + "," \
+            + str(self._x) + "," + str(self._y)
+
+    @property
+    def form_id(self):
+        return self._form_id

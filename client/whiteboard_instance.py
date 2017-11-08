@@ -5,11 +5,11 @@ from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
-from formTypes import Forms
-from Form_class import WB_Line, WB_Rectangle, WB_Square, WB_Ellipse, \
-    WB_Circle, Point, Pic, LINE_WIDTH, STICKER_SIZE, STICKER_URL, WB_Label
+from utils.form_types import Forms
+from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
+    WBCircle, WBPoint, WBPicture, WBLabel, LINE_WIDTH, STICKER_SIZE, STICKER_URL
 
-from Command_class import Delete_demend
+from utils.command_class import DeleteRequest
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -78,14 +78,14 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0))
 
             elif self._selected_form == Forms.IMAGE:
-                a = Point(int(touch.x - STICKER_SIZE / 2),
+                a = WBPoint(int(touch.x - STICKER_SIZE / 2),
                           int(touch.y - STICKER_SIZE / 2))
                 touch.ud['image'] = Image(
                     source=STICKER_URL,
-                    pos=(touch.x - STICKER_SIZE/2, touch.y - STICKER_SIZE/2),
-                    size = (STICKER_SIZE, STICKER_SIZE))
+                    pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
+                    size=(STICKER_SIZE, STICKER_SIZE))
 
-                group_name = self.session_manager.store_internal_form(Pic(a))
+                group_name = self.session_manager.store_internal_form(WBPicture(a))
                 touch.ud['image'].canvas.group = group_name
 
             elif self._selected_form == Forms.TEXT:
@@ -108,7 +108,7 @@ class WhiteboardInstance(RelativeLayout):
                     self.delete_form_in_canvas(result.identifier, send_to_server=True)
                 else:
                     self.sending_queue.put(
-                        Delete_demend(result.identifier,
+                        DeleteRequest(result.identifier,
                                       self.session_manager.client_id ).get_string())
                     print("""This form belongs to {}. Authorization to
                     delete is being asked
@@ -173,18 +173,18 @@ class WhiteboardInstance(RelativeLayout):
                     del touch.ud['line'].points[-2:]
                     touch.ud['line'].points += [touch.x, touch.y]
 
-                    a = Point(int(self.touch_origin_x),
+                    a = WBPoint(int(self.touch_origin_x),
                               int(self.touch_origin_y))
-                    b = Point(int(touch.x), int(touch.y))
+                    b = WBPoint(int(touch.x), int(touch.y))
                     group_name = \
-                        self.session_manager.store_internal_form(WB_Line(a, b))
+                        self.session_manager.store_internal_form(WBLine(a, b))
                     touch.ud['line'].group = group_name
 
             elif self._selected_form == Forms.RECT:
-                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-                b = Point(int(touch.x), int(touch.y))
+                a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
+                b = WBPoint(int(touch.x), int(touch.y))
                 group_name = \
-                    self.session_manager.store_internal_form(WB_Rectangle(a, b))
+                    self.session_manager.store_internal_form(WBRectangle(a, b))
                 touch.ud['rect'].group = group_name
 
             elif self._selected_form == Forms.SQUARE:
@@ -196,27 +196,27 @@ class WhiteboardInstance(RelativeLayout):
                 # the square object takes only positive coordinates
                 x_min = min(int(touch.x), int(self.touch_origin_x))
                 y_min = min(int(touch.y), int(self.touch_origin_y))
-                a = Point(x_min, y_min)
-                b = Point(x_min + l, y_min + l)
+                a = WBPoint(x_min, y_min)
+                b = WBPoint(x_min + l, y_min + l)
                 group_name = \
-                    self.session_manager.store_internal_form(WB_Square(a, b))
+                    self.session_manager.store_internal_form(WBSquare(a, b))
                 touch.ud['square'].group = group_name
 
             elif self._selected_form == Forms.ELLIPSE:
-                c = Point(int((touch.x + self.touch_origin_x) / 2),
+                c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
                           int((touch.y + self.touch_origin_y) / 2))
                 rx = int(abs(touch.x - self.touch_origin_x) / 2)
                 ry = int(abs(touch.y - self.touch_origin_y) / 2)
                 group_name = \
-                    self.session_manager.store_internal_form(WB_Ellipse(c, rx, ry))
+                    self.session_manager.store_internal_form(WBEllipse(c, rx, ry))
                 touch.ud['ellipse'].group = group_name
 
             elif self._selected_form == Forms.CIRCLE:
-                c = Point(int((touch.x + self.touch_origin_x) / 2),
+                c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
                           int((touch.y + self.touch_origin_y) / 2))
                 r = int(abs(touch.x - self.touch_origin_x) / 2)
                 group_name = \
-                    self.session_manager.store_internal_form(WB_Circle(c, r))
+                    self.session_manager.store_internal_form(WBCircle(c, r))
                 touch.ud['circle'].group = group_name
 
             elif self.selected_form == Forms.TEXT:
@@ -224,11 +224,11 @@ class WhiteboardInstance(RelativeLayout):
                 text_input = 'CONTENU'
                 self.canvas.remove_group('tmp_text_rectangle')
 
-                a = Point(int(self.touch_origin_x), int(self.touch_origin_y))
-                b = Point(int(touch.x), int(touch.y))
+                a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
+                b = WBPoint(int(touch.x), int(touch.y))
 
                 group_id = self.session_manager.store_internal_form(
-                    WB_Label(a, b, text_input))
+                    WBLabel(a, b, text_input))
 
                 with self.canvas:
                     label = Label(text=text_input,
@@ -248,37 +248,37 @@ class WhiteboardInstance(RelativeLayout):
 
         with self.canvas:
 
-            if isinstance(form, WB_Line):
+            if isinstance(form, WBLine):
                 group_name = self.session_manager.store_external_form(form)
                 Line(points=(form.a.x, form.a.y, form.b.x, form.b.y),
                      width=LINE_WIDTH,
                      group=group_name)
 
-            elif isinstance(form, WB_Rectangle):
+            elif isinstance(form, WBRectangle):
                 group_name = self.session_manager.store_external_form(form)
                 Rectangle(pos=(form.a.x, form.a.y),
                           size=(form.b.x - form.a.x, form.b.y - form.a.y),
                           group=group_name)
 
-            elif isinstance(form, WB_Square):
+            elif isinstance(form, WBSquare):
                 group_name = self.session_manager.store_external_form(form)
                 Rectangle(pos=(form.a.x, form.a.y),
                           size=(form.b.x - form.a.x, form.b.y - form.a.y),
                           group=group_name)
 
-            elif isinstance(form, WB_Circle):
+            elif isinstance(form, WBCircle):
                 group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.r, form.c.y - form.r),
                         size=(form.r * 2, form.r * 2),
                         group=group_name)
 
-            elif isinstance(form, WB_Ellipse):
+            elif isinstance(form, WBEllipse):
                 group_name = self.session_manager.store_external_form(form)
                 Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry / 2),
                         size=(form.rx * 2, form.ry * 2),
-                        group = group_name)
+                        group=group_name)
 
-            elif isinstance(form, WB_Label):
+            elif isinstance(form, WBLabel):
                 group_id = self.session_manager.store_external_form(form)
                 label = Label(text=form.text_input,
                               color=(1, 0, 0, 1),
@@ -286,7 +286,7 @@ class WhiteboardInstance(RelativeLayout):
                               pos=(form.a.x, form.a.y))
                 label.canvas.group = group_id
 
-            elif isinstance(form, Pic):
+            elif isinstance(form, WBPicture):
                 group_name = self.session_manager.store_external_form(form)
                 image = Image(source=STICKER_URL,
                               pos=(form.c.x, form.c.y),

@@ -2,14 +2,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
-
-from sessionManager import SessionManager
-
 from kivy.clock import Clock
 from kivy.uix.colorpicker import ColorPicker
-from kivy.uix.popup import Popup
 
-from formTypes import Forms
+from utils.form_types import Forms
 
 
 class Toolbar(BoxLayout):
@@ -27,7 +23,6 @@ class Toolbar(BoxLayout):
         self.connected_label = Label(text="Offline")
         self.add_widget(self.connected_label)
 
-
         self.name_input = TextInput(text='', hint_text='Enter your pseudo here',
                                     multiline=False)
         self.name_input.bind(on_text_validate=self.set_name)
@@ -36,7 +31,6 @@ class Toolbar(BoxLayout):
         self.print_canvas_btn = Button(text="Print Canvas")
         self.print_canvas_btn.bind(on_release=self.print_canvas)
         self.add_widget(self.print_canvas_btn)
-
 
         self.print_local_database_btn = Button(text="Print Local Data")
         self.print_local_database_btn.bind(on_release=self.print_local_database)
@@ -86,7 +80,6 @@ class Toolbar(BoxLayout):
         self.select_image_btn.bind(on_release=self.select_image)
         self.add_widget(self.select_image_btn)
 
-
     def update_network_status(self, dt):
         if self.session_manager.is_connected:
             self.connected_label.text = "Online"
@@ -110,12 +103,11 @@ class Toolbar(BoxLayout):
         self.white_board.selected_form = Forms.DELETE
 
     # TODO : remove this funtion / button
-    def print_canvas(self,obj):
+    def print_canvas(self, obj):
         print(self.white_board.canvas.children)
 
-
     # TODO : remove this funtion / button
-    def print_local_database(self,obj):
+    def print_local_database(self, obj):
         print(self.session_manager.local_database)
         print(self.session_manager.form_pile)
 

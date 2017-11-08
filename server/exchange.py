@@ -1,6 +1,7 @@
-from threading import Thread, Event
 import socket
-from stockage_serveur import Stock
+from threading import Thread, Event
+
+from server.stockage_serveur import Stock
 
 # Keys: sockets of the clients ; Values: message received from the clients
 connexions = {}
@@ -21,27 +22,28 @@ class ExchangeThread(Thread):
         global connexions
         connexions[self.sock] = self.reception
 
-    def getTableau(self):
+    def _get_tableau(self):
         string = ""
-        for socket in connexions:
+        for sock in connexions:
             try:
-                string += connexions[socket].convertStockIntoStr()
+                string += connexions[sock].convert_stock_into_str()
             except AttributeError:
                 pass
         string = string[:-2]
         print(string)
         return string.encode()
 
-    def getmessage(self):
+    def _get_message(self):
         data = bytes()
         data += self.sock.recv(1024)
         return data.decode()
 
-    def sendmessage(self, message, allUsers=False):
-        # If allUsers is True, a message is sent to all the client.
-        # If allUsers is False, the message is sent to everyone except the client associated to the exchange thread
+    def _send_message(self, message, all_users=False):
+        # If all_users is True, a message is sent to all the client.
+        # If all_users is False, the message is sent to everyone except the
+        # client associated to the exchange thread
         message = message.encode()
-        if allUsers == True:
+        if all_users:
             for client in connexions:
                     client.send(message)
         else:
@@ -49,48 +51,48 @@ class ExchangeThread(Thread):
                 if client != self.sock:
                     client.send(message)
 
-    def stockData(self, data):
-        self.reception.newObject(data)
+    def _stock_data(self, data):
+        self.reception.new_object(data)
         return self.reception
 
-    def analyzeCommand(self):
-        message = self.getmessage()
+    def analyze_command(self):
+        message = self._get_message()
         if message != "":
-            firstmessage = ""
+            first_message = ""
             i = 0
             letter = message[0]
             while letter != ".":
-                firstmessage = firstmessage + letter
+                first_message = first_message + letter
                 i += 1
                 letter = message[i]
-            message = message[i+1:]
-            command = firstmessage[0]
+            message = message[i + 1:]
+            command = first_message[0]
             if command == "D":
                 id = message[1:]
-                for socket in connexions:
+                for sock in connexions:
                     try:
-                        self.reception.deleteForm(id)
+                        self.reception.delete_form(id)
                     except KeyError:
                         pass
-                self.sendmessage(firstmessage)
+                self._send_message(first_message)
             elif command == "Q":
-                self.stopListening()
+                self._stop_listenning()
             elif command == "Z":
-                self.sendmessage(firstmessage)
+                self._send_message(first_message)
             else:
-                self.stockData(firstmessage)
-                if len(connexions)>=2:
-                    self.sendmessage(firstmessage)
+                self._stock_data(first_message)
+                if len(connexions) >= 2:
+                    self._send_message(first_message)
         else:
             pass
 
-    def getUserName(self):
+    def _get_user_name(self):
 
-        self.username = self.getmessage()
+        self.username = self._get_message()
         print("Start of the connection with {} ".format(self.username))
         self.sock.send("O".encode())
 
-    def stopListening(self):
+    def _stop_listenning(self):
         self.__exit_request.set()
         print("End of communication with client {}".format(self.username))
 
@@ -102,14 +104,14 @@ class ExchangeThread(Thread):
             print("End of communication")
         self.sock.send("O".encode())
 
-        self.getUserName()
+        self._get_user_name()
 
         if len(connexions) >= 2:
             print("envoi tableau")
-            self.sock.send(self.getTableau())
+            self.sock.send(self._get_tableau())
 
         while not self.__exit_request.is_set():
-            self.analyzeCommand()
+            self.analyze_command()
 
         self.sock.send("O".encode())
         self.sock.close()
