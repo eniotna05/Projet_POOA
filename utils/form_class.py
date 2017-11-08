@@ -125,14 +125,14 @@ class WBLine(WBForm):
             point1 = self._b
             point2 = self._a
 
-        # Special case 1: the lign is parralel to the ordinate line
+        # Special case 1: the line is parallel to the ordinate line
         if point2.x == point1.x:
             if point2.x - x_selection <= LINE_WIDTH:
                 return True
             else:
                 return False
 
-        # Special case 2: the lign is parralel to the absiss line
+        # Special case 2: the line is parallel to the absiss line
         if point2.y == point1.y:
             if point2.y - y_selection <= LINE_WIDTH:
                 return True
@@ -455,7 +455,7 @@ class WBPicture(WBForm):
         else:
             return False
 
-    def change_position(self):
+    def change_position(self, x, y):
         if not isinstance(x, int):
             raise TypeError("The first parameter has to be an integer")
         if not isinstance(y, int):
