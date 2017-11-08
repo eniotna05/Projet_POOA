@@ -1,7 +1,6 @@
-from threading import Thread, Event
 import socket
-import time
-from exchange import ExchangeThread
+from threading import Thread, Event
+from server.exchange import ExchangeThread
 
 SOCKET_TIMEOUT = 0.5
 
@@ -19,14 +18,6 @@ class Server(Thread):
         self.__sock.settimeout(SOCKET_TIMEOUT)
         self.__exit_request = Event()
         self.__exchange_thread_list = []
-
-    @property
-    def portserveur(self):
-        return self.__port
-
-    @property
-    def socketserveur(self):
-        return self.__sock
 
     def run(self):
         self.__sock.listen(5)

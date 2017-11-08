@@ -19,63 +19,51 @@ class WB_Popup(Popup):
         self.auto_dismiss = False
         self.size_hint = (0.5, 0.5)
         self.size = (300, 300)
-        self.content = Popup_Content("", "")
-        self.content.button.bind(on_release=self._on_answer)
-
-    def _on_answer(self):
-        pass
+        self.content = Popup_Content("")
 
 
 class Popup_Content(BoxLayout):
 
-    def __init__(self, text_content, text_close_button, text_window=False):
+    def __init__(self, text_content):
         super().__init__(orientation='vertical')
         self.text_content = text_content
-        self.text_close_button = text_close_button
-        self.text_window = text_window
-        self.text_input = "John Doe"
         self.label = Label(text=self.text_content)
-        self.button = Button(text=self.text_close_button)
-        self.case_text_input = TextInput(text=self.text_input)
         self.add_widget(self.label)
-        self.output = Label(text="John Doe")
-        if self.text_window:
-            self.add_widget(self.case_text_input)
-            self.case_text_input.bind(text=self.get_user_text)
-        self.add_widget(self.button)
-
-    def get_user_text(self, instance, value):
-        self.output.text = value
-        print(self.output.text)
-        return self.output.text
 
 
 class Start_Popup(WB_Popup):
 
     def __init__(self):
         WB_Popup.__init__(self)
-        self.popup_content = Popup_Content("Please enter your username", "Enter",text_window=True)
+        self.popup_content = Popup_Content("Please enter your username")
         self.content = self.popup_content
-        self.content.button.bind(on_release=self.close)
+        self.text_input = TextInput(multiline=False)
+        self.text_input.bind(on_text_validate=self.on_enter)
+        self.popup_content.add_widget(self.text_input)
+        self.username = ""
 
-    def close(self,value):
-        if self.popup_content.output.text == "John Doe":
+    def on_enter(self, instance):
+        self.username = self.text_input.text
+        if self.username == "":
             error_popup = Error_Popup()
             error_popup.open()
         else:
             self.dismiss()
+            return self.text_input.text
 
 
 class Error_Popup(WB_Popup):
     def __init__(self):
         WB_Popup.__init__(self)
-        self.popup_content = Popup_Content("You have not entered your username !",
-                                            "Ok",text_window=False)
+        self.popup_content = Popup_Content("You have not entered your username !")
         self.content = self.popup_content
-        self.content.button.bind(on_release=self.close)
+        self.button = Button(text="Ok")
+        self.button.bind(on_release=self.close)
+        self.popup_content.add_widget(self.button)
 
     def close(self,value):
         self.dismiss()
+
 
 class Delete_Popup(WB_Popup):
 
@@ -96,7 +84,7 @@ class Delete_Popup(WB_Popup):
 class MyApp(App):
 
     def build(self):
-        self.popup = Delete_Popup("antoine","fewr")
+        self.popup = Start_Popup()
         self.popup.open()
 
 

@@ -2,23 +2,18 @@
 # Before launching it, make sure that the server is launched with
 # "python server.py" command (therfore the client can connect)
 
-from queue import Queue
 
 from kivy.app import App
-from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.graphics import Color
 from kivy.clock import Clock
 from queue import Queue
-from popup import *
-from popup import *
-from sessionManager import SessionManager
-from whiteboardInstance import WhiteboardInstance
-from toolbar import Toolbar
-from client import Client
-from Command_class import Create, Delete, Delete_demend, Negative_answer
+
+from client.popup import Start_Popup
+from client.session_manager import SessionManager
+from client.whiteboard_instance import WhiteboardInstance
+from client.toolbar import Toolbar
+from client.client import Client
+from utils.command_class import Create, Delete, DeleteRequest, NegativeAnswer
 
 
 class WhiteboardApp(App):
@@ -34,22 +29,12 @@ class WhiteboardApp(App):
         self.toolbar = Toolbar(self.board, self.client_thread, self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
-        # self.toolbar.pos_hint = {'x': self.toolbar.width}
-        # self.board.pos_hint = {'x': 0.2}
-
+        self.start_popup = Start_Popup()
 
     def build(self):
         parent = BoxLayout()
         self.client_thread.start()
-        # self.toolbar.size_hint = (None, None)
-        # self.toolbar.size = (200, 600)
-        # self.toolbar.pos = (0, 0)
-        # self.board.size_hint = (None, None)
-        # self.board.size = (600, 600)
-        # self.board.pos = (200, 0)
-        # self.toolbar.pos_hint = {}
 
-        # self.board.pos_hint = {'x': 0.2})
         parent.add_widget(self.board)
         parent.add_widget(self.toolbar, 0)
 
@@ -57,13 +42,16 @@ class WhiteboardApp(App):
 
         return parent
 
-
     def on_start(self):
-        self.popup = Start_Popup()
-        self.popup.open()
-        self.popup.content.button.bind(on_release=self.popup.close)
-        self.session_manager.client_id = self.popup.popup_content.output.text
+        self.start_popup.open()
+        # TODO : à améliorer
+        # pas très clean ça, d'accéder à un objet et de bind une de ses propriétés
+        # à l'extérieur. Mieux vaut écouter on_dismiss de l'objet Popup et
+        # récupérer la valeur stockée dans Popup à ce moment là;-)
+        self.start_popup.text_input.bind(on_text_validate=self.update_username)
 
+    def update_username(self, instance):
+        self.session_manager.client_id = self.start_popup.text_input.text
 
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
@@ -75,28 +63,25 @@ class WhiteboardApp(App):
                 self.board.draw_form(new_command.created_form)
 
             if isinstance(new_command, Delete):
-                self.board.delete_form_in_canvas(new_command.form_id,"ext")
+                self.board.delete_form_in_canvas(new_command.form_id)
 
-            if isinstance(new_command, Delete_demend):
+            if isinstance(new_command, DeleteRequest):
                 if new_command.form_id.split("-")[0] == \
                         self.session_manager.client_id:
-                    response =str(input("""{} wishes to delete one of the form that you created: {}, 
+                    response = str(input("""{} wishes to delete one of the form that you created: {},
                                            type o to accept and n to refuse \n
-                                           """.format(new_command.requester,new_command.form_id)))
-                    if response == "n" or response == "N" :
-                        self.sending_queue.put(Negative_answer
-                            (new_command.form_id,new_command.requester).get_string())
+                                           """.format(new_command.requester, new_command.form_id)))
+                    if response == "n" or response == "N":
+                        self.sending_queue.put(NegativeAnswer(new_command.form_id, new_command.requester).get_string())
                     else:
-                        self.board.delete_form_in_canvas(new_command.form_id, "int")
+                        self.board.delete_form_in_canvas(new_command.form_id, send_to_server=True)
 
-            if isinstance(new_command, Negative_answer):
+            if isinstance(new_command, NegativeAnswer):
                 if new_command.receptor == \
                         self.session_manager.client_id:
                     emettor = new_command.form_id.split("-")[0]
                     print("{} does not wish you to delete his form: {}"
-                          .format(emettor,new_command.form_id))
-
-
+                          .format(emettor, new_command.form_id))
 
     def on_stop(self):
         self.client_thread.quit()
