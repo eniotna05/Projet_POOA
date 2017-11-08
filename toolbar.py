@@ -11,6 +11,9 @@ from kivy.uix.popup import Popup
 
 from formTypes import Forms
 
+Button_pushed_theme = "atlas://data/images/defaulttheme/button_pressed"
+Button_normal_theme = "atlas://data/images/defaulttheme/button"
+
 
 class Toolbar(BoxLayout):
     """Class defining the buttons of the left-side toolbar"""
@@ -67,20 +70,27 @@ class Toolbar(BoxLayout):
         self.add_widget(self.select_line_btn)
 
         self.select_rect_btn = Button(text="Rectangle")
-        self.select_rect_btn.bind(on_release=self.select_rect)
+        self.select_rect_btn.bind(on_press = self.unpress_all,on_release=self.select_rect)
         self.add_widget(self.select_rect_btn)
 
+
+
         self.select_square_btn = Button(text="Square")
-        self.select_square_btn.bind(on_release=self.select_square)
+        self.select_square_btn.bind(on_press = self.unpress_all, on_release=self.select_square)
         self.add_widget(self.select_square_btn)
 
+
+
+
         self.select_ellipse_btn = Button(text="Ellipse")
-        self.select_ellipse_btn.bind(on_release=self.select_ellipse)
+        self.select_ellipse_btn.bind(on_press = self.unpress_all, on_release=self.select_ellipse)
         self.add_widget(self.select_ellipse_btn)
 
+
         self.select_circle_btn = Button(text="Circle")
-        self.select_circle_btn.bind(on_release=self.select_circle)
+        self.select_circle_btn.bind(on_press = self.unpress_all, on_release=self.select_circle)
         self.add_widget(self.select_circle_btn)
+
 
         self.select_image_btn = Button(text="Image")
         self.select_image_btn.bind(on_release=self.select_image)
@@ -128,15 +138,25 @@ class Toolbar(BoxLayout):
 
     def select_rect(self, obj):
         self.white_board.selected_form = Forms.RECT
+        self.select_rect_btn.background_color = [0,0,0,0]
 
     def select_square(self, obj):
         self.white_board.selected_form = Forms.SQUARE
+        self.select_square_btn.background_color = [0, 0, 0, 0]
+
 
     def select_ellipse(self, obj):
         self.white_board.selected_form = Forms.ELLIPSE
+        self.select_ellipse_btn.background_color = [0, 0, 0, 0]
 
     def select_circle(self, obj):
         self.white_board.selected_form = Forms.CIRCLE
 
     def select_image(self, obj):
         self.white_board.selected_form = Forms.IMAGE
+
+    def unpress_all(self, obj):
+        button_list = [self.select_line_btn, self.select_rect_btn, self.select_square_btn, self.select_ellipse_btn]
+        for button in button_list:
+            button.background_color = [1,1,1,1]
+
