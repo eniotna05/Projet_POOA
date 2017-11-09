@@ -35,14 +35,6 @@ class Error_Popup(WB_Popup):
         self.content.add_widget(self.button)
 
 
-# Coucou Anais
-# J'ai aussi renommé cette classe (qui était Start_Popup) pour qu'elle soit plus
-# générique. Ce qui nous intéresse c'est : un titre, un texte, un input, un
-# bouton "entrer" et un popup à afficher en cas d'erreur. Après on récupère
-# la "return_value" qui est le username, le texte entré ou autre ...
-# En Orienté Objet, mieux vaux avoir des classes assez génériques qu'on réutilise
-# plusieurs fois avec des paramètres différents qu'une classe qui ne sert que pour
-# une seule instanciation.
 class Input_Popup(WB_Popup):
 
     def __init__(self, title="", text_content="", hint_text="", error_popup=None):
@@ -83,6 +75,33 @@ class Input_Popup(WB_Popup):
 # besoin de passer des paramètres au constructeur et que ça soit une classe plus
 # générique "question/réponse + bouttons oui/non", et on pourra l'utiliser pour
 # des tas d'autres trucs
+
+
+class Question_Popup(WB_Popup):
+
+    def __init__(self, title="", question=""):
+        WB_Popup.__init__(self, title=title, text_content=question)
+        self._return_value = ""
+
+        self.yes_button = Button(text="yes")
+        self.yes_button.bind(on_release=on_yes_answer)
+        self.content.add_widget(self.yes_button)
+
+        self.no_button = Button(text="no")
+        self.no_button.bind(on_release=on_no_answer)
+        self.content.add_widget(self.no_button)
+
+    def on_yes_answer(self, instance):
+        self._return_value = instance.text
+        self.dismiss()
+
+    def on_no_answer(self, instance):
+        self._return_value = instance.text
+        self.dismiss()
+
+    @property
+    def return_value(self):
+        return self._return_value
 
 
 class MyApp(App):

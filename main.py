@@ -14,6 +14,7 @@ from client.whiteboard_instance import WhiteboardInstance
 from client.toolbar import Toolbar
 from client.client import Client
 from utils.command_class import Create, Delete, DeleteRequest, NegativeAnswer
+from client.popup2 import *
 
 
 class WhiteboardApp(App):
@@ -29,7 +30,10 @@ class WhiteboardApp(App):
         self.toolbar = Toolbar(self.board, self.client_thread, self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
-        self.start_popup = Start_Popup()
+        self.start_popup = Input_Popup("Username",
+                                       "Please enter your name",
+                                       "John Doe",
+                                       Error_Popup("You have not entered your name !"))
 
     def build(self):
         parent = BoxLayout()
@@ -44,14 +48,11 @@ class WhiteboardApp(App):
 
     def on_start(self):
         self.start_popup.open()
-        # TODO : à améliorer
-        # pas très clean ça, d'accéder à un objet et de bind une de ses propriétés
-        # à l'extérieur. Mieux vaut écouter on_dismiss de l'objet Popup et
-        # récupérer la valeur stockée dans Popup à ce moment là;-)
-        self.start_popup.text_input.bind(on_text_validate=self.update_username)
+        self.start_popup.bind(on_dismiss=self.update_username)
 
     def update_username(self, instance):
-        self.session_manager.client_id = self.start_popup.text_input.text
+        self.session_manager.client_id = instance.return_value
+
 
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually
