@@ -65,7 +65,6 @@ class ExchangeThread(Thread):
                   or command == "T":
                 self.server_database.new_object(first_message)
                 if len(self.server_database.connexions) >= 2:
-                    self._send_message(first_message)
         else:
             pass
 
