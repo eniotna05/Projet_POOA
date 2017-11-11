@@ -1,3 +1,4 @@
+from functools import partial
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
 from kivy.uix.label import Label
@@ -10,6 +11,7 @@ from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, LINE_WIDTH, STICKER_SIZE, STICKER_URL
 
 from utils.command_class import DeleteRequest
+from client.popup2 import Input_Popup, Error_Popup
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -220,27 +222,42 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['circle'].group = group_name
 
             elif self.selected_form == Forms.TEXT:
-                # ask usr for text input
-                text_input = 'CONTENU'
+
+                self._draw_text_popup = Input_Popup(
+                    title="Draw Text",
+                    text_content="Enter the text you want to write",
+                    error_popup=Error_Popup(text_content="You have not written any text")
+                )
+                # biding with the function that will be called on dismiss of the
+                # popup
+                self._draw_text_popup.bind(on_dismiss=partial(
+                    self._update_draw_text,
+                    touch.x,
+                    touch.y))
+                self._draw_text_popup.open()
+
                 self.canvas.remove_group('tmp_text_rectangle')
-
-                a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
-                b = WBPoint(int(touch.x), int(touch.y))
-
-                group_id = self.session_manager.store_internal_form(
-                    WBLabel(a, b, text_input))
-
-                with self.canvas:
-                    label = Label(text=text_input,
-                                  color=(1, 0, 0, 1),
-                                  size=(touch.x - self.touch_origin_x,
-                                        touch.y - self.touch_origin_y),
-                                  pos=(self.touch_origin_x, self.touch_origin_y))
-                label.canvas.group = group_id
 
         self.drawing = False
 
         return True
+
+    def _update_draw_text(self, x, y, instance):
+        """Method called to draw a text on the board, after the user has
+        completed the popup asking for the text he wnats to write"""
+        a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
+        b = WBPoint(int(x), int(y))
+
+        group_id = self.session_manager.store_internal_form(
+            WBLabel(a, b, self._draw_text_popup.return_value))
+
+        with self.canvas:
+            label = Label(text=self._draw_text_popup.return_value,
+                          color=(1, 0, 0, 1),
+                          size=(x - self.touch_origin_x,
+                                y - self.touch_origin_y),
+                          pos=(self.touch_origin_x, self.touch_origin_y))
+        label.canvas.group = group_id
 
     def draw_form(self, form):
         """Method calld to draw a form on the board andd add it to the local
