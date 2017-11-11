@@ -80,7 +80,7 @@ class NegativeAnswer:
         if not isinstance(form_id, str):
             raise TypeError("The parameter has to be a string")
         self._form_id = form_id
-        self._receptor = _receptor
+        self._receptor = receptor
         self._symbol = "N"
 
     def __repr__(self):
@@ -90,12 +90,16 @@ class NegativeAnswer:
     def get_string(self):
         """method to transform command into string
         Ex: negative answer of Form 45, owned by antoine to yoann
-        => return Aantoine45,yoann"""
+        => return Nantoine45,yoann"""
         return self._symbol + self._form_id + "," + self._receptor
 
     @property
     def form_id(self):
         return self._form_id
+
+    @property
+    def receptor(self):
+        return self._receptor
 
 
 class Quit:

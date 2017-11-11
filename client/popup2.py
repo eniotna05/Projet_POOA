@@ -84,11 +84,11 @@ class Question_Popup(WB_Popup):
         self._return_value = ""
 
         self.yes_button = Button(text="yes")
-        self.yes_button.bind(on_release=on_yes_answer)
+        self.yes_button.bind(on_release=self.on_yes_answer)
         self.content.add_widget(self.yes_button)
 
         self.no_button = Button(text="no")
-        self.no_button.bind(on_release=on_no_answer)
+        self.no_button.bind(on_release=self.on_no_answer)
         self.content.add_widget(self.no_button)
 
     def on_yes_answer(self, instance):
@@ -107,14 +107,20 @@ class Question_Popup(WB_Popup):
 class MyApp(App):
 
     def build(self):
-
+        self.answer = ""
         self.popup = Input_Popup(
             title="Welcome",
             text_content="Please enter your username",
             hint_text="John Doe",
             error_popup=Error_Popup(text_content="You have not entered your username !"))
         self.popup.bind(on_dismiss=self.update_username)
-        self.popup.open()
+        self.question = Question_Popup("dv","cs")
+        self.question.open()
+        self.question.bind(on_dismiss=self.update_answer)
+
+    def update_answer(self, instance):
+        self.answer = instance.return_value
+
 
         # La même chose pour moi quand j'en ai besoin pour récupérer le texte
         # que l'user veut dessiner

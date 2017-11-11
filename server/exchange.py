@@ -79,6 +79,8 @@ class ExchangeThread(Thread):
                 self._stop_listenning()
             elif command == "Z":
                 self._send_message(first_message)
+            elif command == "N":
+                self._send_message(first_message)
             else:
                 self._stock_data(first_message)
                 if len(connexions) >= 2:
