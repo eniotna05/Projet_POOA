@@ -1,12 +1,8 @@
 import socket
 from threading import Thread, Event
 
-#TODO: Supprimer toutes les references à stockage server une fois que Server Database fonctionne
-from server.stockage_serveur import Stock
 from server.server_database import ServerDatabase
 
-# Keys: sockets of the clients ; Values: message received from the clients
-connexions = {}
 
 
 class ExchangeThread(Thread):
@@ -20,22 +16,9 @@ class ExchangeThread(Thread):
         self.sock = sock
         self.__exit_request = Event()
         self.username = ""
-        self.reception = Stock(self.username)
         self.server_database = server_database
-        global connexions
-        #TODO: gérer effets
-        connexions[self.sock] = self.reception
+        self.server_database.connexions.append(self.sock)
 
-    def _get_tableau(self):
-        string = ""
-        for sock in connexions:
-            try:
-                string += connexions[sock].convert_stock_into_str()
-            except AttributeError:
-                pass
-        string = string[:-2]
-        print(string)
-        return string.encode()
 
     def _get_message(self):
         data = bytes()
@@ -48,10 +31,10 @@ class ExchangeThread(Thread):
         # client associated to the exchange thread
         message = message.encode()
         if all_users:
-            for client in connexions:
+            for client in self.server_database.connexions:
                     client.send(message)
         else:
-            for client in connexions:
+            for client in self.server_database.connexions:
                 if client != self.sock:
                     client.send(message)
 
@@ -73,7 +56,6 @@ class ExchangeThread(Thread):
                 print(form_id)
                 self.server_database.delete_form(form_id)
                 self._send_message(first_message)
-                #TODO: Supprimer la forme de la database
             elif command == "Q":
                 self._stop_listenning()
             elif command == "Z" or command == "N":
@@ -82,7 +64,7 @@ class ExchangeThread(Thread):
                   or command == "E" or command == "L" or command == "C" \
                   or command == "T":
                 self.server_database.new_object(first_message)
-                if len(connexions) >= 2:
+                if len(self.server_database.connexions) >= 2:
                     self._send_message(first_message)
         else:
             pass
@@ -106,7 +88,7 @@ class ExchangeThread(Thread):
 
         self._get_user_name()
 
-        if len(connexions) >= 2:
+        if len(self.server_database.connexions) >= 2:
             
             print("envoi tableau")
             tableau = self.server_database.convert_database_into_str()
@@ -116,7 +98,7 @@ class ExchangeThread(Thread):
 
 
         #TODO : Envoi des objets un par un mais ne fonctione pas
-        """if len(connexions) >= 2:
+        """if len(self.server_database.connexions) >= 2:
             print("envoi tableau")
             n = len(self.server_database.form_pile) -1
             while n >= 0:

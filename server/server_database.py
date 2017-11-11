@@ -11,6 +11,8 @@ class ServerDatabase:
         # Dict with the identifier of the form as key, and the form
         self.stock = {}
         self.form_pile = []
+        # list of socker connexions with clients
+        self.connexions = []
 
     def new_object(self, string):
         parameter = string.split(",")
