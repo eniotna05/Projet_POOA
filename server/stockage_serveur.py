@@ -1,3 +1,6 @@
+
+#TODO: Supprimer ce fichier une fois que Server_Database est opérationel
+
 from utils.string_to_class import string_to_command
 
 
@@ -14,8 +17,7 @@ class Stock:
         identifier = parameter[-1]
         form = string_to_command(string).created_form
         self._insert_form(identifier, form)
-        print(self.stock)
-        print(self.form_pile)
+
         return self.stock
 
     def _insert_form(self, identifier, form):
@@ -38,9 +40,7 @@ class Stock:
     def delete_form(self, identifier):
         del self.stock[identifier]
         self.form_pile.remove(identifier)
-        print("The object number {} has been deleted".format(identifier))
-        print(self.stock)
-        print(self.form_pile)
+
 
     def convert_stock_into_str(self):
         # TODO : Check that this sends forms in the right order
