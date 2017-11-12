@@ -32,3 +32,23 @@ $ python server.py
 3/ Lancer l'application "Whiteboard" sur Android
 
 4/ Rentrer l'IP du serveur et l'id de l'user dans les champs texte prévus pour se connecter au serveur
+## Précisions sur le code
+
+### Structure des strings transmises par socket
+1 lettre pour préciser la commande souhaités + les paramètres en fonction de la commande, séparés par des virgules + un point pour indiquer la fin de la string.
+Les paramètres peuvent être des coordonnées de points, des longueurs ou la couleur de la forme par exemple.
+
+### Commandes implémentées
+- C : créer un object Circle
+- E : créer un object Ellipse
+- S : créer un object Square
+- R : créer un object Rectangle
+- L : créer un object Line
+- P : créer un object Picture
+- T : créer un object Text
+
+- Q : quitter le serveur
+- H : "Hello", utilisé pour le handshake à l'ouverture de la connection
+- D : supprimer un objet (Delete)
+- Z : demander la suppression d'un objet (DeleteRequest)
+- N : refuser la suppression d'un objet (NegativeAnswer)

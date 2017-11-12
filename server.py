@@ -1,7 +1,8 @@
-from threading import Thread, Event
 import socket
-import time
-from exchange import ExchangeThread
+from threading import Thread, Event
+from server.exchange import ExchangeThread
+from server.server_database import ServerDatabase
+
 
 SOCKET_TIMEOUT = 0.5
 
@@ -19,14 +20,7 @@ class Server(Thread):
         self.__sock.settimeout(SOCKET_TIMEOUT)
         self.__exit_request = Event()
         self.__exchange_thread_list = []
-
-    @property
-    def portserveur(self):
-        return self.__port
-
-    @property
-    def socketserveur(self):
-        return self.__sock
+        self.database = ServerDatabase()
 
     def run(self):
         self.__sock.listen(5)
@@ -35,7 +29,7 @@ class Server(Thread):
             try:
                 connexion, client = self.__sock.accept()
                 # Starts the exchange thread between a new client and the server
-                new_thread = ExchangeThread(connexion)
+                new_thread = ExchangeThread(connexion, self.database)
                 new_thread.start()
                 self.__exchange_thread_list.append(new_thread)
             except OSError:
@@ -58,6 +52,8 @@ class Server(Thread):
             t.join()
         if self.__sock:
             self.__sock.close()
+
+
 
 
 if __name__ == '__main__':

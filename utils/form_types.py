@@ -9,3 +9,5 @@ class Forms(Enum):
     ELLIPSE = 4
     CIRCLE = 5
     IMAGE = 6
+    DELETE = 7
+    TEXT = 8
