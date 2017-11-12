@@ -32,6 +32,7 @@ $ python server.py
 3/ Lancer l'application "Whiteboard" sur Android
 
 4/ Rentrer l'IP du serveur et l'id de l'user dans les champs texte prévus pour se connecter au serveur
+
 ## Précisions sur le code
 
 ### Structure des strings transmises par socket

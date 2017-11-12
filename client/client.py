@@ -8,7 +8,7 @@ from utils.string_to_class import string_to_command
 
 WAITING_QUEUE_TIMEOUT = 0.05
 SOCKET_TIMEOUT = 0.5
-SERVER_URL = 'localhost'
+SERVER_URL = '192.168.0.11'
 SERVER_PORT = 12800
 
 
