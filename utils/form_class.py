@@ -1,4 +1,8 @@
-# File defining the forms that can be exchanged over the network
+# File defining the custom forms used in the application.
+# The get_string methods are usually called to transform the objects into
+# strings that can be transferred over the socket.
+# The check_inclusion methods are called to check if a point is in the area of
+# a form
 
 ABSCISS_MAX = 10000
 ORDINATE_MAX = 10000
@@ -8,25 +12,60 @@ STICKER_URL = './images/snice.png'
 
 
 class WBColor:
-    """ parameters are colors HTML RGB codes in that order"""
+    """ parameters are colors HTML RGBA codes in that order (A is alpha
+    channel), and are coded on 8bits"""
 
-    def __init__(self, R, G, B):
-        if (not isinstance(R, int) or not isinstance(G, int) or
-            not isinstance(B, int)):
+    def __init__(self, R, G, B, A):
+        if not isinstance(R, int) or not isinstance(G, int) or \
+                not isinstance(B, int) or not isinstance(A, int):
             raise TypeError("All parameters have to be interger")
 
-        if R < 0 or R > 255 or G < 0 or G > 255 or B < 0 or B > 255:
+        if not 0 <= R <= 255 or not 0 <= G <= 255 or not 0 <= B <= 255 or \
+                not 0 <= A <= 255:
             raise ValueError("All parameters have to be between 0 and 255")
 
         self._R = R
         self._G = G
         self._B = B
+        self._A = A
 
     def __repr__(self):
-        return """Color of RGB code: {}.{}.{}""".format(self._R, self._G, self._B)
+        return """Color of RGBA code: {}.{}.{}.{}""".format(self._R, self._G,
+                                                            self._B, self._A)
+
+    def get_string(self):
+        return str(self._R) + "," + str(self._G) + "," + str(self._B) + "," + \
+            str(self._A)
+
+    def get_relative_values(self):
+        return [self._R / 255, self._G / 255, self._B / 255, self._A / 255]
+
+    @staticmethod
+    def to_8bit(relative_values):
+        """Static utilitary function that converts an array of relative values
+        of RGBA code into values between 0 and 255"""
+        for v in relative_values:
+            if not isinstance(v, float):
+                raise TypeError("All channels have to be floats")
+            if not 0 <= v <= 1:
+                raise ValueError("Channel must be relative between 0 and 1")
+
+        return [int(255 * v) for v in relative_values]
+
+    @staticmethod
+    def to_relative_code(bit_values):
+        """Static utilitary function that converts an array of 8bit RGBA values
+        into an array of relative values between 0 and 1"""
+        for v in bit_values:
+            if not isinstance(v, int):
+                raise TypeError("All channels have to be integer")
+            if not 0 <= v <= 255:
+                raise ValueError("Channel must be between 0 and 255")
+
+        return [v / 255 for v in bit_values]
 
 
-BLACK = WBColor(0, 0, 0)
+BLACK = WBColor(0, 0, 0, 1)
 
 
 class WBPoint:
@@ -68,8 +107,9 @@ class WBPoint:
 class WBForm:
     """Base class from which other forms inherit"""
 
-    def __init__(self, identifier=0):
+    def __init__(self, color=BLACK, identifier=0):
         self._identifier = identifier
+        self._color = color
 
     @property
     def identifier(self):
@@ -79,12 +119,16 @@ class WBForm:
     def identifier(self, iden):
         self._identifier = iden
 
+    @property
+    def color(self):
+        return self._color
+
 
 class WBLine(WBForm):
     """ a and b are the two tip points of the line"""
 
     def __init__(self, a, b, color=BLACK, identifier=0):
-        super().__init__(identifier=identifier)
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(a, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(b, WBPoint):
@@ -94,7 +138,6 @@ class WBLine(WBForm):
 
         self._a = a
         self._b = b
-        self._color = color
 
     def __repr__(self):
         return """Lign from {} to {} and of color: {}
@@ -105,7 +148,7 @@ class WBLine(WBForm):
         Ex: lign from (2,4) to (8,14) => string = L2,4,8,14"""
         string = "L" + str(self._a.x) + "," + str(self._a.y) + ","
         string += str(self._b.x) + "," + str(self._b.y) + ","
-        string += str(self._identifier)
+        string += self._color.get_string() + "," + str(self._identifier)
         return string
 
     def check_inclusion(self, x_selection, y_selection):
@@ -181,7 +224,7 @@ class WBRectangle(WBForm):
     b is the summit on the other side of the diagonal"""
 
     def __init__(self, a, b, color=BLACK, identifier=0):
-        super().__init__(identifier=identifier)
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(a, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(b, WBPoint):
@@ -190,7 +233,6 @@ class WBRectangle(WBForm):
             raise TypeError("The third parameter has to be a color")
         self._a = a
         self._b = b
-        self._color = color
 
     def __repr__(self):
         return """Rectangle from {} to {} and of color: {}
@@ -201,7 +243,7 @@ class WBRectangle(WBForm):
         Ex: rectangle from (2,4) to (8,14) => string = R2,4,8,14"""
         string = "R" + str(self._a.x) + "," + str(self._a.y) + ","
         string += str(self._b.x) + "," + str(self._b.y) + ","
-        string += str(self._identifier)
+        string += self._color.get_string() + "," + str(self._identifier)
         return string
 
     def check_inclusion(self, x_selection, y_selection):
@@ -243,7 +285,7 @@ class WBSquare(WBForm):
     b is the summit on the other side of the diagonal
     """
     def __init__(self, a, b, color=BLACK, identifier=0):
-        super().__init__(identifier=identifier)
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(a, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(b, WBPoint):
@@ -254,7 +296,6 @@ class WBSquare(WBForm):
             raise ValueError("This is not a square !!!!")
         self._a = a
         self._b = b
-        self._color = color
 
     def __repr__(self):
         return """Square of corners {} and {} and of color: {}
@@ -266,7 +307,7 @@ class WBSquare(WBForm):
         string = "S17,5,2"""
         string = "S" + str(self._a.x) + "," + str(self._a.y)
         string += "," + str(self._b.x) + "," + str(self._b.y) + ","
-        string += str(self._identifier)
+        string += self._color.get_string() + "," + str(self._identifier)
         return string
 
     def check_inclusion(self, x_selection, y_selection):
@@ -306,7 +347,7 @@ class WBCircle(WBForm):
     """c is the center of the circle, r is the radius   """
 
     def __init__(self, c, r, color=BLACK, identifier=0):
-        super().__init__(identifier=identifier)
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(c, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(r, int):
@@ -315,7 +356,6 @@ class WBCircle(WBForm):
             raise TypeError("The third parameter has to be a color")
         self._c = c
         self._r = r
-        self._color = color
 
     def __repr__(self):
         return """Circle of center {}, of radius: {} and of color: {}
@@ -326,7 +366,7 @@ class WBCircle(WBForm):
         Ex: Circle of center (17,5) and of radius 2 => string = S17,5,2"""
         string = "C" + str(self._c.x) + "," + str(self._c.y)
         string += "," + str(self._r) + ","
-        string += str(self._identifier)
+        string += self._color.get_string() + "," + str(self._identifier)
         return string
 
     def check_inclusion(self, x_selection, y_selection):
@@ -363,7 +403,7 @@ class WBEllipse(WBForm):
     """
 
     def __init__(self, c, rx, ry, color=BLACK, identifier=0):
-        super().__init__(identifier=identifier)
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(c, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(rx, int):
@@ -376,7 +416,6 @@ class WBEllipse(WBForm):
         self._c = c
         self._rx = rx
         self._ry = ry
-        self._color = color
 
     def __repr__(self):
         return """Ellipse of center {}, of horizontal radius: {},
@@ -389,14 +428,14 @@ class WBEllipse(WBForm):
         and of vertical radius 3 => string = "S17,5,7,3"""
         string = "E" + str(self._c.x) + "," + str(self._c.y)
         string += "," + str(self._rx) + "," + str(self._ry) + ","
-        string += str(self._identifier)
+        string += self._color.get_string() + "," + str(self._identifier)
         return string
 
     def check_inclusion(self, x_selection, y_selection):
         """method to check if selected point (x_selection, y_selection)
          is inside the circle"""
         if (x_selection - self._c.x)**2 / self._rx**2 + \
-        (y_selection - self._c.y)**2 / self._ry**2 < 1:
+                (y_selection - self._c.y)**2 / self._ry**2 < 1:
             return True
         else:
             return False
@@ -470,8 +509,8 @@ class WBPicture(WBForm):
 
 class WBLabel(WBForm):
 
-    def __init__(self, a, b, text_input, identifier=0):
-        super().__init__(identifier=identifier)
+    def __init__(self, a, b, text_input, color=BLACK, identifier=0):
+        super().__init__(color=color, identifier=identifier)
         if not isinstance(a, WBPoint):
             raise TypeError("The first parameter has to be a point")
         if not isinstance(text_input, str):
@@ -484,7 +523,8 @@ class WBLabel(WBForm):
     def get_string(self):
         return "T" + str(self._a.x) + "," + str(self._a.y) + "," + \
             str(self._b.x) + "," + str(self._b.y) + "," + \
-            self._text_input + "," + str(self._identifier)
+            self._text_input + "," + self._color.get_string() + "," + \
+            str(self._identifier)
 
     def check_inclusion(self, x_selection, y_selection):
         """method to check if selected point (x_selection, y_selection)
@@ -498,8 +538,8 @@ class WBLabel(WBForm):
             return False
 
     def __repr__(self):
-        return """Label of point {} to point {} and content '{}'.
-        """.format(self._a, self._b, self._text_input)
+        return """Label of point {} to point {} of color {} and content '{}'.
+        """.format(self._a, self._b, self._color, self._text_input)
 
     @property
     def a(self):

@@ -8,7 +8,8 @@ from kivy.uix.image import Image
 
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
-    WBCircle, WBPoint, WBPicture, WBLabel, LINE_WIDTH, STICKER_SIZE, STICKER_URL
+    WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
+    STICKER_URL
 
 from utils.command_class import DeleteRequest
 from client.popup2 import Input_Popup, Error_Popup
@@ -23,7 +24,7 @@ class WhiteboardInstance(RelativeLayout):
     # they change) and accessors
     touch_origin_x = NumericProperty(0)
     touch_origin_y = NumericProperty(0)
-    drawing_color = ListProperty([1, 0, 0, 1])
+    drawing_color = ListProperty([1.0, 0.0, 0.0, 1.0])
 
     def __init__(self, sending_queue, session_manager):
         super().__init__()
@@ -34,7 +35,6 @@ class WhiteboardInstance(RelativeLayout):
 
         with self.canvas:
             self.back = Rectangle(pos=(0, 0), size=(self.width, self.height))
-            Color(rgba=(1, 0, 0, 1))
 
         self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -168,6 +168,10 @@ class WhiteboardInstance(RelativeLayout):
         # fired. This condition prevents from drawing a form in this case.
         if self.drawing:
 
+            # getting and converting the currently selected drawing color to
+            # make it an attribute of the form object when storing the form
+            color_val = WBColor.to_8bit(self.drawing_color)
+
             if self._selected_form == Forms.LINE:
                 # prevents key error if for some reason the first click has not
                 # created a line object
@@ -176,17 +180,18 @@ class WhiteboardInstance(RelativeLayout):
                     touch.ud['line'].points += [touch.x, touch.y]
 
                     a = WBPoint(int(self.touch_origin_x),
-                              int(self.touch_origin_y))
+                                int(self.touch_origin_y))
                     b = WBPoint(int(touch.x), int(touch.y))
-                    group_name = \
-                        self.session_manager.store_internal_form(WBLine(a, b))
+
+                    group_name = self.session_manager.store_internal_form(
+                        WBLine(a, b, WBColor(*color_val)))
                     touch.ud['line'].group = group_name
 
             elif self._selected_form == Forms.RECT:
                 a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
                 b = WBPoint(int(touch.x), int(touch.y))
-                group_name = \
-                    self.session_manager.store_internal_form(WBRectangle(a, b))
+                group_name = self.session_manager.store_internal_form(
+                    WBRectangle(a, b, WBColor(*color_val)))
                 touch.ud['rect'].group = group_name
 
             elif self._selected_form == Forms.SQUARE:
@@ -200,25 +205,25 @@ class WhiteboardInstance(RelativeLayout):
                 y_min = min(int(touch.y), int(self.touch_origin_y))
                 a = WBPoint(x_min, y_min)
                 b = WBPoint(x_min + l, y_min + l)
-                group_name = \
-                    self.session_manager.store_internal_form(WBSquare(a, b))
+                group_name = self.session_manager.store_internal_form(
+                    WBSquare(a, b, WBColor(*color_val)))
                 touch.ud['square'].group = group_name
 
             elif self._selected_form == Forms.ELLIPSE:
                 c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
-                          int((touch.y + self.touch_origin_y) / 2))
+                            int((touch.y + self.touch_origin_y) / 2))
                 rx = int(abs(touch.x - self.touch_origin_x) / 2)
                 ry = int(abs(touch.y - self.touch_origin_y) / 2)
-                group_name = \
-                    self.session_manager.store_internal_form(WBEllipse(c, rx, ry))
+                group_name = self.session_manager.store_internal_form(
+                    WBEllipse(c, rx, ry, WBColor(*color_val)))
                 touch.ud['ellipse'].group = group_name
 
             elif self._selected_form == Forms.CIRCLE:
                 c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
-                          int((touch.y + self.touch_origin_y) / 2))
+                            int((touch.y + self.touch_origin_y) / 2))
                 r = int(abs(touch.x - self.touch_origin_x) / 2)
-                group_name = \
-                    self.session_manager.store_internal_form(WBCircle(c, r))
+                group_name = self.session_manager.store_internal_form(
+                    WBCircle(c, r, WBColor(*color_val)))
                 touch.ud['circle'].group = group_name
 
             elif self.selected_form == Forms.TEXT:
@@ -243,17 +248,24 @@ class WhiteboardInstance(RelativeLayout):
         return True
 
     def _update_draw_text(self, x, y, instance):
-        """Method called to draw a text on the board, after the user has
-        completed the popup asking for the text he wnats to write"""
+        """Callback called to draw a text on the board, after the user has
+        completed the popup asking for the text he wants to write"""
         a = WBPoint(int(self.touch_origin_x), int(self.touch_origin_y))
         b = WBPoint(int(x), int(y))
 
+        # getting and converting the currently selected drawing color to
+        # make it an attribute of the form object when storing the form
+        color_val = WBColor.to_8bit(self.drawing_color)
+
         group_id = self.session_manager.store_internal_form(
-            WBLabel(a, b, self._draw_text_popup.return_value))
+            WBLabel(a,
+                    b,
+                    self._draw_text_popup.return_value,
+                    WBColor(*color_val)))
 
         with self.canvas:
             label = Label(text=self._draw_text_popup.return_value,
-                          color=(1, 0, 0, 1),
+                          color=self.drawing_color,
                           size=(x - self.touch_origin_x,
                                 y - self.touch_origin_y),
                           pos=(self.touch_origin_x, self.touch_origin_y))
@@ -264,6 +276,8 @@ class WhiteboardInstance(RelativeLayout):
         storage. It is especilly usefull when receiving a from from the network"""
 
         with self.canvas:
+            rcv_color = form.color.get_relative_values()
+            Color(rgba=rcv_color)
 
             if isinstance(form, WBLine):
                 group_name = self.session_manager.store_external_form(form)
