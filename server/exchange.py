@@ -1,16 +1,14 @@
 import socket
 from threading import Thread, Event
 
-from server.stockage_serveur import Stock
+from server.server_database import ServerDatabase
 
-# Keys: sockets of the clients ; Values: message received from the clients
-connexions = {}
 
 
 class ExchangeThread(Thread):
     """Class defining the exchange process on the server side"""
 
-    def __init__(self, sock):
+    def __init__(self, sock, server_database):
         Thread.__init__(self)
         if not isinstance(sock, socket.socket) or sock is None:
             raise TypeError("Needs a real socket")
@@ -18,20 +16,9 @@ class ExchangeThread(Thread):
         self.sock = sock
         self.__exit_request = Event()
         self.username = ""
-        self.reception = Stock(self.username)
-        global connexions
-        connexions[self.sock] = self.reception
+        self.server_database = server_database
+        self.server_database.connexions.append(self.sock)
 
-    def _get_tableau(self):
-        string = ""
-        for sock in connexions:
-            try:
-                string += connexions[sock].convert_stock_into_str()
-            except AttributeError:
-                pass
-        string = string[:-2]
-        print(string)
-        return string.encode()
 
     def _get_message(self):
         data = bytes()
@@ -44,16 +31,13 @@ class ExchangeThread(Thread):
         # client associated to the exchange thread
         message = message.encode()
         if all_users:
-            for client in connexions:
+            for client in self.server_database.connexions:
                     client.send(message)
         else:
-            for client in connexions:
+            for client in self.server_database.connexions:
                 if client != self.sock:
                     client.send(message)
 
-    def _stock_data(self, data):
-        self.reception.new_object(data)
-        return self.reception
 
     def analyze_command(self):
         message = self._get_message()
@@ -68,28 +52,24 @@ class ExchangeThread(Thread):
             message = message[i + 1:]
             command = first_message[0]
             if command == "D":
-                id = message[1:]
-                for sock in connexions:
-                    try:
-                        self.reception.delete_form(id)
-                    except KeyError:
-                        pass
+                form_id = first_message[1:]
+                print(form_id)
+                self.server_database.delete_form(form_id)
                 self._send_message(first_message)
             elif command == "Q":
                 self._stop_listenning()
-            elif command == "Z":
+            elif command == "Z" or command == "N":
                 self._send_message(first_message)
-            elif command == "N":
-                self._send_message(first_message)
-            else:
-                self._stock_data(first_message)
-                if len(connexions) >= 2:
+            elif command == "R" or command == "S" or command == "P" \
+                  or command == "E" or command == "L" or command == "C" \
+                  or command == "T":
+                self.server_database.new_object(first_message)
+                if len(self.server_database.connexions) >= 2:
                     self._send_message(first_message)
         else:
             pass
 
     def _get_user_name(self):
-
         self.username = self._get_message()
         print("Start of the connection with {} ".format(self.username))
         self.sock.send("O".encode())
@@ -108,9 +88,26 @@ class ExchangeThread(Thread):
 
         self._get_user_name()
 
-        if len(connexions) >= 2:
+        if len(self.server_database.connexions) >= 2:
+            
             print("envoi tableau")
-            self.sock.send(self._get_tableau())
+            tableau = self.server_database.convert_database_into_str()
+            print(tableau)
+            tableau = tableau.encode()
+            self.sock.send(tableau)
+
+
+        #TODO : Envoi des objets un par un mais ne fonctione pas
+        """if len(self.server_database.connexions) >= 2:
+            print("envoi tableau")
+            n = len(self.server_database.form_pile) -1
+            while n >= 0:
+                form_id = self.server_database.form_pile[n]
+                string = self.server_database.stock[form_id].get_string() + "."
+                print(string)
+                string = string.encode()
+                self.sock.send(string)
+                n = n - 1"""
 
         while not self.__exit_request.is_set():
             self.analyze_command()
