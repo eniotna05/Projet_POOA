@@ -82,15 +82,17 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0))
 
             elif self._selected_form == Forms.IMAGE:
-                a = WBPoint(int(touch.x - STICKER_SIZE / 2),
-                          int(touch.y - STICKER_SIZE / 2))
-                touch.ud['image'] = Image(
-                    source=STICKER_URL,
-                    pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
-                    size=(STICKER_SIZE, STICKER_SIZE))
-
-                group_name = self.session_manager.store_internal_form(WBPicture(a))
-                touch.ud['image'].canvas.group = group_name
+                if touch.x - STICKER_SIZE / 2 <= 0  or  touch.y - STICKER_SIZE / 2 <= 0:
+                    print("Image does not fit into the board")
+                else:
+                    a = WBPoint(int(touch.x - STICKER_SIZE / 2),
+                              int(touch.y - STICKER_SIZE / 2))
+                    touch.ud['image'] = Image(
+                        source=STICKER_URL,
+                        pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
+                        size=(STICKER_SIZE, STICKER_SIZE))
+                    group_name = self.session_manager.store_internal_form(WBPicture(a))
+                    touch.ud['image'].canvas.group = group_name
 
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'] = Rectangle(
@@ -203,8 +205,14 @@ class WhiteboardInstance(RelativeLayout):
 
                 # take the bottom left corner so the coordinates will be positive
                 # the square object takes only positive coordinates
-                x_min = min(int(touch.x), int(self.touch_origin_x))
-                y_min = min(int(touch.y), int(self.touch_origin_y))
+                if dx >0:
+                    x_min = int(self.touch_origin_x)
+                else:
+                    x_min = int(self.touch_origin_x - l)
+                if dy > 0:
+                    y_min = int(self.touch_origin_y)
+                else:
+                    y_min = int(self.touch_origin_y -l)
                 a = WBPoint(x_min, y_min)
                 b = WBPoint(x_min + l, y_min + l)
                 group_name = self.session_manager.store_internal_form(
@@ -221,9 +229,18 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['ellipse'].group = group_name
 
             elif self._selected_form == Forms.CIRCLE:
-                c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
-                            int((touch.y + self.touch_origin_y) / 2))
-                r = int(abs(touch.x - self.touch_origin_x) / 2)
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                r = int(max(abs(dx),abs(dy)) / 2)
+                if dx > 0:
+                    cx = int(self.touch_origin_x + r)
+                else:
+                    cx = int(self.touch_origin_x - r)
+                if dy > 0:
+                    cy = int(self.touch_origin_y + r)
+                else:
+                    cy = int(self.touch_origin_y - r)
+                c = WBPoint(cx,cy)
                 group_name = self.session_manager.store_internal_form(
                     WBCircle(c, r, WBColor(*color_val)))
                 touch.ud['circle'].group = group_name
@@ -308,7 +325,7 @@ class WhiteboardInstance(RelativeLayout):
 
             elif isinstance(form, WBEllipse):
                 group_name = self.session_manager.store_external_form(form)
-                Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry / 2),
+                Ellipse(pos=(form.c.x - form.rx, form.c.y - form.ry),
                         size=(form.rx * 2, form.ry * 2),
                         group=group_name)
 
@@ -326,7 +343,6 @@ class WhiteboardInstance(RelativeLayout):
                               pos=(form.c.x, form.c.y),
                               size=(STICKER_SIZE, STICKER_SIZE))
                 image.canvas.group = group_name
-            print(len(self.canvas.children))
 
     def delete_form_in_canvas(self, form_id, send_to_server=False):
         """Method called to remove a form from the canvas and from the local
