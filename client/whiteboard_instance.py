@@ -5,6 +5,8 @@ from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
+from time import sleep
+
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, LINE_WIDTH, STICKER_SIZE, STICKER_URL
@@ -248,6 +250,7 @@ class WhiteboardInstance(RelativeLayout):
 
         with self.canvas:
 
+
             if isinstance(form, WBLine):
                 group_name = self.session_manager.store_external_form(form)
                 Line(points=(form.a.x, form.a.y, form.b.x, form.b.y),
@@ -292,6 +295,7 @@ class WhiteboardInstance(RelativeLayout):
                               pos=(form.c.x, form.c.y),
                               size=(STICKER_SIZE, STICKER_SIZE))
                 image.canvas.group = group_name
+            print(len(self.canvas.children))
 
     def delete_form_in_canvas(self, form_id, send_to_server=False):
         """Method called to remove a form from the canvas and from the local

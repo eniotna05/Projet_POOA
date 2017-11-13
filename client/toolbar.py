@@ -122,6 +122,7 @@ class Toolbar(BoxLayout):
     # TODO : remove this funtion / button
     def print_canvas(self, obj):
         print(self.white_board.canvas.children)
+        print(len(self.white_board.canvas.children))
 
     # TODO : remove this funtion / button
     def print_local_database(self, obj):

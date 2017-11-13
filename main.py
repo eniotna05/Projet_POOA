@@ -1,7 +1,7 @@
 # This file handles the main thread of the client application
 # Before launching it, make sure that the server is launched with
 # "python server.py" command (therfore the client can connect)
-
+from time import sleep
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -46,7 +46,7 @@ class WhiteboardApp(App):
         parent.add_widget(self.board)
         parent.add_widget(self.toolbar, 0)
 
-        Clock.schedule_interval(self.execute_command, 1 / 30)
+        Clock.schedule_interval(self.execute_command, 1/30)
 
         return parent
 
