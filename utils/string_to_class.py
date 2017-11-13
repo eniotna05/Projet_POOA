@@ -1,5 +1,5 @@
 from utils.form_class import WBCircle, WBEllipse, WBRectangle, WBSquare, \
-    WBLine, WBLabel, WBPoint, WBPicture
+    WBLine, WBLabel, WBPoint, WBPicture, WBColor
 
 from utils.command_class import Create, Delete, Move, Quit, Hello, \
     DeleteRequest, NegativeAnswer
@@ -9,7 +9,11 @@ def string_to_circle(string):
     parameters = string.split(",")
     return WBCircle(WBPoint(int(parameters[0]), int(parameters[1])),
                     int(parameters[2]),
-                    identifier=parameters[3])
+                    color=WBColor(int(parameters[3]),
+                                  int(parameters[4]),
+                                  int(parameters[5]),
+                                  int(parameters[6])),
+                    identifier=parameters[7])
 
 
 def string_to_ellipse(string):
@@ -17,36 +21,56 @@ def string_to_ellipse(string):
     return WBEllipse(WBPoint(int(parameters[0]), int(parameters[1])),
                      int(parameters[2]),
                      int(parameters[3]),
-                     identifier=parameters[4])
+                     color=WBColor(int(parameters[4]),
+                                   int(parameters[5]),
+                                   int(parameters[6]),
+                                   int(parameters[7])),
+                     identifier=parameters[8])
 
 
 def string_to_square(string):
     parameters = string.split(",")
     return WBSquare(WBPoint(int(parameters[0]), int(parameters[1])),
                     WBPoint(int(parameters[2]), int(parameters[3])),
-                    identifier=parameters[4])
+                    color=WBColor(int(parameters[4]),
+                                  int(parameters[5]),
+                                  int(parameters[6]),
+                                  int(parameters[7])),
+                    identifier=parameters[8])
 
 
 def string_to_lign(string):
     parameters = string.split(",")
     return WBLine(WBPoint(int(parameters[0]), int(parameters[1])),
                   WBPoint(int(parameters[2]), int(parameters[3])),
-                  identifier=parameters[4])
+                  color=WBColor(int(parameters[4]),
+                                int(parameters[5]),
+                                int(parameters[6]),
+                                int(parameters[7])),
+                  identifier=parameters[8])
 
 
 def string_to_rectangle(string):
     parameters = string.split(",")
     return WBRectangle(WBPoint(int(parameters[0]), int(parameters[1])),
                        WBPoint(int(parameters[2]), int(parameters[3])),
-                       identifier=parameters[4])
+                       color=WBColor(int(parameters[4]),
+                                     int(parameters[5]),
+                                     int(parameters[6]),
+                                     int(parameters[7])),
+                       identifier=parameters[8])
 
 
 def string_to_label(string):
     parameters = string.split(",")
     return WBLabel(WBPoint(int(parameters[0]), int(parameters[1])),
                    WBPoint(int(parameters[2]), int(parameters[3])),
-                   parameters[4],
-                   identifier=parameters[5])
+                   text_input=parameters[4],
+                   color=WBColor(int(parameters[5]),
+                                 int(parameters[6]),
+                                 int(parameters[7]),
+                                 int(parameters[8])),
+                   identifier=parameters[9])
 
 
 def string_to_image(string):
