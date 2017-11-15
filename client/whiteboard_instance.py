@@ -6,15 +6,13 @@ from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
-from time import sleep
-
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
     STICKER_URL
 
 from utils.command_class import DeleteRequest
-from client.popup2 import Input_Popup, Error_Popup
+from client.popup import Input_Popup, Error_Popup
 
 
 class WhiteboardInstance(RelativeLayout):

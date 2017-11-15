@@ -1,20 +1,17 @@
 # This file handles the main thread of the client application
 # Before launching it, make sure that the server is launched with
 # "python server.py" command (therfore the client can connect)
-from time import sleep
-
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from queue import Queue
 
-from client.popup import Start_Popup
 from client.session_manager import SessionManager
 from client.whiteboard_instance import WhiteboardInstance
 from client.toolbar import Toolbar
 from client.client import Client
 from utils.command_class import Create, Delete, DeleteRequest, NegativeAnswer
-from client.popup2 import *
+from client.popup import Input_Popup, Question_Popup, Error_Popup
 
 
 class WhiteboardApp(App):
