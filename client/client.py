@@ -35,20 +35,20 @@ class Client(Thread):
 
         # tests if the server sends HLO
         server_msg = self._sock.recv(1024)
-        if server_msg != b"H":
+        if server_msg != b"H.":
             raise ValueError("Protocol error: H expected")
 
         # Sends HLO back & waits for confirmation
-        self._sock.send(u"H".encode())
+        self._sock.send(u"H.".encode())
         server_msg = self._sock.recv(1024)
-        if server_msg != b"O":
+        if server_msg != b"O.":
             raise ValueError("Protocol error: O expected")
 
         # Sends client_id
         self._sock.send(self.session_manager.client_id.encode())
 
         server_msg = self._sock.recv(1024)
-        if server_msg != b"O":
+        if server_msg != b"O.":
             raise ValueError("Protocol error: O expected")
         self.session_manager.is_connected = True
 
@@ -59,10 +59,10 @@ class Client(Thread):
         self._reception.join()
         self._envoi.join()
 
-        self._sock.send(u"Q".encode())
+        self._sock.send(u"Q.".encode())
         try:
             server_msg = self._sock.recv(1024)
-            if server_msg != b"O":
+            if server_msg != b"O.":
                 raise ValueError("Protocol error: O expected")
         except socket.timeout:
             pass
