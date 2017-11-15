@@ -95,13 +95,11 @@ class WhiteboardApp(App):
                     refusal_popup = Error_Popup(text_content=refusal_text)
                     refusal_popup.open()
 
-
     def update_answer(self, instance):
         if instance.return_value == "no":
             self.sending_queue.put(NegativeAnswer(self.command, self.requester).get_string())
         else:
             self.board.delete_form_in_canvas(self.command, send_to_server=True)
-
 
     def on_stop(self):
         self.client_thread.quit()

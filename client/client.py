@@ -66,6 +66,7 @@ class Client(Thread):
                 raise ValueError("Protocol error: O expected")
         except socket.timeout:
             pass
+        self._sock.close()
         self.session_manager.is_connected = False
 
     def quit(self):
@@ -74,7 +75,6 @@ class Client(Thread):
             self._reception.quit()
         if self._envoi:
             self._envoi.quit()
-        print('Exit request in client set')
 
 
 class Envoi(Thread):
@@ -122,9 +122,8 @@ class Reception(Thread):
     def _get_message(self):
         """Receives a 3-characters long message"""
         command = bytes()
-        # TODO : This function is blocking, so it prenvents from quitting the app
-        # properly. We need to modify that behaviour (server closes connection,
-        # non-blocking socket or socket timeout)
+        # This function is blocking, so it prevents from quitting the app
+        # properly. So we put a timeout on the socket to enable propper quitting
         try:
             command += self._sock.recv(1024)
         except socket.timeout:

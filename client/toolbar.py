@@ -1,3 +1,4 @@
+from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
@@ -14,11 +15,11 @@ Button_normal_theme = "atlas://data/images/defaulttheme/button"
 class Toolbar(BoxLayout):
     """Class defining the buttons of the left-side toolbar"""
 
-    def __init__(self, white_board, client_thread_manager, session_manager):
+    def __init__(self, white_board, client_thread, session_manager):
         super().__init__(orientation='vertical')
         self.white_board = white_board
         self.selected_form = None
-        self.client_thread_manager = client_thread_manager
+        self.client_thread = client_thread
         self.session_manager = session_manager
 
         Clock.schedule_interval(self.update_network_status, 1 / 30)
@@ -105,7 +106,7 @@ class Toolbar(BoxLayout):
         self.session_manager.client_id = value.text
 
     def quit(self, obj):
-        self.client_thread_manager.quit()
+        App.get_running_app().stop()
 
     def delete_last(self, obj):
         last_form_id = self.session_manager.extract_last_created()
@@ -146,7 +147,6 @@ class Toolbar(BoxLayout):
             self.white_board.selected_form = Forms.LINE
             self.select_line_btn.background_color = [0, 0, 0, 0]
 
-
     def select_rect(self, obj):
         if self.white_board.selected_form == Forms.RECT:
             self.white_board.selected_form = None
@@ -183,6 +183,3 @@ class Toolbar(BoxLayout):
         else:
             self.white_board.selected_form = Forms.IMAGE
             self.select_image_btn.background_color = [0, 0, 0, 0]
-
-
-
