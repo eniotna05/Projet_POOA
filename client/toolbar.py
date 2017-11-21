@@ -1,10 +1,11 @@
+# This file handles the toolbar used to select forms, colours, delete requests, etc...
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.clock import Clock
 from kivy.uix.colorpicker import ColorPicker
-
 from utils.form_types import Forms
 
 Button_pushed_theme = "atlas://data/images/defaulttheme/button_pressed"
@@ -12,7 +13,7 @@ Button_normal_theme = "atlas://data/images/defaulttheme/button"
 
 
 class Toolbar(BoxLayout):
-    """Class defining the buttons of the left-side toolbar"""
+    """Class defining the buttons of the right-side toolbar"""
 
     def __init__(self, white_board, client_thread, session_manager):
         super().__init__(orientation='vertical')
@@ -81,7 +82,7 @@ class Toolbar(BoxLayout):
         ]
 
     def unpress_all(self, obj):
-        """Change the background_color of the button when another one is
+        """Changes the background_color of the button when another one is
         selected"""
         for button in self.__button_to_unpress_list:
             button.background_color = [1, 1, 1, 1]

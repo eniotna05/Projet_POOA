@@ -11,7 +11,7 @@ from client.whiteboard_instance import WhiteboardInstance
 from client.toolbar import Toolbar
 from client.client import Client
 from utils.command_class import Create, Delete, DeleteRequest, NegativeAnswer
-from client.popup import Initial_Popup, Question_Popup, Error_Popup
+from client.popup import InitialPopup, QuestionPopup, ErrorPopup
 
 EXECUTE_COMMAND_INTERVAL = 1 / 25
 
@@ -33,11 +33,8 @@ class WhiteboardApp(App):
                                self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
-        self.__start_popup = Initial_Popup("Connection",
-                                           "Please enter your id & the server IP",
-                                           "John Doe",
-                                           "localhost",
-                                           Error_Popup("Some fields are empty"))
+        self.__start_popup = InitialPopup("Connection", "Please enter your id & the server IP", "John Doe",
+                                          "localhost", ErrorPopup("Some fields are empty"))
         self.__question_popup = Question_Popup()
         self.__command = ""
         self.__requester = ""
@@ -81,7 +78,7 @@ class WhiteboardApp(App):
                         " wishes to delete \n" + \
                         "one of the form that you created : " + \
                         str(new_command.form_id)
-                    self.__question_popup = Question_Popup("Someone would like to delete one of your shape", question)
+                    self.__question_popup = QuestionPopup("Someone would like to delete one of your shape", question)
                     self.__question_popup.bind(on_dismiss=self.update_answer)
                     self.__question_popup.open()
                     self.__command = new_command.form_id
@@ -93,7 +90,7 @@ class WhiteboardApp(App):
                     refusal_text = str(emettor) + \
                         "does not wish you to delete his form:" + \
                         str(new_command.form_id)
-                    refusal_popup = Error_Popup(text_content=refusal_text)
+                    refusal_popup = ErrorPopup(text_content=refusal_text)
                     refusal_popup.open()
 
     def update_answer(self, instance):

@@ -1,3 +1,6 @@
+# This file handles the activity on the whitebard, allowing to draw forms from
+# the selected buttons.
+
 from functools import partial
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
@@ -5,12 +8,10 @@ from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
-
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
     STICKER_URL
-
 from utils.command_class import DeleteRequest
 from client.popup import Input_Popup, Error_Popup
 

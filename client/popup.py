@@ -1,3 +1,5 @@
+# This file is in charge of defining the popups used in the app
+
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -5,7 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 
 
-class WB_Popup(Popup):
+class WBPopup(Popup):
     """Generic & custom class defining a Popup"""
 
     def __init__(self, title="", text_content=""):
@@ -22,23 +24,23 @@ class WB_Popup(Popup):
         self.dismiss()
 
 
-class Error_Popup(WB_Popup):
+class ErrorPopup(WBPopup):
     """Popup showing an error message to the user and a "OK" button"""
 
     def __init__(self, text_content="Unknown Error !"):
-        WB_Popup.__init__(self, title="Error", text_content=text_content)
+        WBPopup.__init__(self, title="Error", text_content=text_content)
         self._button = Button(text="Ok")
         self._button.bind(on_release=self.close)
         self.content.add_widget(self._button)
 
 
-class Input_Popup(WB_Popup):
+class InputPopup(WBPopup):
     """Popup asking for some text user input, with a "OK" button. The text that
     the user typed in is stored in the public variable "return_value for later
     reuse"""
 
     def __init__(self, title="", text_content="", hint_text="", error_popup=None):
-        WB_Popup.__init__(self, title=title, text_content=text_content)
+        WBPopup.__init__(self, title=title, text_content=text_content)
         self._error_popup = error_popup
         self._return_value = ""
 
@@ -51,7 +53,7 @@ class Input_Popup(WB_Popup):
         self.content.add_widget(self._button)
 
     def on_enter(self, instance):
-
+        # Action when the user presses 'Enter' on his keyboard
         if instance.text == "":
             if self._error_popup is not None:
                 self._error_popup.open()
@@ -60,6 +62,7 @@ class Input_Popup(WB_Popup):
             self.dismiss()
 
     def on_validate(self, instance):
+        # Action when the user presses the 'Ok' button in the popup
         if self._text_input.text == "":
             if self._error_popup is not None:
                 self._error_popup.open()
@@ -72,14 +75,14 @@ class Input_Popup(WB_Popup):
         return self._return_value
 
 
-class Initial_Popup(Input_Popup):
+class InitialPopup(InputPopup):
     """Special Input_Popup, showing two text input boxes instead of one. The
     second text input is asking for an IP address, and that address is stored
     in the public "ip_value" variable"""
 
     def __init__(self, title="", text_content="", hint_text="", hint_IP="",
                  error_popup=None):
-        Input_Popup.__init__(self, title=title, text_content=text_content,
+        InputPopup.__init__(self, title=title, text_content=text_content,
                              hint_text=hint_text, error_popup=error_popup)
         self._ip_value = ""
 
@@ -105,12 +108,12 @@ class Initial_Popup(Input_Popup):
         return self._ip_value
 
 
-class Question_Popup(WB_Popup):
-    """Popup asking a question to the user qith a yes/no answer. The result is
+class QuestionPopup(WBPopup):
+    """Popup asking a question to the user with a yes/no answer. The result is
     stored as a string "yes" or "no" in the public variable "return_value"."""
 
     def __init__(self, title="", question=""):
-        WB_Popup.__init__(self, title=title, text_content=question)
+        WBPopup.__init__(self, title=title, text_content=question)
         self._return_value = ""
 
         self._yes_button = Button(text="yes")
