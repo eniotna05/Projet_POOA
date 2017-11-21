@@ -8,7 +8,6 @@ from utils.string_to_class import string_to_command
 
 WAITING_QUEUE_TIMEOUT = 0.05
 SOCKET_TIMEOUT = 0.5
-SERVER_URL = 'localhost'
 SERVER_PORT = 12800
 
 
@@ -25,30 +24,31 @@ class Client(Thread):
 
     def run(self):
 
-        while self.session_manager.client_id is None:
+        while self.session_manager.client_id is None or \
+                self.session_manager.server_ip is None:
             time.sleep(0.1)
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self._sock.settimeout(SOCKET_TIMEOUT)
-        self._sock.connect((SERVER_URL, SERVER_PORT))
+        self._sock.connect((self.session_manager.server_ip, SERVER_PORT))
 
         # tests if the server sends HLO
         server_msg = self._sock.recv(1024)
-        if server_msg != b"H":
+        if server_msg != b"H.":
             raise ValueError("Protocol error: H expected")
 
         # Sends HLO back & waits for confirmation
-        self._sock.send(u"H".encode())
+        self._sock.send(u"H.".encode())
         server_msg = self._sock.recv(1024)
-        if server_msg != b"O":
+        if server_msg != b"O.":
             raise ValueError("Protocol error: O expected")
 
         # Sends client_id
         self._sock.send(self.session_manager.client_id.encode())
 
         server_msg = self._sock.recv(1024)
-        if server_msg != b"O":
+        if server_msg != b"O.":
             raise ValueError("Protocol error: O expected")
         self.session_manager.is_connected = True
 
@@ -59,22 +59,21 @@ class Client(Thread):
         self._reception.join()
         self._envoi.join()
 
-        self._sock.send(u"Q".encode())
+        self._sock.send(u"Q.".encode())
         try:
             server_msg = self._sock.recv(1024)
-            if server_msg != b"O":
+            if server_msg != b"O.":
                 raise ValueError("Protocol error: O expected")
         except socket.timeout:
             pass
+        self._sock.close()
         self.session_manager.is_connected = False
 
     def quit(self):
-        # TODO : refactor code and remove these conditions
         if self._reception:
             self._reception.quit()
         if self._envoi:
             self._envoi.quit()
-        print('Exit request in client set')
 
 
 class Envoi(Thread):
@@ -122,9 +121,8 @@ class Reception(Thread):
     def _get_message(self):
         """Receives a 3-characters long message"""
         command = bytes()
-        # TODO : This function is blocking, so it prenvents from quitting the app
-        # properly. We need to modify that behaviour (server closes connection,
-        # non-blocking socket or socket timeout)
+        # This function is blocking, so it prevents from quitting the app
+        # properly. So we put a timeout on the socket to enable propper quitting
         try:
             command += self._sock.recv(1024)
         except socket.timeout:

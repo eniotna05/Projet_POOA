@@ -11,6 +11,7 @@ class SessionManager():
 
     def __init__(self, sending_queue):
         self._client_id = None
+        self._server_ip = None
         self._is_connected = False
         self.local_database = {}
         self.form_pile = []
@@ -28,6 +29,14 @@ class SessionManager():
     @client_id.setter
     def client_id(self, client_id=None):
         self._client_id = client_id
+
+    @property
+    def server_ip(self):
+        return self._server_ip
+
+    @server_ip.setter
+    def server_ip(self, ip):
+        self._server_ip = ip
 
     @property
     def is_connected(self):
