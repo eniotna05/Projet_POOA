@@ -164,8 +164,6 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'].size = touch.x - self.touch_origin_x, \
                     touch.y - self.touch_origin_y
-
-
         return True
 
     def on_touch_up(self, touch):
@@ -251,7 +249,7 @@ class WhiteboardInstance(RelativeLayout):
 
             elif self.selected_form == Forms.TEXT:
 
-                self._draw_text_popup = Input_Popup(
+                self._draw_text_popup = InputPopup(
                     title="Draw Text",
                     text_content="Enter the text you want to write",
                     error_popup=Error_Popup(text_content="You have not written any text")
