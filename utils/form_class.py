@@ -1,13 +1,14 @@
 # File defining the custom forms used in the application.
 # The get_string methods are usually called to transform the objects into
 # strings that can be transferred over the socket.
-# The check_inclusion methods are called to check if a point is in the area of
-# a form
+# The check_inclusion methods are called to check if a point is in the area
+#  of a form
 
 ABSCISS_MAX = 10000
 ORDINATE_MAX = 10000
 LINE_WIDTH = 5
 STICKER_SIZE = 50
+
 STICKER_URL = './images/snice.png'
 
 
@@ -140,8 +141,8 @@ class WBLine(WBForm):
         self._b = b
 
     def __repr__(self):
-        return """Lign from {} to {} and of color: {}
-        and of id: {}""".format(self._a, self._b, self._color, self._identifier)
+        return """Lign from {} to {} and of color: {} and of 
+        id: {}""".format(self._a, self._b, self._color, self._identifier)
 
     def get_string(self):
         """method to transform lign into string
@@ -197,18 +198,6 @@ class WBLine(WBForm):
         else:
             return False
 
-    def change_position(self, x, y):
-        """method to change position of the form
-        horizontal movement = x , vertical movement = y"""
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The second parameter has to be an integer")
-
-        self._a.x += x
-        self._b.x += x
-        self._a.y += y
-        self._b.y += y
 
     @property
     def a(self):
@@ -235,8 +224,8 @@ class WBRectangle(WBForm):
         self._b = b
 
     def __repr__(self):
-        return """Rectangle from {} to {} and of color: {}
-        and of id: {}""".format(self._a, self._b, self._color, self._identifier)
+        return """Rectangle from {} to {} and of color: {} and of id:
+         {}""".format(self._a, self._b, self._color, self._identifier)
 
     def get_string(self):
         """method to transform rectangle into string
@@ -256,19 +245,6 @@ class WBRectangle(WBForm):
             return True
         else:
             return False
-
-    def change_position(self, x, y):
-        """method to change position of the form
-        horizontal movement = x , vertical movement = y"""
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The second parameter has to be an integer")
-
-        self._a.x += x
-        self._b.x += x
-        self._a.y += y
-        self._b.y += y
 
     @property
     def a(self):
@@ -298,8 +274,8 @@ class WBSquare(WBForm):
         self._b = b
 
     def __repr__(self):
-        return """Square of corners {} and {} and of color: {}
-        and of id: {}""".format(self._a, self._b, self._color, self._identifier)
+        return """Square of corners {} and {} and of color: {} and of 
+        id: {}""".format(self._a, self._b, self._color, self._identifier)
 
     def get_string(self):
         """method to transform square into string
@@ -320,19 +296,6 @@ class WBSquare(WBForm):
             return True
         else:
             return False
-
-    def change_position(self, x, y):
-        """method to change position of the form
-        horizontal movement = x , vertical movement = y"""
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The second parameter has to be an integer")
-
-        self._a.x += x
-        self._b.x += x
-        self._a.y += y
-        self._b.y += y
 
     @property
     def a(self):
@@ -358,8 +321,8 @@ class WBCircle(WBForm):
         self._r = r
 
     def __repr__(self):
-        return """Circle of center {}, of radius: {} and of color: {}
-        and of id: {}""".format(self._c, self._r, self._color, self._identifier)
+        return """Circle of center {}, of radius: {} and of color: {} and of 
+        id: {}""".format(self._c, self._r, self._color, self._identifier)
 
     def get_string(self):
         """method to transform circle into string
@@ -372,21 +335,11 @@ class WBCircle(WBForm):
     def check_inclusion(self, x_selection, y_selection):
         """method to check if selected point (x_selection, y_selection)
          is inside the circle"""
-        if (x_selection - self._c.x)**2 + (y_selection - self._c.y)**2 < self._r**2:
+        if (x_selection - self._c.x)**2 + \
+                        (y_selection - self._c.y)**2 < self._r**2:
             return True
         else:
             return False
-
-    def change_position(self, x, y):
-        """method to change position of the form
-        horizontal movement = x , vertical movement = y"""
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The second parameter has to be an integer")
-
-        self._c.x += x
-        self._c.y += y
 
     @property
     def c(self):
@@ -440,17 +393,6 @@ class WBEllipse(WBForm):
         else:
             return False
 
-    def change_position(self, x, y):
-        """method to change position of the form
-        horizontal movement = x , vertical movement = y"""
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The second parameter has to be an integer")
-
-        self._c.x += x
-        self._c.y += y
-
     @property
     def c(self):
         return self._c
@@ -465,7 +407,7 @@ class WBEllipse(WBForm):
 
 
 class WBPicture(WBForm):
-    """c is the left bottom point of the pic (Image size is a fixed parameter),
+    """c is the left bottom point of the pic (Image size is a fixed parameter)
     """
 
     def __init__(self, c, identifier=0):
@@ -494,27 +436,24 @@ class WBPicture(WBForm):
         else:
             return False
 
-    def change_position(self, x, y):
-        if not isinstance(x, int):
-            raise TypeError("The first parameter has to be an integer")
-        if not isinstance(y, int):
-            raise TypeError("The first parameter has to be an integer")
-        self._c.x += x
-        self._c.y += y
-
     @property
     def c(self):
         return self._c
 
 
 class WBLabel(WBForm):
+    """a is one of the corner of the label, b is the diagonal corner
+     text_input is the content of the lable (a string)
+        """
 
     def __init__(self, a, b, text_input, color=BLACK, identifier=0):
         super().__init__(color=color, identifier=identifier)
         if not isinstance(a, WBPoint):
             raise TypeError("The first parameter has to be a point")
+        if not isinstance(b, WBPoint):
+            raise TypeError("The second parameter has to be a point")
         if not isinstance(text_input, str):
-            raise TypeError("The first parameter has to be a string")
+            raise TypeError("The third parameter has to be a string")
 
         self._a = a
         self._b = b
@@ -538,8 +477,9 @@ class WBLabel(WBForm):
             return False
 
     def __repr__(self):
-        return """Label of point {} to point {} of color {} and content '{}'.
-        """.format(self._a, self._b, self._color, self._text_input)
+        return """Label of point {} to point {} of color {} and content
+         '{}' and of id: {}.""".format(self._a, self._b,
+                        self._color, self._text_input, self._identifier)
 
     @property
     def a(self):

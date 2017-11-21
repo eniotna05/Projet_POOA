@@ -43,3 +43,13 @@ lors de la construction des objets les contenant, on les considère comme public
 (on accède in fine au même objet en mémoire).
 Les variables des objets Kivy hérités ne respectent pas les conventions de
 nommage avec "\_" ou "\__"
+
+
+### Bugs détectés
+- Un bug intervient parfois lorsqu'un client se connecte, crée de nombreuses
+images et ensuite un autre client se connecte, toutes les images créées
+précèdemment ne sont pas récupéré. Le problème ne se situe pas au niveau de
+notre base de donné car tout est bien récupéré. Il se situe au niveau du canvas
+kivy qui très probablement ne parvient pas à éxécuter de nombreuses informations
+données à la suite. La modification de l'horloge kivy ou la mise en place de buffer
+ne résoudent pas le problème.

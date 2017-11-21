@@ -1,5 +1,6 @@
 # This file defines different classes that correspond to different commands
-# that can be executed on the client
+# that are sent by clients to other clients through the server. They are
+# converted to string form when sent
 
 
 class Create:
@@ -34,8 +35,8 @@ class DeleteRequest:
 
     def get_string(self):
         """method to transform command into string
-        Ex: ask of deletion of Form 45, owned by antoine, request emmited by yoann
-        => return Zantoine45,yoann"""
+        Ex: ask of deletion of Form 45, owned by antoine, request emmited by
+        yoann => return Zantoine45,yoann"""
         return self._symbol + self._form_id + "," + self._requester
 
     @property
@@ -103,7 +104,7 @@ class NegativeAnswer:
 
 
 class Quit:
-
+    """Class to inform client that he is disconnected"""
     def __init__(self):
         self.symbol = "Q"
         self.message = "You are disconnected from the server"
@@ -113,7 +114,7 @@ class Quit:
 
 
 class Hello:
-
+    """Class to inform client that he is connected"""
     def __init__(self):
         self.symbol = "H"
         self.message = "The client is connected to the server"
@@ -122,34 +123,4 @@ class Hello:
         return self.symbol
 
 
-# Ununsed for now
-class Move:
-    """ horizontal movement and y = vertical movement
-    x an y are integers and can be negative """
 
-    def __init__(self, form_id, x, y):
-        if not isinstance(form_id, str):
-            raise TypeError("The parameter has to be a string")
-        if not isinstance(x, int):
-            raise TypeError("The parameter has to be a string")
-        if not isinstance(y, int):
-            raise TypeError("The parameter has to be a string")
-
-        self._form_id = form_id
-        self._x = x
-        self._y = y
-        self._symbol = "M"
-
-    def __repr__(self):
-        return """Moving of the form: {}, horizontal movement = {},
-        vertical movement = {}""".format(self._form_id, self._x, self._y)
-
-    def get_string(self):
-        """method to transform command into string
-        return string of created form"""
-        return self._symbol + self._form_id + "," \
-            + str(self._x) + "," + str(self._y)
-
-    @property
-    def form_id(self):
-        return self._form_id
