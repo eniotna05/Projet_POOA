@@ -43,6 +43,7 @@ class WhiteboardApp(App):
         self.__requester = ""
 
     def build(self):
+        """Called by kivy to buid the application"""
         parent = BoxLayout()
         self.client_thread.start()
 
@@ -54,17 +55,23 @@ class WhiteboardApp(App):
         return parent
 
     def on_start(self):
+        """Called by kivy when the application is built and will be started"""
         self.__start_popup.open()
         self.__start_popup.bind(on_dismiss=self.update_session_data)
 
     def update_session_data(self, instance):
+        """Callback tha get the user data from the starting popup and saves it
+        in the session_manager, before for the client thread can use it"""
         self.session_manager.client_id = instance.return_value
         self.session_manager.server_ip = instance.ip_value
 
-    # the main thread needs to be in charge of all the drawing & displaying,
-    # so we check regularly if the client has received new commands (draw,
-    # delete, ....) and eventually draw the forms
+    # the main thread needs to be in charge of all the drawing & displaying, so
+    # this function is here
     def execute_command(self, dt):
+        """Callback executed regularly, it checks if the client has received
+        new commands (draw, delete, ....) and eventually draw the forms to
+        the whiteboard"""
+
         while not self.receiving_queue.empty():
             new_command = self.receiving_queue.get()
 

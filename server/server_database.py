@@ -1,3 +1,6 @@
+# File defining the data structure that the server uses to keep an history of
+# the forms that were created by the users.
+
 from utils.string_to_class import string_to_command
 
 
@@ -14,45 +17,27 @@ class ServerDatabase:
         # list of socker connexions with clients
         self.connexions = []
 
-    def new_object(self, string):
+    def create_object(self, string):
+        """Add a new object to the history"""
         parameter = string.split(",")
         identifier = parameter[-1]
         form = string_to_command(string).created_form
         self.stock[identifier] = form
         self.form_pile.insert(0, identifier)
         print("The object number {} has been created".format(identifier))
-        # TODO : Supprime ces prints
-        print(self.stock)
-        print(self.form_pile)
         return self.stock
 
-    def _get_form(self, identifier):
-        return self.stock[identifier]
-
     def delete_form(self, identifier):
+        """Remove an object from the history"""
         del self.stock[identifier]
         self.form_pile.remove(identifier)
         print("The object number {} has been deleted".format(identifier))
-        # TODO : Supprime ces prints
-        print(self.stock)
-        print(self.form_pile)
 
     def convert_database_into_str(self):
         """Transforms all the form data stocked in the server into a string
-        for sending to new clients
-        """
+        to send it to new clients"""
         concatenate_elements = ""
         for id in self.form_pile:
             string = self.stock[id].get_string()
             concatenate_elements = string + "." + concatenate_elements
         return concatenate_elements[:-1]
-
-    # TODO: verifier utilité de ces trois fonctions
-    def __getitem__(self, identifier):
-        return self.stock.get(identifier)
-
-    def __iter__(self):
-        return iter(self.stock)
-
-    def __delitem__(self, key):
-        del self.stock[key]
