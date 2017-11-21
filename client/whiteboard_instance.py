@@ -1,3 +1,6 @@
+# This file handles the activity on the whitebard, allowing to draw forms from
+# the selected buttons.
+
 from functools import partial
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
@@ -5,12 +8,10 @@ from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
-
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
     STICKER_URL
-
 from utils.command_class import DeleteRequest
 from client.popup import Input_Popup, Error_Popup
 
@@ -99,6 +100,8 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0),
                     group='tmp_text_rectangle')
 
+
+
         if self._selected_form == Forms.DELETE:
             # We return the top (last created) form
             # that includes the point we clicked
@@ -120,7 +123,7 @@ class WhiteboardInstance(RelativeLayout):
                     delete is being asked
                     """.format(result.identifier.split("-")[0]))
 
-        return True
+
 
     def on_touch_move(self, touch):
         """Method called after on_touch_down. touch is an object with
@@ -161,6 +164,7 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'].size = touch.x - self.touch_origin_x, \
                     touch.y - self.touch_origin_y
+
 
         return True
 
