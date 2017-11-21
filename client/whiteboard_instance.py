@@ -47,83 +47,81 @@ class WhiteboardInstance(RelativeLayout):
 
     def on_touch_down(self, touch):
         """Method called when the user clicks somewhere in the widget"""
-        self._drawing = True
-        self.touch_origin_x = touch.x
-        self.touch_origin_y = touch.y
 
-        # Kivy objects are automatically added to the canvas
-        with self.canvas:
+        if self.collide_point(touch.x, touch.y):
+            self._drawing = True
+            self.touch_origin_x = touch.x
+            self.touch_origin_y = touch.y
 
-            Color(rgba=self.drawing_color)
+            # Kivy objects are automatically added to the canvas with that
+            # statement
+            with self.canvas:
+                Color(rgba=self.drawing_color)
 
-            if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y),
-                                        width=LINE_WIDTH)
+                if self._selected_form == Forms.LINE:
+                    touch.ud['line'] = Line(points=(touch.x, touch.y),
+                                            width=LINE_WIDTH)
 
-            elif self._selected_form == Forms.RECT:
-                touch.ud['rect'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.RECT:
+                    touch.ud['rect'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.SQUARE:
-                touch.ud['square'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.SQUARE:
+                    touch.ud['square'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.ELLIPSE:
-                touch.ud['ellipse'] = Ellipse(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.ELLIPSE:
+                    touch.ud['ellipse'] = Ellipse(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.CIRCLE:
-                touch.ud['circle'] = Ellipse(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.CIRCLE:
+                    touch.ud['circle'] = Ellipse(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.IMAGE:
-                if touch.x - STICKER_SIZE / 2 <= 0 or \
-                        touch.y - STICKER_SIZE / 2 <= 0:
-                    print("Image does not fit into the board")
-                else:
-                    a = WBPoint(int(touch.x - STICKER_SIZE / 2),
-                                int(touch.y - STICKER_SIZE / 2))
-                    touch.ud['image'] = Image(
-                        source=STICKER_URL,
-                        pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
-                        size=(STICKER_SIZE, STICKER_SIZE))
-                    group_name = self.session_manager.store_internal_form(WBPicture(a))
-                    touch.ud['image'].canvas.group = group_name
+                elif self._selected_form == Forms.IMAGE:
+                    if touch.x - STICKER_SIZE / 2 <= 0 or \
+                            touch.y - STICKER_SIZE / 2 <= 0:
+                        print("Image does not fit into the board")
+                    else:
+                        a = WBPoint(int(touch.x - STICKER_SIZE / 2),
+                                    int(touch.y - STICKER_SIZE / 2))
+                        touch.ud['image'] = Image(
+                            source=STICKER_URL,
+                            pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
+                            size=(STICKER_SIZE, STICKER_SIZE))
+                        group_name = self.session_manager.store_internal_form(WBPicture(a))
+                        touch.ud['image'].canvas.group = group_name
 
-            elif self._selected_form == Forms.TEXT:
-                touch.ud['text'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0),
-                    group='tmp_text_rectangle')
+                elif self._selected_form == Forms.TEXT:
+                    touch.ud['text'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0),
+                        group='tmp_text_rectangle')
 
+            if self._selected_form == Forms.DELETE:
+                # We return the top (last created) form
+                # that includes the point we clicked
+                result = self.session_manager.extract_top_form(touch.x, touch.y)
 
-
-        if self._selected_form == Forms.DELETE:
-            # We return the top (last created) form
-            # that includes the point we clicked
-            result = self.session_manager.extract_top_form(touch.x, touch.y)
-
-            if result is not None:
-                # We check if this form was created by us
-                #  if it is, deletion is immediate
-                # if not permission is asked to owner
-                if self.session_manager.client_id == \
-                        result.identifier.split("-")[0]:
-                    self.delete_form_in_canvas(result.identifier, send_to_server=True)
-                else:
-                    self.sending_queue.put(DeleteRequest(
-                        result.identifier,
-                        self.session_manager.client_id
-                    ).get_string())
-                    print("""This form belongs to {}. Authorization to
-                    delete is being asked
-                    """.format(result.identifier.split("-")[0]))
-
-
+                if result is not None:
+                    # We check if this form was created by us
+                    #  if it is, deletion is immediate
+                    # if not permission is asked to owner
+                    if self.session_manager.client_id == \
+                            result.identifier.split("-")[0]:
+                        self.delete_form_in_canvas(result.identifier, send_to_server=True)
+                    else:
+                        self.sending_queue.put(DeleteRequest(
+                            result.identifier,
+                            self.session_manager.client_id
+                        ).get_string())
+                        print("""This form belongs to {}. Authorization to
+                        delete is being asked
+                        """.format(result.identifier.split("-")[0]))
 
     def on_touch_move(self, touch):
         """Method called after on_touch_down. touch is an object with
@@ -252,7 +250,7 @@ class WhiteboardInstance(RelativeLayout):
                 self._draw_text_popup = InputPopup(
                     title="Draw Text",
                     text_content="Enter the text you want to write",
-                    error_popup=Error_Popup(text_content="You have not written any text")
+                    error_popup=ErrorPopup(text_content="You have not written any text")
                 )
                 # biding with the function that will be called on dismiss of
                 # the popup

@@ -29,6 +29,7 @@ class ExchangeThread(Thread):
 
     def _send_message(self, message):
         """Handle message dispatching from the server to all the clients"""
+        message = message.encode()
         for client in self.server_database.connexions:
             if client != self.__sock:
                 client.send(message)
@@ -63,8 +64,6 @@ class ExchangeThread(Thread):
                 self.server_database.create_object(first_message)
                 if len(self.server_database.connexions) >= 2:
                     self._send_message(first_message)
-        else:
-            pass
 
     def _get_user_name(self):
         self._username = self._get_message()

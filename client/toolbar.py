@@ -1,4 +1,5 @@
-# This file handles the toolbar used to select forms, colours, delete requests, etc...
+# This file handles the toolbar used to select forms, colours, delete requests,
+# etc...
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -31,11 +32,13 @@ class Toolbar(BoxLayout):
         self.add_widget(self.__quit_btn)
 
         self.__delete_last_btn = Button(text="Delete Last")
-        self.__delete_last_btn.bind(on_press=self.unpress_all, on_release=self.delete_last)
+        self.__delete_last_btn.bind(on_press=self.unpress_all,
+                                    on_release=self.delete_last)
         self.add_widget(self.__delete_last_btn)
 
         self.__delete_selected_btn = Button(text="Delete Selected")
-        self.__delete_selected_btn.bind(on_press=self.unpress_all, on_release=self.delete_selected)
+        self.__delete_selected_btn.bind(on_press=self.unpress_all,
+                                        on_release=self.delete_selected)
         self.add_widget(self.__delete_selected_btn)
 
         self.__color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
@@ -43,31 +46,38 @@ class Toolbar(BoxLayout):
         self.add_widget(self.__color_picker)
 
         self.__select_text_btn = Button(text="Write Text")
-        self.__select_text_btn.bind(on_press=self.unpress_all, on_release=self.select_text)
+        self.__select_text_btn.bind(on_press=self.unpress_all,
+                                    on_release=self.select_text)
         self.add_widget(self.__select_text_btn)
 
         self.__select_line_btn = Button(text="Line")
-        self.__select_line_btn.bind(on_press=self.unpress_all, on_release=self.select_line)
+        self.__select_line_btn.bind(on_press=self.unpress_all,
+                                    on_release=self.select_line)
         self.add_widget(self.__select_line_btn)
 
         self.__select_rect_btn = Button(text="Rectangle")
-        self.__select_rect_btn.bind(on_press=self.unpress_all, on_release=self.select_rect)
+        self.__select_rect_btn.bind(on_press=self.unpress_all,
+                                    on_release=self.select_rect)
         self.add_widget(self.__select_rect_btn)
 
         self.__select_square_btn = Button(text="Square")
-        self.__select_square_btn.bind(on_press=self.unpress_all, on_release=self.select_square)
+        self.__select_square_btn.bind(on_press=self.unpress_all,
+                                      on_release=self.select_square)
         self.add_widget(self.__select_square_btn)
 
         self.__select_ellipse_btn = Button(text="Ellipse")
-        self.__select_ellipse_btn.bind(on_press=self.unpress_all, on_release=self.select_ellipse)
+        self.__select_ellipse_btn.bind(on_press=self.unpress_all,
+                                       on_release=self.select_ellipse)
         self.add_widget(self.__select_ellipse_btn)
 
         self.__select_circle_btn = Button(text="Circle")
-        self.__select_circle_btn.bind(on_press=self.unpress_all, on_release=self.select_circle)
+        self.__select_circle_btn.bind(on_press=self.unpress_all,
+                                      on_release=self.select_circle)
         self.add_widget(self.__select_circle_btn)
 
         self.__select_image_btn = Button(text="Image")
-        self.__select_image_btn.bind(on_press=self.unpress_all, on_release=self.select_image)
+        self.__select_image_btn.bind(on_press=self.unpress_all,
+                                     on_release=self.select_image)
         self.add_widget(self.__select_image_btn)
 
         self.__button_to_unpress_list = [
