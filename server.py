@@ -5,6 +5,7 @@ from server.server_database import ServerDatabase
 
 
 SOCKET_TIMEOUT = 0.5
+SERVER_PORT = 12800
 
 
 class Server(Thread):
@@ -54,9 +55,7 @@ class Server(Thread):
             self.__sock.close()
 
 
-
-
 if __name__ == '__main__':
-    server = Server(12800)
+    server = Server(SERVER_PORT)
     server.start()
     server.join()

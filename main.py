@@ -52,11 +52,11 @@ class WhiteboardApp(App):
 
     def on_start(self):
         self.start_popup.open()
-        self.start_popup.bind(on_dismiss=self.update_username)
+        self.start_popup.bind(on_dismiss=self.update_session_data)
 
-    def update_username(self, instance):
+    def update_session_data(self, instance):
         self.session_manager.client_id = instance.return_value
-
+        self.session_manager.server_ip = instance.ip_value
 
     # the main thread needs to be in charge of all the drawing, so we check
     # regularly if the client has received new forms and draw them eventually

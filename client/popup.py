@@ -73,9 +73,28 @@ class Initial_Popup(Input_Popup):
                  error_popup=None):
         Input_Popup.__init__(self, title=title, text_content=text_content,
                              hint_text=hint_text, error_popup=error_popup)
+        self._ip_value = ""
+
         self.IP_input = TextInput(multiline=False, hint_text=hint_IP)
         self.IP_input.bind(on_text_validate=self.on_enter)
         self.content.add_widget(self.IP_input, 1)
+
+    # override the super class method, preventing direct validation
+    def on_enter(self, instance):
+        pass
+
+    def on_validate(self, instance):
+        if self.text_input.text == "" or self.IP_input.text == "":
+            if self.error_popup is not None:
+                self.error_popup.open()
+        else:
+            self._return_value = self.text_input.text
+            self._ip_value = self.IP_input.text
+            self.dismiss()
+
+    @property
+    def ip_value(self):
+        return self._ip_value
 
 
 class Question_Popup(WB_Popup):

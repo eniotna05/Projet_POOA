@@ -66,7 +66,8 @@ class ExchangeThread(Thread):
 
     def _get_user_name(self):
         self.username = self._get_message()
-        print("Start of the connection with {} ".format(self.username))
+        print("Start of the connection with {} {}"
+              .format(self.username, self.sock.getpeername()))
         self.sock.send("O.".encode())
 
     def _stop_listenning(self):
