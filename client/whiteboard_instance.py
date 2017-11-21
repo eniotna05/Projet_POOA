@@ -6,8 +6,6 @@ from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
 
-from time import sleep
-
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
@@ -100,6 +98,8 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0),
                     group='tmp_text_rectangle')
 
+
+
         if self._selected_form == Forms.DELETE:
             # We return the top (last created) form
             # that includes the point we clicked
@@ -120,7 +120,7 @@ class WhiteboardInstance(RelativeLayout):
                     delete is being asked
                     """.format(result.identifier.split("-")[0]))
 
-        return True
+
 
     def on_touch_move(self, touch):
         """Method called after on_touch_down. touch is an object with
@@ -161,6 +161,7 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'].size = touch.x - self.touch_origin_x, \
                     touch.y - self.touch_origin_y
+
 
         return True
 
