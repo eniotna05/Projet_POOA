@@ -1,12 +1,12 @@
 from utils.string_to_class import string_to_command
 
 
-
 class ServerDatabase:
     """This class stores a dictionnary and a pile of the forms created by
-    clients
+    clients.
     Its purpose is to allow new clients connecting to an ongoing session to
     receive the forms that were created before they connected """
+
     def __init__(self):
         # Dict with the identifier of the form as key, and the form
         self.stock = {}
@@ -46,9 +46,6 @@ class ServerDatabase:
             string = self.stock[id].get_string()
             concatenate_elements = string + "." + concatenate_elements
         return concatenate_elements[:-1]
-
-
-
 
     # TODO: verifier utilité de ces trois fonctions
     def __getitem__(self, identifier):

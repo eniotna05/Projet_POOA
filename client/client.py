@@ -70,7 +70,6 @@ class Client(Thread):
         self.session_manager.is_connected = False
 
     def quit(self):
-        # TODO : refactor code and remove these conditions
         if self._reception:
             self._reception.quit()
         if self._envoi:

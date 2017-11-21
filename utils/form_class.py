@@ -548,3 +548,7 @@ class WBLabel(WBForm):
     @property
     def b(self):
         return self._b
+
+    @property
+    def text_input(self):
+        return self._text_input

@@ -28,7 +28,7 @@ class WhiteboardInstance(RelativeLayout):
 
     def __init__(self, sending_queue, session_manager):
         super().__init__()
-        self.drawing = False
+        self._drawing = False
         self._selected_form = None
         self.sending_queue = sending_queue
         self.session_manager = session_manager
@@ -46,7 +46,7 @@ class WhiteboardInstance(RelativeLayout):
 
     def on_touch_down(self, touch):
         """Method called when the user clicks somewhere in the widget"""
-        self.drawing = True
+        self._drawing = True
         self.touch_origin_x = touch.x
         self.touch_origin_y = touch.y
 
@@ -80,11 +80,12 @@ class WhiteboardInstance(RelativeLayout):
                     size=(0, 0))
 
             elif self._selected_form == Forms.IMAGE:
-                if touch.x - STICKER_SIZE / 2 <= 0  or  touch.y - STICKER_SIZE / 2 <= 0:
+                if touch.x - STICKER_SIZE / 2 <= 0 or \
+                        touch.y - STICKER_SIZE / 2 <= 0:
                     print("Image does not fit into the board")
                 else:
                     a = WBPoint(int(touch.x - STICKER_SIZE / 2),
-                              int(touch.y - STICKER_SIZE / 2))
+                                int(touch.y - STICKER_SIZE / 2))
                     touch.ud['image'] = Image(
                         source=STICKER_URL,
                         pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
@@ -111,9 +112,10 @@ class WhiteboardInstance(RelativeLayout):
                         result.identifier.split("-")[0]:
                     self.delete_form_in_canvas(result.identifier, send_to_server=True)
                 else:
-                    self.sending_queue.put(
-                        DeleteRequest(result.identifier,
-                                      self.session_manager.client_id ).get_string())
+                    self.sending_queue.put(DeleteRequest(
+                        result.identifier,
+                        self.session_manager.client_id
+                    ).get_string())
                     print("""This form belongs to {}. Authorization to
                     delete is being asked
                     """.format(result.identifier.split("-")[0]))
@@ -168,7 +170,7 @@ class WhiteboardInstance(RelativeLayout):
 
         # Sometimes on_touch_up is fired even if on_touch_down has not been
         # fired. This condition prevents from drawing a form in this case.
-        if self.drawing:
+        if self._drawing:
 
             # getting and converting the currently selected drawing color to
             # make it an attribute of the form object when storing the form
@@ -203,14 +205,14 @@ class WhiteboardInstance(RelativeLayout):
 
                 # take the bottom left corner so the coordinates will be positive
                 # the square object takes only positive coordinates
-                if dx >0:
+                if dx > 0:
                     x_min = int(self.touch_origin_x)
                 else:
                     x_min = int(self.touch_origin_x - l)
                 if dy > 0:
                     y_min = int(self.touch_origin_y)
                 else:
-                    y_min = int(self.touch_origin_y -l)
+                    y_min = int(self.touch_origin_y - l)
                 a = WBPoint(x_min, y_min)
                 b = WBPoint(x_min + l, y_min + l)
                 group_name = self.session_manager.store_internal_form(
@@ -229,7 +231,7 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.CIRCLE:
                 dx = touch.x - self.touch_origin_x
                 dy = touch.y - self.touch_origin_y
-                r = int(max(abs(dx),abs(dy)) / 2)
+                r = int(max(abs(dx), abs(dy)) / 2)
                 if dx > 0:
                     cx = int(self.touch_origin_x + r)
                 else:
@@ -238,7 +240,7 @@ class WhiteboardInstance(RelativeLayout):
                     cy = int(self.touch_origin_y + r)
                 else:
                     cy = int(self.touch_origin_y - r)
-                c = WBPoint(cx,cy)
+                c = WBPoint(cx, cy)
                 group_name = self.session_manager.store_internal_form(
                     WBCircle(c, r, WBColor(*color_val)))
                 touch.ud['circle'].group = group_name
@@ -250,8 +252,8 @@ class WhiteboardInstance(RelativeLayout):
                     text_content="Enter the text you want to write",
                     error_popup=Error_Popup(text_content="You have not written any text")
                 )
-                # biding with the function that will be called on dismiss of the
-                # popup
+                # biding with the function that will be called on dismiss of
+                # the popup
                 self._draw_text_popup.bind(on_dismiss=partial(
                     self._update_draw_text,
                     touch.x,
@@ -260,7 +262,7 @@ class WhiteboardInstance(RelativeLayout):
 
                 self.canvas.remove_group('tmp_text_rectangle')
 
-        self.drawing = False
+        self._drawing = False
 
         return True
 
@@ -290,12 +292,12 @@ class WhiteboardInstance(RelativeLayout):
 
     def draw_form(self, form):
         """Method calld to draw a form on the board andd add it to the local
-        storage. It is especilly usefull when receiving a from from the network"""
+        storage. It is especilly usefull when receiving a from from the
+        network"""
 
         with self.canvas:
             rcv_color = form.color.get_relative_values()
             Color(rgba=rcv_color)
-
 
             if isinstance(form, WBLine):
                 group_name = self.session_manager.store_external_form(form)

@@ -17,83 +17,82 @@ class Toolbar(BoxLayout):
     def __init__(self, white_board, client_thread, session_manager):
         super().__init__(orientation='vertical')
         self.white_board = white_board
-        self.selected_form = None
         self.client_thread = client_thread
         self.session_manager = session_manager
 
         Clock.schedule_interval(self.update_network_status, 1 / 30)
 
-        self.connected_label = Label(text="Offline")
-        self.add_widget(self.connected_label)
+        self.__connected_label = Label(text="Offline")
+        self.add_widget(self.__connected_label)
 
-        self.quit_btn = Button(text="Quit")
-        self.quit_btn.bind(on_press=self.unpress_all, on_release=self.quit)
-        self.add_widget(self.quit_btn)
+        self.__quit_btn = Button(text="Quit")
+        self.__quit_btn.bind(on_press=self.unpress_all, on_release=self.quit)
+        self.add_widget(self.__quit_btn)
 
-        self.delete_last_btn = Button(text="Delete Last")
-        self.delete_last_btn.bind(on_press=self.unpress_all, on_release=self.delete_last)
-        self.add_widget(self.delete_last_btn)
+        self.__delete_last_btn = Button(text="Delete Last")
+        self.__delete_last_btn.bind(on_press=self.unpress_all, on_release=self.delete_last)
+        self.add_widget(self.__delete_last_btn)
 
-        self.delete_selected_btn = Button(text="Delete Selected")
-        self.delete_selected_btn.bind(on_press=self.unpress_all, on_release=self.delete_selected)
-        self.add_widget(self.delete_selected_btn)
+        self.__delete_selected_btn = Button(text="Delete Selected")
+        self.__delete_selected_btn.bind(on_press=self.unpress_all, on_release=self.delete_selected)
+        self.add_widget(self.__delete_selected_btn)
 
-        self.color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
-        self.color_picker.bind(color=self.choose_color)
-        self.add_widget(self.color_picker)
+        self.__color_picker = ColorPicker(color=(1, 0, 0, 1), size_hint=(1, 5))
+        self.__color_picker.bind(color=self.choose_color)
+        self.add_widget(self.__color_picker)
 
-        self.select_text_btn = Button(text="Write Text")
-        self.select_text_btn.bind(on_press=self.unpress_all, on_release=self.select_text)
-        self.add_widget(self.select_text_btn)
+        self.__select_text_btn = Button(text="Write Text")
+        self.__select_text_btn.bind(on_press=self.unpress_all, on_release=self.select_text)
+        self.add_widget(self.__select_text_btn)
 
-        self.select_line_btn = Button(text="Line")
-        self.select_line_btn.bind(on_press=self.unpress_all, on_release=self.select_line)
-        self.add_widget(self.select_line_btn)
+        self.__select_line_btn = Button(text="Line")
+        self.__select_line_btn.bind(on_press=self.unpress_all, on_release=self.select_line)
+        self.add_widget(self.__select_line_btn)
 
-        self.select_rect_btn = Button(text="Rectangle")
-        self.select_rect_btn.bind(on_press=self.unpress_all, on_release=self.select_rect)
-        self.add_widget(self.select_rect_btn)
+        self.__select_rect_btn = Button(text="Rectangle")
+        self.__select_rect_btn.bind(on_press=self.unpress_all, on_release=self.select_rect)
+        self.add_widget(self.__select_rect_btn)
 
-        self.select_square_btn = Button(text="Square")
-        self.select_square_btn.bind(on_press=self.unpress_all, on_release=self.select_square)
-        self.add_widget(self.select_square_btn)
+        self.__select_square_btn = Button(text="Square")
+        self.__select_square_btn.bind(on_press=self.unpress_all, on_release=self.select_square)
+        self.add_widget(self.__select_square_btn)
 
-        self.select_ellipse_btn = Button(text="Ellipse")
-        self.select_ellipse_btn.bind(on_press=self.unpress_all, on_release=self.select_ellipse)
-        self.add_widget(self.select_ellipse_btn)
+        self.__select_ellipse_btn = Button(text="Ellipse")
+        self.__select_ellipse_btn.bind(on_press=self.unpress_all, on_release=self.select_ellipse)
+        self.add_widget(self.__select_ellipse_btn)
 
-        self.select_circle_btn = Button(text="Circle")
-        self.select_circle_btn.bind(on_press=self.unpress_all, on_release=self.select_circle)
-        self.add_widget(self.select_circle_btn)
+        self.__select_circle_btn = Button(text="Circle")
+        self.__select_circle_btn.bind(on_press=self.unpress_all, on_release=self.select_circle)
+        self.add_widget(self.__select_circle_btn)
 
-        self.select_image_btn = Button(text="Image")
-        self.select_image_btn.bind(on_press=self.unpress_all, on_release=self.select_image)
-        self.add_widget(self.select_image_btn)
+        self.__select_image_btn = Button(text="Image")
+        self.__select_image_btn.bind(on_press=self.unpress_all, on_release=self.select_image)
+        self.add_widget(self.__select_image_btn)
 
-        self.button_to_unpress_list = [
-            self.delete_selected_btn,
-            self.select_line_btn,
-            self.select_text_btn,
-            self.select_rect_btn,
-            self.select_square_btn,
-            self.select_ellipse_btn,
-            self.select_circle_btn,
-            self.select_image_btn
+        self.__button_to_unpress_list = [
+            self.__delete_selected_btn,
+            self.__select_line_btn,
+            self.__select_text_btn,
+            self.__select_rect_btn,
+            self.__select_square_btn,
+            self.__select_ellipse_btn,
+            self.__select_circle_btn,
+            self.__select_image_btn
         ]
 
     def unpress_all(self, obj):
         """Change the background_color of the button when another one is
         selected"""
-        for button in self.button_to_unpress_list:
+        for button in self.__button_to_unpress_list:
             button.background_color = [1, 1, 1, 1]
 
     def update_network_status(self, dt):
         if self.session_manager.is_connected:
-            self.connected_label.text = "Online"
-            self.connected_label.color = 0, 1, 0, 1
+            self.__connected_label.text = "Online"
+            self.__connected_label.color = 0, 1, 0, 1
         else:
-            self.connected_label.text = "Offline"
-            self.connected_label.color = 1, 0, 0, 1
+            self.__connected_label.text = "Offline"
+            self.__connected_label.color = 1, 0, 0, 1
 
     def quit(self, obj):
         App.get_running_app().stop()
@@ -108,7 +107,7 @@ class Toolbar(BoxLayout):
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.DELETE
-            self.delete_selected_btn.background_color = [0, 0, 0, 0]
+            self.__delete_selected_btn.background_color = [0, 0, 0, 0]
 
     def choose_color(self, instance, value):
         self.white_board.drawing_color = value
@@ -118,46 +117,46 @@ class Toolbar(BoxLayout):
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.TEXT
-            self.select_text_btn.background_color = [0, 0, 0, 0]
+            self.__select_text_btn.background_color = [0, 0, 0, 0]
 
     def select_line(self, obj):
         if self.white_board.selected_form == Forms.LINE:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.LINE
-            self.select_line_btn.background_color = [0, 0, 0, 0]
+            self.__select_line_btn.background_color = [0, 0, 0, 0]
 
     def select_rect(self, obj):
         if self.white_board.selected_form == Forms.RECT:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.RECT
-            self.select_rect_btn.background_color = [0, 0, 0, 0]
+            self.__select_rect_btn.background_color = [0, 0, 0, 0]
 
     def select_square(self, obj):
         if self.white_board.selected_form == Forms.SQUARE:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.SQUARE
-            self.select_square_btn.background_color = [0, 0, 0, 0]
+            self.__select_square_btn.background_color = [0, 0, 0, 0]
 
     def select_ellipse(self, obj):
         if self.white_board.selected_form == Forms.ELLIPSE:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.ELLIPSE
-            self.select_ellipse_btn.background_color = [0, 0, 0, 0]
+            self.__select_ellipse_btn.background_color = [0, 0, 0, 0]
 
     def select_circle(self, obj):
         if self.white_board.selected_form == Forms.CIRCLE:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.CIRCLE
-            self.select_circle_btn.background_color = [0, 0, 0, 0]
+            self.__select_circle_btn.background_color = [0, 0, 0, 0]
 
     def select_image(self, obj):
         if self.white_board.selected_form == Forms.IMAGE:
             self.white_board.selected_form = None
         else:
             self.white_board.selected_form = Forms.IMAGE
-            self.select_image_btn.background_color = [0, 0, 0, 0]
+            self.__select_image_btn.background_color = [0, 0, 0, 0]

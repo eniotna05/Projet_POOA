@@ -36,3 +36,10 @@ Les paramètres peuvent être des coordonnées de points, des longueurs ou la co
 - D : supprimer un objet (Delete)
 - Z : demander la suppression d'un objet (DeleteRequest)
 - N : refuser la suppression d'un objet (NegativeAnswer)
+
+### Conventions de nommage
+Pour les objets qui sont partagés par plusieurs threads et passés en référence
+lors de la construction des objets les contenant, on les considère comme publics
+(on accède in fine au même objet en mémoire).
+Les variables des objets Kivy hérités ne respectent pas les conventions de
+nommage avec "\_" ou "\__"
