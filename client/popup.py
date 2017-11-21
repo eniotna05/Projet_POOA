@@ -1,10 +1,5 @@
-import kivy
-
 from kivy.app import App
-from kivy.lang import Builder
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
-from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
@@ -71,10 +66,16 @@ class Input_Popup(WB_Popup):
     def return_value(self):
         return self._return_value
 
-#Delete_Popup  ==> en devoirs ;-P Mais suggestion : faire en sorte que t'aie juste
-# besoin de passer des paramètres au constructeur et que ça soit une classe plus
-# générique "question/réponse + bouttons oui/non", et on pourra l'utiliser pour
-# des tas d'autres trucs
+
+class Initial_Popup(Input_Popup):
+
+    def __init__(self, title="", text_content="", hint_text="", hint_IP="",
+                 error_popup=None):
+        Input_Popup.__init__(self, title=title, text_content=text_content,
+                             hint_text=hint_text, error_popup=error_popup)
+        self.IP_input = TextInput(multiline=False, hint_text=hint_IP)
+        self.IP_input.bind(on_text_validate=self.on_enter)
+        self.content.add_widget(self.IP_input, 1)
 
 
 class Question_Popup(WB_Popup):
@@ -102,43 +103,3 @@ class Question_Popup(WB_Popup):
     @property
     def return_value(self):
         return self._return_value
-
-
-class MyApp(App):
-
-    def build(self):
-        self.answer = ""
-        self.popup = Input_Popup(
-            title="Welcome",
-            text_content="Please enter your username",
-            hint_text="John Doe",
-            error_popup=Error_Popup(text_content="You have not entered your username !"))
-        self.popup.bind(on_dismiss=self.update_username)
-        self.question = Question_Popup("dv","cs")
-        self.question.open()
-        self.question.bind(on_dismiss=self.update_answer)
-
-    def update_answer(self, instance):
-        self.answer = instance.return_value
-
-
-        # La même chose pour moi quand j'en ai besoin pour récupérer le texte
-        # que l'user veut dessiner
-        # self.draw_text_popup = Input_Popup(
-        #     title="Draw Text",
-        #     text_content="Enter the text you want to write"
-        #     error_popup=Error_Popup(text_content="You have not written any text")
-        # )
-        # self.popup.bind(on_dismiss=self.update_draw_text)
-        # self.draw_text_popup.open()
-
-    def update_username(self, instance):
-        print(self.popup.return_value)
-
-
-
-
-
-
-if __name__ == "__main__":
-        MyApp().run()

@@ -11,7 +11,9 @@ from client.whiteboard_instance import WhiteboardInstance
 from client.toolbar import Toolbar
 from client.client import Client
 from utils.command_class import Create, Delete, DeleteRequest, NegativeAnswer
-from client.popup import Input_Popup, Question_Popup, Error_Popup
+from client.popup import Initial_Popup, Question_Popup, Error_Popup
+
+EXECUTE_COMMAND_INTERVAL = 1 / 25
 
 
 class WhiteboardApp(App):
@@ -27,11 +29,12 @@ class WhiteboardApp(App):
         self.toolbar = Toolbar(self.board, self.client_thread, self.session_manager)
         self.toolbar.size_hint = (0.2, 1)
         self.board.size_hint = (0.8, 1)
-        self.start_popup = Input_Popup("Username",
-                                       "Please enter your name",
-                                       "John Doe",
-                                       Error_Popup("You have not entered your name !"))
-        self.question_popup = Question_Popup("", "")
+        self.start_popup = Initial_Popup("Connection",
+                                         "Please enter your id & the server IP",
+                                         "John Doe",
+                                         "localhost",
+                                         Error_Popup("Some fields are empty"))
+        self.question_popup = Question_Popup()
         self.answer = ""
         self.command = ""
         self.requester = ""
@@ -43,7 +46,7 @@ class WhiteboardApp(App):
         parent.add_widget(self.board)
         parent.add_widget(self.toolbar, 0)
 
-        Clock.schedule_interval(self.execute_command, 1/30)
+        Clock.schedule_interval(self.execute_command, EXECUTE_COMMAND_INTERVAL)
 
         return parent
 
