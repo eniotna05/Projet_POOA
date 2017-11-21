@@ -1,8 +1,9 @@
 # Projet_POOA
 Projet n°05 sur le whiteboard collaboratif.
+Pour accéder à la version Android, voir [ici](https://github.com/eniotna05/Projet_POOA/tree/Android)
 
 ## Instructions
-1/ Installer [Kivy](https://kivy.org/docs/gettingstarted/installation.html) (librarie graphique python) :
+1/ Installer [Kivy](https://kivy.org/#download) (librarie graphique python). L'installation est détaillée sur leur site et dépend de l'OS utilisé.
 
 2/ Lancer le serveur :
 ```bash
@@ -14,7 +15,9 @@ $ python server.py
 $ python main.py
 ```
 
-4/ Pour que les clients soient connectés et puissent échanger des dessins, ils doivent prendre des noms uniques dans le cadre prévu à cet affet et faire "Enter".
+4/ Pour que les clients soient connectés et puissent échanger des dessins, ils doivent choisir des noms uniques dans la popup de lancement. L'utilisateur doit également choisir l'IP du serveur auquel il souhaite se connecter. Il est fortement recommandé d'être sur le même réseau LAN (même réseau wifi par exemple).
+
+Si le serveur est lancé sur la même machine que le client, simplement écrire _localhost_ connectera le client au serveur local.
 
 ## Précisions sur le code
 

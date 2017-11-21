@@ -1,9 +1,13 @@
+# File defining the thread that the server starts with each client when the
+# client connects
+
 import socket
 from threading import Thread, Event
 
 
 class ExchangeThread(Thread):
-    """Class defining the exchange process on the server side"""
+    """Class defining the exchange process on the server side, between the
+    server and one client."""
 
     def __init__(self, sock, server_database):
         Thread.__init__(self)
@@ -17,24 +21,22 @@ class ExchangeThread(Thread):
         self.server_database.connexions.append(self.__sock)
 
     def _get_message(self):
+        """Methods that gets a message (max length 1024 bytes) from the socket
+        with the client."""
         data = bytes()
         data += self.__sock.recv(1024)
         return data.decode()
 
-    def _send_message(self, message, all_users=False):
-        # If all_users is True, a message is sent to all the client.
-        # If all_users is False, the message is sent to everyone except the
-        # client associated to the exchange thread
-        message = message.encode()
-        if all_users:
-            for client in self.server_database.connexions:
-                    client.send(message)
-        else:
-            for client in self.server_database.connexions:
-                if client != self.__sock:
-                    client.send(message)
+    def _send_message(self, message):
+        """Handle message dispatching from the server to all the clients"""
+        for client in self.server_database.connexions:
+            if client != self.__sock:
+                client.send(message)
 
-    def analyze_command(self):
+    def _analyze_command(self):
+        """Method that analyzes the commands received by the server from the
+        client, and calls the corresponding actions"""
+
         message = self._get_message()
         if message != "":
             first_message = ""
@@ -52,13 +54,13 @@ class ExchangeThread(Thread):
                 self.server_database.delete_form(form_id)
                 self._send_message(first_message)
             elif command == "Q":
-                self._stop_listenning()
+                self.quit()
             elif command == "Z" or command == "N":
                 self._send_message(first_message)
             elif command == "R" or command == "S" or command == "P" \
                     or command == "E" or command == "L" or command == "C" \
                     or command == "T":
-                self.server_database.new_object(first_message)
+                self.server_database.create_object(first_message)
                 if len(self.server_database.connexions) >= 2:
                     self._send_message(first_message)
         else:
@@ -69,10 +71,6 @@ class ExchangeThread(Thread):
         print("Start of the connection with {} {}"
               .format(self._username, self.__sock.getpeername()))
         self.__sock.send("O.".encode())
-
-    def _stop_listenning(self):
-        self.__exit_request.set()
-        print("End of communication with client {}".format(self._username))
 
     def run(self):
         self.__sock.send("H.".encode())
@@ -92,23 +90,12 @@ class ExchangeThread(Thread):
             history = history.encode()
             self.__sock.send(history)
 
-        # TODO : Envoi des objets un par un mais ne fonctione pas
-        """if len(self.server_database.connexions) >= 2:
-            print("envoi history")
-            n = len(self.server_database.form_pile) -1
-            while n >= 0:
-                form_id = self.server_database.form_pile[n]
-                string = self.server_database.stock[form_id].get_string() + "."
-                print(string)
-                string = string.encode()
-                self.__sock.send(string)
-                n = n - 1"""
-
         while not self.__exit_request.is_set():
-            self.analyze_command()
+            self._analyze_command()
 
         self.__sock.send("O.".encode())
         self.__sock.close()
 
     def quit(self):
         self.__exit_request.set()
+        print("End of communication with client {}".format(self._username))

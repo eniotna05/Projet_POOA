@@ -1,3 +1,5 @@
+# File defining the main thread of the server
+
 import socket
 from threading import Thread, Event
 from server.exchange import ExchangeThread
@@ -9,7 +11,8 @@ SERVER_PORT = 12800
 
 
 class Server(Thread):
-    """Class defining the server"""
+    """Class defining the server thread. This thread listen for incoming
+    connections and start a new thread for each client"""
 
     def __init__(self, port):
         Thread.__init__(self)
