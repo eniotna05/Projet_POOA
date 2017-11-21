@@ -4,7 +4,7 @@
 
 from threading import Thread, Event
 from queue import Empty
-from socket import socket
+import socket
 from time import sleep
 from utils.command_class import Create
 from utils.string_to_class import string_to_command

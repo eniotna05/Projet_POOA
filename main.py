@@ -35,7 +35,7 @@ class WhiteboardApp(App):
         self.board.size_hint = (0.8, 1)
         self.__start_popup = InitialPopup("Connection", "Please enter your id & the server IP", "John Doe",
                                           "localhost", ErrorPopup("Some fields are empty"))
-        self.__question_popup = Question_Popup()
+        self.__question_popup = QuestionPopup()
         self.__command = ""
         self.__requester = ""
 

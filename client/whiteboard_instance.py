@@ -13,7 +13,7 @@ from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
     STICKER_URL
 from utils.command_class import DeleteRequest
-from client.popup import Input_Popup, Error_Popup
+from client.popup import InputPopup, ErrorPopup
 
 
 class WhiteboardInstance(RelativeLayout):
