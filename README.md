@@ -56,3 +56,4 @@ notre base de donné car tout est bien récupéré. Il se situe au niveau du can
 kivy qui très probablement ne parvient pas à éxécuter de nombreuses informations
 données à la suite. La modification de l'horloge kivy ou la mise en place de buffer
 ne résoudent pas le problème.
+- Concernant l'écriture du texte, la mise à l'échelle telle que nous l'avions pensée est impossible à réaliser sous Kivy : il est impossible de redimensionner la taille texture du texte a posteriori en fonction du cadre que l'utilisateur a tracé. Pour contourner le problème, il faudrait demander avant l'écriture à l'utilisateur la taille de police qu'il souhaiterait utiliser.
