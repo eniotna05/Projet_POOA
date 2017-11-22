@@ -1,42 +1,34 @@
 # Projet_POOA
 Projet n°05 sur le whiteboard collaboratif.
-Pour accéder à la version Android, voir [ici](https://github.com/eniotna05/Projet_POOA/tree/Android)
+Pour accéder à la version Desktop, voir [ici](https://github.com/eniotna05/Projet_POOA/)
 
-## Instructions
-1/ Installer [Kivy](https://kivy.org/#download) (librarie graphique python). L'installation est détaillée sur leur site et dépend de l'OS utilisé.
+## Disclaimer
+Attention, par manque de temps, le débugging a été réduit sur la version Android, (notamment en ce qui concerne l'intégration spécifique, lorsque l'application est passée en background ou sur le support portrait / paysage par exemple).
 
-2/ Lancer le serveur :
+## Instructions pour Android
+1/ Télécharger le paquet _Whiteboard-1.0.apk_ dans le dossier _bin/_, le mettre sur son téléphone et l'installer.
+
+2/ Lancer le serveur depuis un ordinateur :
 ```bash
 $ python server.py
 ```
 
-3/ Lancer autant de clients que désiré :
-```bash
-$ python main.py
-```
+3/ Ouvrir l'application sur son smartphone
 
 4/ Pour que les clients soient connectés et puissent échanger des dessins, ils doivent choisir des noms uniques dans la popup de lancement. L'utilisateur doit également choisir l'IP du serveur auquel il souhaite se connecter. Il est fortement recommandé d'être sur le même réseau LAN (même réseau wifi par exemple).
 
-Si le serveur est lancé sur la même machine que le client, simplement écrire _localhost_ connectera le client au serveur local.
-
-## Instructions pour Android
-Il est également possible d'utiliser notre Whiteboard collaboratif sur Android (avec un support et débugging réduit cependant, notamment en ce qui concerne l'intégration lorsque l'application est passée en background). Pour que l'application et le serveur puissent communiquer, il faut qu'ils soient sur le même réseau local (même wifi par exemple). Voici les étapes :
-1/ Récupérer l'addresse IP du serveur avec :
-```bash
-$ ifconfig
-```
-et repérer le champ inet addr dans wlan0 par exemple (probablement quelque chose comme 192.168.0.10).
-
-2/ Lancer le serveur :
-```bash
-$ python server.py
-```
-
-3/ Lancer l'application "Whiteboard" sur Android
-
-4/ Rentrer l'IP du serveur et l'id de l'user dans les champs texte prévus pour se connecter au serveur
-
 ## Précisions sur le code
+
+### Compilation spécifique
+
+Nous utilisons le projet [Buildozer](https://github.com/kivy/buildozer) qui permet de porter du code python3 utilisant Kivy sous Android. Le travail a donc consisté à installer la chaine de compilation spécifique pour Android et à paramétrer le fichier _buildozer.spec_ définissant les étapes de la compilation.
+
+Une fois le projet correctement paramétré, on compile une nouvelle version avec :
+```bash
+$ buildozer android deploy run
+```
+
+Une application iOS pourrait théoriquement être compilé en suivant un processus similaire.
 
 ### Structure des strings transmises par socket
 1 lettre pour préciser la commande souhaités + les paramètres en fonction de la commande, séparés par des virgules + un point pour indiquer la fin de la string.
