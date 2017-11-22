@@ -1,3 +1,6 @@
+# This file handles the activity on the whitebard, allowing to draw forms from
+# the selected buttons.
+
 from functools import partial
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.graphics import Rectangle, Line, Ellipse
@@ -5,14 +8,12 @@ from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ListProperty
 from kivy.graphics import Color
 from kivy.uix.image import Image
-
 from utils.form_types import Forms
 from utils.form_class import WBLine, WBRectangle, WBSquare, WBEllipse, \
     WBCircle, WBPoint, WBPicture, WBLabel, WBColor, LINE_WIDTH, STICKER_SIZE, \
     STICKER_URL
-
 from utils.command_class import DeleteRequest
-from client.popup2 import Input_Popup, Error_Popup
+from client.popup import InputPopup, ErrorPopup
 
 
 class WhiteboardInstance(RelativeLayout):
@@ -28,7 +29,7 @@ class WhiteboardInstance(RelativeLayout):
 
     def __init__(self, sending_queue, session_manager):
         super().__init__()
-        self.drawing = False
+        self._drawing = False
         self._selected_form = None
         self.sending_queue = sending_queue
         self.session_manager = session_manager
@@ -46,77 +47,81 @@ class WhiteboardInstance(RelativeLayout):
 
     def on_touch_down(self, touch):
         """Method called when the user clicks somewhere in the widget"""
-        self.drawing = True
-        self.touch_origin_x = touch.x
-        self.touch_origin_y = touch.y
 
-        # Kivy objects are automatically added to the canvas
-        with self.canvas:
+        if self.collide_point(touch.x, touch.y):
+            self._drawing = True
+            self.touch_origin_x = touch.x
+            self.touch_origin_y = touch.y
 
-            Color(rgba=self.drawing_color)
+            # Kivy objects are automatically added to the canvas with that
+            # statement
+            with self.canvas:
+                Color(rgba=self.drawing_color)
 
-            if self._selected_form == Forms.LINE:
-                touch.ud['line'] = Line(points=(touch.x, touch.y),
-                                        width=LINE_WIDTH)
+                if self._selected_form == Forms.LINE:
+                    touch.ud['line'] = Line(points=(touch.x, touch.y),
+                                            width=LINE_WIDTH)
 
-            elif self._selected_form == Forms.RECT:
-                touch.ud['rect'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.RECT:
+                    touch.ud['rect'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.SQUARE:
-                touch.ud['square'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.SQUARE:
+                    touch.ud['square'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.ELLIPSE:
-                touch.ud['ellipse'] = Ellipse(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.ELLIPSE:
+                    touch.ud['ellipse'] = Ellipse(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.CIRCLE:
-                touch.ud['circle'] = Ellipse(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0))
+                elif self._selected_form == Forms.CIRCLE:
+                    touch.ud['circle'] = Ellipse(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0))
 
-            elif self._selected_form == Forms.IMAGE:
-                a = WBPoint(int(touch.x - STICKER_SIZE / 2),
-                          int(touch.y - STICKER_SIZE / 2))
-                touch.ud['image'] = Image(
-                    source=STICKER_URL,
-                    pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
-                    size=(STICKER_SIZE, STICKER_SIZE))
+                elif self._selected_form == Forms.IMAGE:
+                    if touch.x - STICKER_SIZE / 2 <= 0 or \
+                            touch.y - STICKER_SIZE / 2 <= 0:
+                        print("Image does not fit into the board")
+                    else:
+                        a = WBPoint(int(touch.x - STICKER_SIZE / 2),
+                                    int(touch.y - STICKER_SIZE / 2))
+                        touch.ud['image'] = Image(
+                            source=STICKER_URL,
+                            pos=(touch.x - STICKER_SIZE / 2, touch.y - STICKER_SIZE / 2),
+                            size=(STICKER_SIZE, STICKER_SIZE))
+                        group_name = self.session_manager.store_internal_form(WBPicture(a))
+                        touch.ud['image'].canvas.group = group_name
 
-                group_name = self.session_manager.store_internal_form(WBPicture(a))
-                touch.ud['image'].canvas.group = group_name
+                elif self._selected_form == Forms.TEXT:
+                    touch.ud['text'] = Rectangle(
+                        pos=(touch.x, touch.y),
+                        size=(0, 0),
+                        group='tmp_text_rectangle')
 
-            elif self._selected_form == Forms.TEXT:
-                touch.ud['text'] = Rectangle(
-                    pos=(touch.x, touch.y),
-                    size=(0, 0),
-                    group='tmp_text_rectangle')
+            if self._selected_form == Forms.DELETE:
+                # We return the top (last created) form
+                # that includes the point we clicked
+                result = self.session_manager.extract_top_form(touch.x, touch.y)
 
-        if self._selected_form == Forms.DELETE:
-            # We return the top (last created) form
-            # that includes the point we clicked
-            result = self.session_manager.extract_top_form(touch.x, touch.y)
-
-            if result is not None:
-                # We check if this form was created by us
-                #  if it is, deletion is immediate
-                # if not permission is asked to owner
-                if self.session_manager.client_id == \
-                        result.identifier.split("-")[0]:
-                    self.delete_form_in_canvas(result.identifier, send_to_server=True)
-                else:
-                    self.sending_queue.put(
-                        DeleteRequest(result.identifier,
-                                      self.session_manager.client_id ).get_string())
-                    print("""This form belongs to {}. Authorization to
-                    delete is being asked
-                    """.format(result.identifier.split("-")[0]))
-
-        return True
+                if result is not None:
+                    # We check if this form was created by us
+                    #  if it is, deletion is immediate
+                    # if not permission is asked to owner
+                    if self.session_manager.client_id == \
+                            result.identifier.split("-")[0]:
+                        self.delete_form_in_canvas(result.identifier, send_to_server=True)
+                    else:
+                        self.sending_queue.put(DeleteRequest(
+                            result.identifier,
+                            self.session_manager.client_id
+                        ).get_string())
+                        print("""This form belongs to {}. Authorization to
+                        delete is being asked
+                        """.format(result.identifier.split("-")[0]))
 
     def on_touch_move(self, touch):
         """Method called after on_touch_down. touch is an object with
@@ -157,7 +162,6 @@ class WhiteboardInstance(RelativeLayout):
             elif self._selected_form == Forms.TEXT:
                 touch.ud['text'].size = touch.x - self.touch_origin_x, \
                     touch.y - self.touch_origin_y
-
         return True
 
     def on_touch_up(self, touch):
@@ -166,7 +170,7 @@ class WhiteboardInstance(RelativeLayout):
 
         # Sometimes on_touch_up is fired even if on_touch_down has not been
         # fired. This condition prevents from drawing a form in this case.
-        if self.drawing:
+        if self._drawing:
 
             # getting and converting the currently selected drawing color to
             # make it an attribute of the form object when storing the form
@@ -201,8 +205,14 @@ class WhiteboardInstance(RelativeLayout):
 
                 # take the bottom left corner so the coordinates will be positive
                 # the square object takes only positive coordinates
-                x_min = min(int(touch.x), int(self.touch_origin_x))
-                y_min = min(int(touch.y), int(self.touch_origin_y))
+                if dx > 0:
+                    x_min = int(self.touch_origin_x)
+                else:
+                    x_min = int(self.touch_origin_x - l)
+                if dy > 0:
+                    y_min = int(self.touch_origin_y)
+                else:
+                    y_min = int(self.touch_origin_y - l)
                 a = WBPoint(x_min, y_min)
                 b = WBPoint(x_min + l, y_min + l)
                 group_name = self.session_manager.store_internal_form(
@@ -219,22 +229,31 @@ class WhiteboardInstance(RelativeLayout):
                 touch.ud['ellipse'].group = group_name
 
             elif self._selected_form == Forms.CIRCLE:
-                c = WBPoint(int((touch.x + self.touch_origin_x) / 2),
-                            int((touch.y + self.touch_origin_y) / 2))
-                r = int(abs(touch.x - self.touch_origin_x) / 2)
+                dx = touch.x - self.touch_origin_x
+                dy = touch.y - self.touch_origin_y
+                r = int(max(abs(dx), abs(dy)) / 2)
+                if dx > 0:
+                    cx = int(self.touch_origin_x + r)
+                else:
+                    cx = int(self.touch_origin_x - r)
+                if dy > 0:
+                    cy = int(self.touch_origin_y + r)
+                else:
+                    cy = int(self.touch_origin_y - r)
+                c = WBPoint(cx, cy)
                 group_name = self.session_manager.store_internal_form(
                     WBCircle(c, r, WBColor(*color_val)))
                 touch.ud['circle'].group = group_name
 
             elif self.selected_form == Forms.TEXT:
 
-                self._draw_text_popup = Input_Popup(
+                self._draw_text_popup = InputPopup(
                     title="Draw Text",
                     text_content="Enter the text you want to write",
-                    error_popup=Error_Popup(text_content="You have not written any text")
+                    error_popup=ErrorPopup(text_content="You have not written any text")
                 )
-                # biding with the function that will be called on dismiss of the
-                # popup
+                # biding with the function that will be called on dismiss of
+                # the popup
                 self._draw_text_popup.bind(on_dismiss=partial(
                     self._update_draw_text,
                     touch.x,
@@ -243,7 +262,7 @@ class WhiteboardInstance(RelativeLayout):
 
                 self.canvas.remove_group('tmp_text_rectangle')
 
-        self.drawing = False
+        self._drawing = False
 
         return True
 
@@ -273,7 +292,8 @@ class WhiteboardInstance(RelativeLayout):
 
     def draw_form(self, form):
         """Method calld to draw a form on the board andd add it to the local
-        storage. It is especilly usefull when receiving a from from the network"""
+        storage. It is especilly usefull when receiving a from from the
+        network"""
 
         with self.canvas:
             rcv_color = form.color.get_relative_values()
@@ -305,7 +325,7 @@ class WhiteboardInstance(RelativeLayout):
 
             elif isinstance(form, WBEllipse):
                 group_name = self.session_manager.store_external_form(form)
-                Ellipse(pos=(form.c.x - form.rx / 2, form.c.y - form.ry / 2),
+                Ellipse(pos=(form.c.x - form.rx, form.c.y - form.ry),
                         size=(form.rx * 2, form.ry * 2),
                         group=group_name)
 

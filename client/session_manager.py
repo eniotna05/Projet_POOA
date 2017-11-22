@@ -1,16 +1,18 @@
+# This file handles the Session manager, which is used to exchange data between the network-related thread
+# client and the kivy objects like whiteboard and toolbar.
+# It stores the forms both in a dictionnary (for keeping id and references of
+# objects drawn on the board's canvas) and in a pile (for keeping a track of
+# the order of form adding to undo recent changes and know which one is on
+# top) and update them simultaneously"""
+
 from utils.command_class import Delete
 
 
-class SessionManager():
-    """This class is used to exchange data between the network-related thread
-    client and the kivy objects like whiteboard and toolbar.
-    It stores the forms both in a dictionnary (for keeping id and references of
-    objects drawn on the board's canvas) and in a pile (for keeping a track of
-    the order of form adding to undo recent changes and know which one is on
-    top) and update them simultaneously"""
+class SessionManager:
 
     def __init__(self, sending_queue):
         self._client_id = None
+        self._server_ip = None
         self._is_connected = False
         self.local_database = {}
         self.form_pile = []
@@ -28,6 +30,14 @@ class SessionManager():
     @client_id.setter
     def client_id(self, client_id=None):
         self._client_id = client_id
+
+    @property
+    def server_ip(self):
+        return self._server_ip
+
+    @server_ip.setter
+    def server_ip(self, ip):
+        self._server_ip = ip
 
     @property
     def is_connected(self):

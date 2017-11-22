@@ -1,9 +1,18 @@
+#This file defines functions that transform strings back into command,
+# This functions are used by client and servers to decode the coded command
+# The code used is a Capital letter + parameters separated by commas + a dot
+
+
 from utils.form_class import WBCircle, WBEllipse, WBRectangle, WBSquare, \
     WBLine, WBLabel, WBPoint, WBPicture, WBColor
 
-from utils.command_class import Create, Delete, Move, Quit, Hello, \
+from utils.command_class import Create, Delete, Quit, Hello, \
     DeleteRequest, NegativeAnswer
 
+
+# This 6 functions are each specific to the encoding of a type of form.
+# They are not used directly but are called by the main function:
+# string_to_command
 
 def string_to_circle(string):
     parameters = string.split(",")
@@ -114,9 +123,7 @@ def string_to_command(string):
     elif FL == "N":
         parameters = string[1:].split(",")
         return NegativeAnswer(parameters[0], parameters[1])
-    elif FL == "M":
-        parameters = string[1:].split(",")
-        return Move(parameters[0], int(parameters[1]), int(parameters[2]))
+
 
     else:
         raise ValueError("The first letter is incorrect")

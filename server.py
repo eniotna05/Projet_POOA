@@ -1,3 +1,5 @@
+# File defining the main thread of the server
+
 import socket
 from threading import Thread, Event
 from server.exchange import ExchangeThread
@@ -5,10 +7,12 @@ from server.server_database import ServerDatabase
 
 
 SOCKET_TIMEOUT = 0.5
+SERVER_PORT = 12800
 
 
 class Server(Thread):
-    """Class defining the server"""
+    """Class defining the server thread. This thread listen for incoming
+    connections and start a new thread for each client"""
 
     def __init__(self, port):
         Thread.__init__(self)
@@ -54,9 +58,7 @@ class Server(Thread):
             self.__sock.close()
 
 
-
-
 if __name__ == '__main__':
-    server = Server(12800)
+    server = Server(SERVER_PORT)
     server.start()
     server.join()
