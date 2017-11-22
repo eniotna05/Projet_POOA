@@ -1,5 +1,5 @@
 # Projet_POOA
-Projet n°05 sur le whiteboard collaboratif.
+Projet n°06 sur le whiteboard collaboratif.
 Pour accéder à la version Desktop, voir [ici](https://github.com/eniotna05/Projet_POOA/)
 
 ## Disclaimer
@@ -57,7 +57,7 @@ Les variables des objets Kivy hérités ne respectent pas les conventions de
 nommage avec "\_" ou "\__"
 
 
-### Bugs détectés
+### Bugs connus
 - Un bug intervient parfois lorsqu'un client se connecte, crée de nombreuses
 images et ensuite un autre client se connecte, toutes les images créées
 précèdemment ne sont pas récupéré. Le problème ne se situe pas au niveau de
